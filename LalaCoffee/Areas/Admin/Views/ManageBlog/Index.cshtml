@@ -1,0 +1,178 @@
+﻿@model IEnumerable<LalaCoffee.Models.Blog>
+
+@{
+    ViewBag.Title = "Blog Manager";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+@functions{
+    public string NorActive(bool active = true)
+    {
+        return active == true ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
+    }
+}
+@Html.Partial("ErrorsAlert")
+<script src="https://cdn.ckeditor.com/4.9.2/full/ckeditor.js"></script>
+<div class="modal fade" id="create_modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            @using (Html.BeginForm("Create", "ManageBlog", FormMethod.Post))
+            {
+                <div class="modal-header">
+                    <h4 class="modal-title">Tạo bài viết mới</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body table-responsive p-0" style="overflow-y: scroll;max-height: 700px;">
+                        <div class="form-group">
+                            <label>Tiêu đề</label>
+                            <input type="text" class="form-control" name="Title">
+                        </div>
+                        <div class="form-group">
+                            <label>Nội dung</label>
+                            <textarea rows="5" class="form-control" name="Content" id="Content"></textarea>
+                            <script type="text/javascript">
+                                CKEDITOR.replace('Content');
+                                CKEDITOR.add
+                            </script>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Hiện hành</label>
+                            <input type="checkbox" name="Published" id="Published" value="true" checked>
+                            <label class="form-check-label">ON</label>
+                        </div>
+                        <div class="form-group">
+                            <label>Người đăng</label>
+                            <input type="text" class="form-control" name="Author" id="Author">
+                        </div>
+                        <div class="form-group">
+                            <label>Hình ảnh</label>
+                            <input type="text" class="form-control" name="image" id="image">
+                            <div class="input-group form-group">
+                                <input type="file" name="fileUpload" id="fileUpload" accept="image/*"
+                                       style="display:none;" />
+                                <span class="input-group-btn">
+                                    <input type="button" id="btnUpload" value="Chọn" class="btn btn-success" />
+                                </span>
+                            </div>
+                            <img src="" id="pictureUpload" class="img-fluid" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fa fa-list"></i> DANH SÁCH BÀI VIẾT <a data-toggle="modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-head-fixed text-nowrap" id="nTable">
+                        <thead>
+                            <tr>
+                                <th>Hành động</th>
+                                <th>Id</th>
+                                <th>Tiêu đề</th>
+                                <th>Nội dung</th>
+                                <th>Thời gian tạo</th>
+                                <th>Hiện hành</th>
+                                <th>Người đăng</th>
+                                <th>Hình ảnh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("Edit", "ManageBlog", new { id = item.Id })" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-danger btn-sm" onclick="del('@item.Id')">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                                    <td><textarea rows="3">@Html.DisplayFor(modelItem => item.Content)</textarea></td>
+                                    <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
+                                    <td>@Html.Raw(NorActive(item.Published))</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Author)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Image)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  function del(id) {
+        if (confirm("Bạn chắc chắn muốn xóa?")) {
+            $.ajax({
+                url: "@Url.Action("Delete", "ManageBlog")",
+                type: "POST",
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
+        }
+    }
+</script>
+<script>
+    $(function () {
+        $('#btnUpload').click(function () {
+            $('#fileUpload').trigger('click');
+        });
+    });
+    $('#fileUpload').change(function () {
+        if (window.FormData !== undefined) {
+            var fileUpload = $('#fileUpload').get(0);
+            var files = fileUpload.files;
+            var formData = new FormData();
+            formData.append('file', files[0]);
+
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: '/Image/ProcessUpload',
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (urlImage) {
+
+                        $('#pictureUpload').attr('src', urlImage);
+                        $('#image').val(urlImage);
+                    },
+                    error: function (err) {
+                        alert('Error ', err.statusText);
+                    }
+                });
+        }
+    });
+</script>
+

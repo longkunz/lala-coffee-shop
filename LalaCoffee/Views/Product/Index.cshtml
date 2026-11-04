@@ -1,0 +1,507 @@
+﻿@model IEnumerable<LalaCoffee.Models.Product>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout_User.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Slug)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Image)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreatedAt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpdatedAt)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Slug)
+            </td>
+            <td>
+                <a href="/Product/@Html.DisplayFor(modelItem => item.Slug)">@Html.DisplayFor(modelItem => item.Name)</a>
+            </td>
+            <td>
+                @item.Price.ToString("N0")đ
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Image)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedAt)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                <button class="btn btn-primary add-to-cart" data-product-id="@item.Id">Add to Cart</button>
+            </td>
+        </tr>
+    }
+
+</table>
+@using (Html.BeginForm("Create", "Product", FormMethod.Post))
+{
+    <div class="form-group">
+        <label>Slug</label>
+        <input type="text" class="form-control" name="Slug">
+    </div>
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" class="form-control" name="Name">
+    </div>
+    <div class="form-group">
+        <label>Price</label>
+        <input type="number" class="form-control" name="Price">
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <textarea rows="5" class="form-control" name="Description"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Image</label>
+        <input type="text" class="form-control" name="Image">
+    </div>
+    <div class="form-group">
+        <label>Category_Id</label>
+        <select class="form-control" name="Category_Id">
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+    </div>
+    <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" name="Status" value="1">
+        <label class="form-check-label">Active</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+}
+<script>
+    $(document).ready(function () {
+        $('.add-to-cart').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).data('product-id');
+            var quantity = 1;
+            $.ajax({
+                url: '/Cart/AddToCart',
+                type: 'POST',
+                data: { productId: productId, quantity: quantity },
+                success: function (data) {
+                    alert("Thêm thành công");
+                    // Thực hiện các thay đổi trên giao diện để hiển thị giỏ hàng mới nhất
+                },
+                error: function () {
+                    alert('An error occurred while adding to cart.');
+                }
+            });
+        });
+    });
+</script>
+<main>
+    <div class="main-part">
+
+        <section class="breadcrumb-nav">
+            <div class="container">
+                <div class="breadcrumb-nav-inner" style="text-align:center">
+                    <label class="now" >MENU</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Start Blog List -->
+
+        <section class="default-section shop-page">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-xs-12">
+                        <div class="blog-left-section">
+                            <div class="blog-left-search blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <input type="text" name="txt" placeholder="Search" fdprocessedid="w8rqs">
+                                <input type="submit" name="submit" value="" fdprocessedid="cze44f">
+                            </div>
+                            <div class="blog-left-categories blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <h5>DANH MỤC</h5>
+                                <ul class="list">
+                                    <li><a href="#">Cà phê</a></li>
+                                    <li><a href="#">Trà</a></li>
+                                    <li><a href="#">Trà sữa</a></li>
+                                </ul>
+                            </div>
+                            <div class="blog-left-deal blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <h5>SẢN PHẨM NỔI BẬT</h5>
+                                <div class="best-deal-blog">
+                                    <div class="best-deal-left">
+                                        <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
+                                    </div>
+                                    <div class="best-deal-right">
+                                        <p>Cà Phê Sữa Đá</p>
+                                        <p><strong>39.000đ</strong></p>
+                                    </div>
+                                </div>
+                                <div class="best-deal-blog">
+                                    <div class="best-deal-left">
+                                        <img src="~/Content/Layout/User/images/tra-dao-cam-sa.jpg" alt="">
+                                    </div>
+                                    <div class="best-deal-right">
+                                        <p>Trà Đào Cam Sả</p>
+                                        <p><strong>49.000đ</strong></p>
+                                    </div>
+                                </div>
+                                <div class="best-deal-blog">
+                                    <div class="best-deal-left">
+                                        <img src="~/Content/Layout/User/images/tra-sua-oolong-nuong-tran-chau.jpg" alt="">
+                                    </div>
+                                    <div class="best-deal-right">
+                                        <p>Trà Sữa Olong Trân Châu</p>
+                                        <p><strong>55.000đ</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9 col-sm-8 col-xs-12">
+                        <div class="blog-right-section">
+                            <h3 class="block_menu_item_title">
+                                <span class="line_after_heading section_heading" style="color: #c19942">Cà Phê</span>
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/ca-phe-den-da.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Cà Phê Đen Đá</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Cà Phê Sữa Đá</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/bac-xiu.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Bạc Xỉu</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/ca-phe-den-da.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Cà Phê Đen Đá</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Cà Phê Sữa Đá</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/bac-xiu.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Bạc Xỉu</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="block_menu_item_title">
+                                <span class="line_after_heading section_heading" style="color: #c19942">Trà</span>
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-sen-nhan.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Long Nhãn Hạt Sen</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-dao-cam-sa.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Đào Cam Sả</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-sen.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Sen Vàng</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-sen-nhan.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Long Nhãn Hạt Sen</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-dao-cam-sa.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Đào Cam Sả</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-sen.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Sen Vàng</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="block_menu_item_title">
+                                <span class="line_after_heading section_heading" style="color: #c19942">Trà Sữa</span>
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra=sua-macca.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Sữa Macca Trân Châu</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-sua-oolong-nuong-tran-chau.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Sữa Olong Nướng Trân Châu</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-den-matchiato.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Đen Macchiato</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra=sua-macca.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Sữa Macca Trân Châu</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-sua-oolong-nuong-tran-chau.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Sữa Olong Nướng Trân Châu</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    <div class="shop-main-list">
+                                        <div class="shop-product">
+                                            <img src="~/Content/Layout/User/images/tra-den-matchiato.jpg" alt="">
+                                            <div class="cart-overlay-wrap">
+                                                <div class="cart-overlay">
+                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="shop_single.html"><h5>Trà Đen Macchiato</h5></a>
+                                        <h5><strong>39.000đ</strong></h5>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*<div class="gallery-pagination">
+            <div class="gallery-pagination-inner">
+                <ul>
+                    <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>Trang Trước</span></a></li>
+                    <li class="active"><a href="#"><span>1</span></a></li>
+                    <li><a href="#"><span>2</span></a></li>
+                    <li><a href="#"><span>3</span></a></li>
+                    <li><a href="#" class="pagination-next"><span>Trang Sau</span> <i class="icon-right-4"></i></a></li>
+                </ul>
+            </div>
+        </div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- End Blog List -->
+
+    </div>
+</main>

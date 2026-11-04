@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - LalaCoffee</title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+
+
+    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("LalaCoffee", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+                        <li>@Html.ActionLink("Category", "Index", "Category")</li>
+                    }
+                        <li>@Html.ActionLink("Product", "Index", "Product")</li>
+                        <li>@Html.ActionLink("Cart", "Index", "Cart")</li>
+                        @*<li>@Html.ActionLink("PropertyProduct", "Index", "PropertyProduct")</li>
+                        <li>@Html.ActionLink("OptionProduct", "Index", "OptionProduct")</li>*@
+                        <li>@Html.ActionLink("CheckOut", "CheckOut", "Order")</li>
+                    
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li>@Html.ActionLink("SET ROLE", "SetRole", "ManageRole", new { area = "Admin" }, null)</li>
+                        <li>@Html.ActionLink("ROLES", "Index", "ManageRole", new { area = "Admin" }, null)</li>
+                        <li>@Html.ActionLink("USER", "Index", "ManageUser", new { area = "Admin" }, null)</li>
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - LalaCoffee</p>
+        </footer>
+    </div>
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

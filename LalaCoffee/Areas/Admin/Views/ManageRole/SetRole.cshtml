@@ -1,0 +1,115 @@
+﻿@model IEnumerable<LalaCoffee.Models.AspNetUserRoles>
+@{
+    ViewBag.Title = "Set Role Manage";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+@{
+    List<LalaCoffee.Data.ApplicationUser> users = ViewBag.Users;
+    List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole> roles = ViewBag.Roles;
+}
+@Html.Partial("ErrorsAlert")
+<div class="modal fade" id="create_modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            @using (Html.BeginForm("SetRole", "ManageRole", FormMethod.Post))
+            {
+                <div class="modal-header">
+                    <h4 class="modal-title">Set role cho user</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body table-responsive p-0">
+                        <div class="form-group">
+                            <label>User</label>
+                            <select class="form-control" name="UserId" id="UserId">
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <option value="@user.Id">@user.UserName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Role</label>
+                            <select class="form-control" name="RoleId" id="RoleId">
+                                @foreach (var role in ViewBag.Roles)
+                                {
+                                    <option value="@role.Id">@role.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fa fa-list"></i> DANH SÁCH SET ROLE <a data-toggle="modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-head-fixed text-nowrap" id="nTable">
+                        <thead>
+                            <tr>
+                                <th>Hành động</th>
+                                <th>User</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" class="btn btn-danger btn-sm" onclick="del('@item.UserId', '@item.RoleId')">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @users.Find(x => x.Id == item.UserId).UserName
+                                    </td>
+                                    <td>
+                                        @roles.Find(x => x.Id == item.RoleId).Name
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function del(UserId, RoleId) {
+        if (confirm("Bạn chắc chắn muốn xóa?")) {
+            $.ajax({
+                url: "@Url.Action("DeleteSetRole", "ManageRole")",
+                type: "POST",
+                data: { UserId: UserId, RoleId: RoleId },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
+        }
+    }
+</script>

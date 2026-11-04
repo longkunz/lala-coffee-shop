@@ -1,0 +1,60 @@
+﻿@model IEnumerable <LalaCoffee.Models.Blog>
+    @{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout_User.cshtml";
+}
+
+<main>
+    <div class="main-part">
+
+        <section class="breadcrumb-nav">
+            <div class="container" style="text-align:center">
+                <div class="breadcrumb-nav-inner">
+                    <label class="now">BLOG</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Start Blog List -->
+
+        <section class="default-section blog-main-section text-center blog-main-full">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="blog-right-section">
+                            @foreach(var item in Model)
+                            {
+                            <div class="blog-right-listing wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                                <div class="feature-img">
+                                    <a href="/Blog/ReadMore/@item.Id"><img src="@item.Image" alt="BlogImage"></a>
+                                    <div class="date-feature">@item.CreatedDate.ToString("dd") <br> <small>@item.CreatedDate.ToString("MM") </small></div>
+                                </div>
+                                <div class="feature-info">
+                                    <span><i class="icon-user-1"></i> Đăng bởi: @item.Author</span>
+                                    <a href="/Blog/ReadMore/@item.Id"><h5>@item.Title</h5></a>
+                               <p>@Html.Raw(item.Content.Substring(0, Math.Min(@item.Content.Length, 150)))</p>
+                                    <a href="/Blog/ReadMore/@item.Id" class="button-default">Read More <i class="icon-right-4"></i></a>
+                                </div>
+                            </div>
+                            }
+                            <div class="gallery-pagination">
+                                <div class="gallery-pagination-inner">
+                                    <ul>
+                                        <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>PREV page</span></a></li>
+                                        <li class="active"><a href="#"><span>1</span></a></li>
+                                        <li><a href="#"><span>2</span></a></li>
+                                        <li><a href="#"><span>3</span></a></li>
+                                        <li><a href="#" class="pagination-next"><span>next page</span> <i class="icon-right-4"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- End Blog List -->
+
+    </div>
+</main>  

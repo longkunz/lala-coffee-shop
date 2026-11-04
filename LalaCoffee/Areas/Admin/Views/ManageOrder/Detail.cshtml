@@ -1,0 +1,45 @@
+﻿@model IEnumerable<LalaCoffee.Models.OrderDetail>
+@{
+    ViewBag.Title = "Detail Order";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fa fa-info-circle"></i> CHI TIẾT ĐƠN HÀNG
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="card-body table-responsive p-0" style="text-align: center">
+                    <table class="table table-head-fixed text-nowrap" id="nTable">
+                        <thead>
+                            <tr>
+                                <th>Product Id</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Thuộc tính</th>
+                                <th>Tùy chọn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.ProductId)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+                                    <td>@item.Total.ToString("N0")đ</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.PropertyProduct)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.OptionProduct)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
