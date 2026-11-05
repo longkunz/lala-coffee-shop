@@ -1,6 +1,6 @@
 # Ticket 03: Xác thực chữ ký số Checksum cho cổng thanh toán MoMo và VNPay
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 
 ## Vấn đề
