@@ -29,3 +29,11 @@
 
 ## Vấn đề chưa rõ (Open Questions)
 - Không có. Tất cả các ticket đã có đặc tả và phương án kỹ thuật rõ ràng.
+
+## Trạng thái tích hợp (Integration Status)
+- [x] Đã hoàn thành toàn bộ 9 tickets (Ticket 00 đến 08).
+- [x] Đã rà soát code review, phát hiện và sửa toàn bộ các vấn đề (ImageController Authorize role, PayController VNPay & MoMo verification, MenuHelper, xóa OptionProductController & PropertyProductController dư thừa).
+- [x] Đã merge nhánh `review-fixes` vào nhánh tích hợp `integration/code-review-fixes`.
+- [x] Đã build thành công bằng MSBuild (0 errors).
+- [x] Đã chạy toàn bộ 118 unit & integration tests với vstest (118/118 passed).
+
