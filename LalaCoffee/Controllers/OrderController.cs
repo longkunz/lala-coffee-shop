@@ -99,6 +99,12 @@ namespace LalaCoffee.Controllers
                         break;
                 }
 
+                var cart = _cartManager.GetCartItems();
+                if (cart == null || cart.Count < 1)
+                {
+                    errors.Add("Giỏ hàng của bạn đang trống.");
+                }
+
                 if (errors.Count == 0)
                 {
                     Order order = new Order();
@@ -111,63 +117,75 @@ namespace LalaCoffee.Controllers
                     order.Payment = payment;
                     order.Note = note;
                     order.UserId = UserId;
-                    order.Status = "1";
-                    
-                    //Add(order);
-                    Session["orderCode"] = code;
-                    // Lấy tổng tiền từ giỏ hàng
-                    var cart = _cartManager.GetCartItems();
+                    order.Status = "Pending";
+                    order.Paid = 0;
+                    order.CreatedAt = DateTime.Now;
+                    order.UpdatedAt = DateTime.Now;
+
                     decimal totalOrder = 0;
+                    var orderDetails = new List<OrderDetail>();
+
                     foreach (var item in cart)
                     {
-                        var itemTotal = item.Price; // giá sản phẩm
-                        itemTotal += item.PropertyProduct.Price; // giá của thuộc tính (size)
-                        foreach (var option in item.Options)
+                        var propertyPrice = item.PropertyProduct != null ? item.PropertyProduct.Price : 0m;
+                        var optionPrices = item.Options != null ? item.Options.Select(o => o.Price) : Enumerable.Empty<decimal>();
+                        var lineTotal = OrderCalculator.CalculateLineTotal(item.Price, propertyPrice, optionPrices, item.Quantity);
+
+                        string propertyProduct = item.PropertyProduct != null
+                            ? $"{item.PropertyProduct.Name} - {item.PropertyProduct.Price:N0}đ"
+                            : "";
+                        string optionProduct = "";
+                        if (item.Options != null)
                         {
-                            itemTotal += option.Price; // giá của tùy chọn (topping)
+                            foreach (var option in item.Options)
+                            {
+                                optionProduct += $"{option.Name} - {option.Price:N0}đ\n";
+                            }
                         }
-                        totalOrder += itemTotal;
+
+                        OrderDetail orderDetail = new OrderDetail
+                        {
+                            Order = order,
+                            ProductId = item.ProductId,
+                            ProductName = item.ProductName,
+                            Price = item.Price,
+                            Total = lineTotal,
+                            Quantity = item.Quantity,
+                            PropertyProduct = propertyProduct,
+                            OptionProduct = optionProduct
+                        };
+                        orderDetails.Add(orderDetail);
+                        totalOrder += lineTotal;
                     }
+
                     order.Total = totalOrder;
+
+                    // Lưu đơn hàng và chi tiết đơn hàng vào Database trước khi chuyển sang cổng thanh toán
+                    Context.Orders.Add(order);
+                    foreach (var detail in orderDetails)
+                    {
+                        Context.OrderDetails.Add(detail);
+                    }
+                    Context.SaveChanges();
+
+                    Session["orderCode"] = code;
                     Session["order"] = order;
                     Session["email"] = email;
+
                     switch (payment)
                     {
                         case "momo":
-                            return RedirectToAction("MomoPay", "Pay");
+                            return RedirectToAction("MomoPay", "Pay", new { orderCode = order.Code });
                         case "vnpay":
-                            return RedirectToAction("VNPay", "Pay");
+                            return RedirectToAction("VNPay", "Pay", new { orderCode = order.Code });
                         default:
-                            totalOrder = 0;
-                            foreach (var item in cart)
-                            {
-                                var itemTotal = item.Price;
-                                itemTotal += item.PropertyProduct.Price;
-                                string propertyProduct = "" + item.PropertyProduct.Name + " - " + item.PropertyProduct.Price.ToString("N0") + "đ";
-                                string optionProduct = "";
-                                foreach (var option in item.Options)
-                                {
-                                    itemTotal += option.Price;
-                                    optionProduct += "" + option.Name + " - " + option.Price.ToString("N0") + "đ\n";
-                                }
-                                OrderDetail orderDetail = new OrderDetail();
-                                orderDetail.Order = order;
-                                orderDetail.ProductId = item.ProductId;
-                                orderDetail.ProductName = item.ProductName;
-                                orderDetail.Price = item.Price;
-                                orderDetail.Total = itemTotal;
-                                orderDetail.Quantity = item.Quantity;
-                                orderDetail.PropertyProduct = propertyProduct;
-                                orderDetail.OptionProduct = optionProduct;
-                                totalOrder += itemTotal;
-                                Context.OrderDetails.Add(orderDetail);
-                                Context.SaveChanges();
-                            }
-                            //Cập nhật tổng số tiền
-                            order.Total = totalOrder;
-                            Update(order);
+                            order.Status = "Confirmed";
+                            Context.SaveChanges();
                             _cartManager.ClearCart();
-                            SendEmail(Session["email"].ToString(), order.Name, order.Code);
+                            if (!string.IsNullOrEmpty(email))
+                            {
+                                SendEmail(email, order.Name, order.Code);
+                            }
                             break;
                     }
                     return RedirectToAction("CompleteOrder", "Order");

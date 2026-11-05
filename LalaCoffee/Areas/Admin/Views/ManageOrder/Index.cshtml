@@ -7,7 +7,15 @@
 @functions{
     public string NorActive(string active = "1")
     {
-        return active == "1" ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
+        if (active == "1" || string.Equals(active, "Paid", StringComparison.OrdinalIgnoreCase) || string.Equals(active, "Confirmed", StringComparison.OrdinalIgnoreCase))
+        {
+            return "<span class='btn btn-success btn-xs'>" + (active == "1" ? "ON" : active.ToUpperInvariant()) + "</span>";
+        }
+        if (string.Equals(active, "Pending", StringComparison.OrdinalIgnoreCase))
+        {
+            return "<span class='btn btn-warning btn-xs'>PENDING</span>";
+        }
+        return active == "0" ? "<span class='btn btn-danger btn-xs'>OFF</span>" : "<span class='btn btn-danger btn-xs'>" + (active ?? "OFF") + "</span>";
     }
     public string NorPaid(int paid = 0)
     {
