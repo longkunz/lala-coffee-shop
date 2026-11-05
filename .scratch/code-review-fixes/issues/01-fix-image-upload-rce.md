@@ -1,6 +1,6 @@
 # Ticket 01: Vá lỗ hổng Arbitrary File Upload / RCE trong ImageController
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 
 ## Vấn đề

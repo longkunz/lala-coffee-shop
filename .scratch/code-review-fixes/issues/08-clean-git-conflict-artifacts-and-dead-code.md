@@ -1,6 +1,6 @@
 # Ticket 08: Dọn dẹp tàn dư Git conflict, file swap và mã nguồn chết (Dead Code)
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 
 ## Vấn đề
