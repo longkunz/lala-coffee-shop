@@ -1,8 +1,9 @@
-﻿@model LalaCoffee.Models.Order
+@model LalaCoffee.Models.Order
 
 @{
     ViewBag.Title = "Edit Order";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    bool isActive = Model.Status == "1" || string.Equals(Model.Status, "Paid", StringComparison.OrdinalIgnoreCase) || string.Equals(Model.Status, "Confirmed", StringComparison.OrdinalIgnoreCase);
 }
 @Html.Partial("ErrorsAlert")
 <div class="row">
@@ -51,7 +52,7 @@
                     </div>
                     <div class="form-group">
                         <label>Trạng thái</label>
-                        @if (Convert.ToInt32(Model.Status) == 1)
+                        @if (isActive)
                         {
                             <input type="checkbox" name="status" id="status" value="1" checked>
                         }
