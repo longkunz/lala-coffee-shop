@@ -1,5 +1,14 @@
 {
   "version": "1.0",
-  "defaultProvider": "cdnjs",
-  "libraries": []
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "bootstrap@5.3.3",
+      "destination": "Content/lib/bootstrap/",
+      "files": [
+        "dist/css/bootstrap.min.css",
+        "dist/js/bootstrap.bundle.min.js"
+      ]
+    }
+  ]
 }

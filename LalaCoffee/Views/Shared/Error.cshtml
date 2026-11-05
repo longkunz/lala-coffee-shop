@@ -1,13 +1,112 @@
-﻿<!DOCTYPE html>
-<html>
+@model System.Web.Mvc.HandleErrorInfo
+@{
+    ViewBag.Title = "Thông báo sự cố - LalaCoffee";
+}
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Error</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,600,700" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .error-card {
+            max-width: 580px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            background: #fff3cd;
+            color: #ff9800;
+            border-radius: 50%;
+            font-size: 38px;
+            margin: 0 auto 24px;
+        }
+        .brand-title {
+            color: #8c5835;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .error-msg {
+            font-size: 16px;
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .btn-lala-primary {
+            background-color: #8c5835;
+            border-color: #8c5835;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-lala-primary:hover {
+            background-color: #6f4225;
+            border-color: #6f4225;
+            color: #ffffff;
+        }
+        .btn-lala-outline {
+            border: 1px solid #8c5835;
+            color: #8c5835;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 12px;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-lala-outline:hover {
+            background-color: #8c5835;
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-    <hgroup>
-        <h1>Error.</h1>
-        <h2>An error occurred while processing your request.</h2>
-    </hgroup>
+    <div class="error-card">
+        <div class="error-icon">
+            <i class="fa fa-coffee" aria-hidden="true"></i>
+        </div>
+        <h1 class="brand-title">LalaCoffee</h1>
+        <h2 class="h4 mb-3 fw-bold text-dark">Rất tiếc! Đã có lỗi xảy ra</h2>
+        <p class="error-msg">
+            Hệ thống đang gặp sự cố gián đoạn tạm thời khi xử lý yêu cầu của bạn.<br />
+            Đội ngũ kỹ thuật đã được ghi nhận thông tin sự cố và đang tiến hành khắc phục.<br />
+            Xin quý khách vui lòng thử lại sau ít phút hoặc quay về trang chủ.
+        </p>
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            <a href="/" class="btn-lala-primary">
+                <i class="fa fa-home me-1"></i> Về Trang Chủ
+            </a>
+            <a href="/Product" class="btn-lala-outline">
+                <i class="fa fa-list me-1"></i> Xem Thực Đơn
+            </a>
+        </div>
+    </div>
 </body>
 </html>

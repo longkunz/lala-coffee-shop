@@ -12,7 +12,7 @@
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h4 class="modal-title">Tạo role mới</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-dismiss="modal">Đóng</button>
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                 </div>
             }
@@ -37,7 +37,7 @@
         <div class="card card-info">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fa fa-list"></i> DANH SÁCH ROLE <a data-toggle="modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
+                    <i class="fa fa-list"></i> DANH SÁCH ROLE <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
                 </h3>
             </div>
             <div class="card-body">
