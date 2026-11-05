@@ -4,7 +4,7 @@
 
 **Blocked by:** 04 (Bảo mật chức năng tải ảnh sản phẩm và vá lỗ hổng RCE), 05 (Đóng các endpoint CRUD công khai và chuẩn hóa phân quyền Admin Area), 08 (Xác thực chữ ký số bảo mật hai chiều cho cổng thanh toán MoMo và VNPay), 09 (Giải phóng kết nối cơ sở dữ liệu và tối ưu hóa truy vấn lặp N+1)
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] Các giao diện và lớp triển khai dịch vụ nghiệp vụ được xây dựng tách biệt khỏi Controller.
 - [ ] Trình giải quyết phụ thuộc Unity được cấu hình làm Dependency Resolver chính thức cho ứng dụng ASP.NET MVC 5.
