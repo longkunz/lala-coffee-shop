@@ -1,6 +1,6 @@
 # Ticket 04: Bảo vệ hoặc loại bỏ các endpoint CRUD công khai ngoài Admin Area
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 
 ## Vấn đề
