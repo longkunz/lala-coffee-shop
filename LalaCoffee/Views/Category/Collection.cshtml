@@ -1,11 +1,11 @@
-﻿@model IEnumerable<LalaCoffee.Models.Product>
+@model IEnumerable<LalaCoffee.Models.Product>
 @{
     Page.Title = "Index";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
 }
 @*@if (@ViewBag.Category != null)
     {
-        <h2> Danh sách sản phẩm của danh mục @ViewBag.Category.Name</h2>
+        <h2> Danh s�ch s?n ph?m c?a danh m?c @ViewBag.Category.Name</h2>
     }*@
 @*@foreach (var product in ViewBag.Products)
     {
@@ -29,15 +29,15 @@
         <section class="default-section shop-page">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3 col-sm-4 col-xs-12">
+                    <div class="col-md-3 col-sm-4 col-12">
                         <div class="blog-left-section">
                             <div class="blog-left-search blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                 <input type="text" name="txt" placeholder="Search" fdprocessedid="w8rqs">
-                                <input type="submit" name="submit" value="" fdprocessedid="cze44f">
+                                <input type="submit" name="submit" value="?" fdprocessedid="cze44f">
                             </div>
                             <div class="blog-left-categories blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                 <h5>
-                                    DANH MỤC
+                                    DANH M?C
                                 </h5>
                                 <ul class="list">
                                     @foreach (var Category in ViewBag.ListCate)
@@ -47,14 +47,14 @@
                                 </ul>
                             </div>
                             @*<div class="blog-left-deal blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
-                                    <h5>SẢN PHẨM NỔI BẬT</h5>
+                                    <h5>S?N PH?M N?I B?T</h5>
                                     <div class="best-deal-blog">
                                         <div class="best-deal-left">
                                             <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
                                         </div>
                                         <div class="best-deal-right">
-                                            <p>Cà Phê Sữa Đá</p>
-                                            <p><strong>39.000đ</strong></p>
+                                            <p>C� Ph� S?a ��</p>
+                                            <p><strong>39.000d</strong></p>
                                         </div>
                                     </div>
                                     <div class="best-deal-blog">
@@ -62,8 +62,8 @@
                                             <img src="~/Content/Layout/User/images/tra-dao-cam-sa.jpg" alt="">
                                         </div>
                                         <div class="best-deal-right">
-                                            <p>Trà Đào Cam Sả</p>
-                                            <p><strong>49.000đ</strong></p>
+                                            <p>Tr� ��o Cam S?</p>
+                                            <p><strong>49.000d</strong></p>
                                         </div>
                                     </div>
                                     <div class="best-deal-blog">
@@ -71,14 +71,14 @@
                                             <img src="~/Content/Layout/User/images/tra-sua-oolong-nuong-tran-chau.jpg" alt="">
                                         </div>
                                         <div class="best-deal-right">
-                                            <p>Trà Sữa Olong Trân Châu</p>
-                                            <p><strong>55.000đ</strong></p>
+                                            <p>Tr� S?a Olong Tr�n Ch�u</p>
+                                            <p><strong>55.000d</strong></p>
                                         </div>
                                     </div>
                                 </div>*@
                         </div>
                     </div>
-                    <div class="col-md-9 col-sm-8 col-xs-12">
+                    <div class="col-md-9 col-sm-8 col-12">
                         @foreach (var Category in ViewBag.Categories)
                         {
                             <div class="blog-right-section">
@@ -90,57 +90,57 @@
                                     {
                                         if (item.Category.Id == Category.Id)
                                         {
-                                            <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                            <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                                 <div class="shop-main-list">
                                                     <div class="shop-product">
                                                         <a href="~/Product/@item.Slug"> <img src="@item.Image" alt="productImage"></a>
                                                         @*<div class="cart-overlay-wrap">
                                                                 <div class="cart-overlay">
-                                                                    <a href="#" class="shop-cart-btn">Thêm</a>
+                                                                    <a href="#" class="shop-cart-btn">Th�m</a>
                                                                 </div>
                                                             </div>*@
                                                     </div>
                                                     <a href="~/Product/@item.Slug"><h5>@item.Name</h5></a>
-                                                    <h5><strong>@item.Price.ToString("N0")đ</strong></h5>
+                                                    <h5><strong>@item.Price.ToString("N0")d</strong></h5>
                                                 </div>
                                             </div>
                                         }
 
                                     }
 
-                                    @*<div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                    @*<div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                             <div class="shop-main-list">
                                                 <div class="shop-product">
                                                     <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
                                                     <div class="cart-overlay-wrap">
                                                         <div class="cart-overlay">
-                                                            <a href="#" class="shop-cart-btn">Thêm</a>
+                                                            <a href="#" class="shop-cart-btn">Th�m</a>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <a href="shop_single.html"><h5>Cà Phê Sữa Đá</h5></a>
-                                                <h5><strong>39.000đ</strong></h5>
+                                                <a href="shop_single.html"><h5>C� Ph� S?a ��</h5></a>
+                                                <h5><strong>39.000d</strong></h5>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                        <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                             <div class="shop-main-list">
                                                 <div class="shop-product">
                                                     <img src="~/Content/Layout/User/images/bac-xiu.jpg" alt="">
                                                     <div class="cart-overlay-wrap">
                                                         <div class="cart-overlay">
-                                                            <a href="#" class="shop-cart-btn">Thêm</a>
+                                                            <a href="#" class="shop-cart-btn">Th�m</a>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <a href="shop_single.html"><h5>Bạc Xỉu</h5></a>
-                                                <h5><strong>39.000đ</strong></h5>*@
+                                                <a href="shop_single.html"><h5>B?c X?u</h5></a>
+                                                <h5><strong>39.000d</strong></h5>*@
                                 </div>
                             </div>}
                     </div>
                     @*<div class="gallery-pagination">
                             <div class="gallery-pagination-inner">
                                 <ul>
-                                    <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>Trang Trước</span></a></li>
+                                    <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>Trang Tru?c</span></a></li>
                                     <li class="active"><a href="#"><span>1</span></a></li>
                                     <li><a href="#"><span>2</span></a></li>
                                     <li><a href="#"><span>3</span></a></li>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable <LalaCoffee.Models.Blog>
+@model IEnumerable <LalaCoffee.Models.Blog>
     @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
@@ -20,7 +20,7 @@
         <section class="default-section blog-main-section text-center blog-main-full">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-12 col-sm-12 col-12">
                         <div class="blog-right-section">
                             @foreach(var item in Model)
                             {
@@ -30,7 +30,7 @@
                                     <div class="date-feature">@item.CreatedDate.ToString("dd") <br> <small>@item.CreatedDate.ToString("MM") </small></div>
                                 </div>
                                 <div class="feature-info">
-                                    <span><i class="icon-user-1"></i> Đăng bởi: @item.Author</span>
+                                    <span><i class="icon-user-1"></i> �ang b?i: @item.Author</span>
                                     <a href="/Blog/ReadMore/@item.Id"><h5>@item.Title</h5></a>
                                <p>@Html.Raw(item.Content.Substring(0, Math.Min(@item.Content.Length, 150)))</p>
                                     <a href="/Blog/ReadMore/@item.Id" class="button-default">Read More <i class="icon-right-4"></i></a>

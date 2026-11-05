@@ -17,7 +17,6 @@ namespace LalaCoffee.Controllers
         private readonly IOrderService _orderService;
         private readonly ICartService _cartService;
         private readonly IEmailService _emailService;
-        private readonly IRepository<Order> _orderRepository;
 
         public PayController()
             : this(null, null, null, null)
@@ -30,7 +29,6 @@ namespace LalaCoffee.Controllers
             CartManager cartManager = null)
             : this(null, null, (ICartService)cartManager, emailService)
         {
-            _orderRepository = orderRepository ?? new Repository<Order>(Context);
         }
 
         public PayController(
@@ -43,7 +41,6 @@ namespace LalaCoffee.Controllers
             _orderService = orderService ?? new OrderService(Context);
             _cartService = cartService ?? new CartService();
             _emailService = emailService ?? new EmailService();
-            _orderRepository = new Repository<Order>(Context);
         }
 
         public ActionResult ErrorPayment()

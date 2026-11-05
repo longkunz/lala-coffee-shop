@@ -15,7 +15,6 @@ namespace LalaCoffee.Controllers
         private readonly IRepository<PropertyProduct> _propertyProductRepository;
         private readonly IRepository<OptionProduct> _optionProductRepository;
         private readonly ICartService _cartService;
-        private readonly CartManager _cartManager;
 
         public CartController()
             : this(null, null, null, null, null)
@@ -34,7 +33,6 @@ namespace LalaCoffee.Controllers
             _propertyProductRepository = propertyProductRepository ?? new Repository<PropertyProduct>(_context);
             _optionProductRepository = optionProductRepository ?? new Repository<OptionProduct>(_context);
             _cartService = cartService ?? new CartService();
-            _cartManager = _cartService as CartManager ?? new CartManager();
         }
 
         public ActionResult Index()

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 using LalaCoffee.Data;
 using LalaCoffee.Models;
 using LalaCoffee.Services;
@@ -33,22 +33,6 @@ namespace LalaCoffee.Controllers
             _emailService = emailService ?? new EmailService();
         }
 
-        public static bool ValidateVNPhoneNumber(string phoneNumber)
-        {
-            if (string.IsNullOrWhiteSpace(phoneNumber)) return false;
-            phoneNumber = phoneNumber.Replace("+84", "0").Trim();
-            var regex = new Regex(@"^(0)(86|96|97|98|32|33|34|35|36|37|38|39|91|94|83|84|85|81|82|90|93|70|79|77|76|78|92|56|58|99|59|55|87)\d{7}$");
-            return regex.IsMatch(phoneNumber);
-        }
-
-        public static string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray()).ToUpper();
-        }
-
         public void SendEmail(string email, string name, string orderCode)
         {
             _emailService.SendOrderConfirmation(email, name, orderCode);
@@ -64,106 +48,121 @@ namespace LalaCoffee.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewBag.Carts = cart;
-            return View();
+
+            var model = new CheckOutViewModel();
+            if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                try
+                {
+                    var userId = User.Identity.GetUserId();
+                    model.UserId = userId;
+                    var appUser = Context?.Users?.Find(userId);
+                    if (appUser != null)
+                    {
+                        model.Name = appUser.UserName;
+                        model.PhoneNumber = appUser.PhoneNumber;
+                        model.Email = appUser.Email;
+                    }
+                    else
+                    {
+                        model.Name = User.Identity.Name;
+                    }
+                }
+                catch
+                {
+                    // Guard against unmocked context in unit tests
+                }
+            }
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CheckOut(FormCollection formCollection)
+        public ActionResult CheckOut(CheckOutViewModel model)
         {
-            List<string> errors = new List<string>();
+            if (model == null)
+            {
+                model = new CheckOutViewModel();
+            }
+
+            var cart = _cartService.GetCartItems();
+            if (cart == null || cart.Count < 1)
+            {
+                ModelState.AddModelError(string.Empty, "Giỏ hàng của bạn đang trống.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.PhoneNumber) && !_orderService.ValidatePhoneNumber(model.PhoneNumber))
+            {
+                ModelState.AddModelError(nameof(model.PhoneNumber), "Số điện thoại không hợp lệ.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errorList = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .Where(m => !string.IsNullOrEmpty(m))
+                    .ToList();
+
+                ViewBag.Carts = cart;
+                ViewBag.Errors = errorList;
+                TempData["Errors"] = errorList;
+                return View(model);
+            }
+
             try
             {
-                var name = formCollection["name"];
-                var email = formCollection["email"];
-                var phoneNumber = formCollection["phoneNumber"];
-                var address = formCollection["address"];
-                var payment = formCollection["payment"];
-                var note = formCollection["note"];
-                var userId = formCollection["UserId"];
+                // Persist order and details to database via IOrderService (encapsulating Context.Orders.Add(order) and details)
+                Order order = _orderService.CreateOrder(model, cart);
 
-                if (string.IsNullOrEmpty(name))
+                if (Session != null)
                 {
-                    errors.Add("Vui lòng nhập tên.");
+                    Session["orderCode"] = order.Code;
+                    Session["order"] = order;
+                    Session["email"] = model.Email;
                 }
 
-                if (string.IsNullOrEmpty(address))
+                switch (model.Payment?.ToLowerInvariant())
                 {
-                    errors.Add("Vui lòng nhập địa chỉ.");
-                }
-
-                if (!_orderService.ValidatePhoneNumber(phoneNumber) && !ValidateVNPhoneNumber(phoneNumber))
-                {
-                    errors.Add("Số điện thoại không hợp lệ.");
-                }
-
-                switch (payment)
-                {
-                    case "cash":
                     case "momo":
+                        return RedirectToAction("MomoPay", "Pay", new { orderCode = order.Code });
                     case "vnpay":
-                        break;
+                        return RedirectToAction("VNPay", "Pay", new { orderCode = order.Code });
                     default:
-                        errors.Add("Phương thức thanh toán không hợp lệ.");
+                        _orderService.UpdateOrderStatus(order.Code, "Confirmed");
+                        _cartService.ClearCart();
+                        if (!string.IsNullOrEmpty(model.Email))
+                        {
+                            SendEmail(model.Email, order.Name, order.Code);
+                        }
                         break;
                 }
-
-                var cart = _cartService.GetCartItems();
-                if (cart == null || cart.Count < 1)
-                {
-                    errors.Add("Giỏ hàng của bạn đang trống.");
-                }
-
-                if (errors.Count == 0)
-                {
-                    Order order = new Order
-                    {
-                        Name = name,
-                        PhoneNumber = phoneNumber,
-                        Address = address,
-                        Payment = payment,
-                        Note = note,
-                        UserId = userId,
-                        Status = "Pending",
-                        Paid = 0,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now
-                    };
-
-                    // Persist order and details to database via IOrderService (encapsulating Context.Orders.Add(order) and details)
-                    order = _orderService.CreateOrder(order, cart);
-
-                    if (Session != null)
-                    {
-                        Session["orderCode"] = order.Code;
-                        Session["order"] = order;
-                        Session["email"] = email;
-                    }
-
-                    switch (payment)
-                    {
-                        case "momo":
-                            return RedirectToAction("MomoPay", "Pay", new { orderCode = order.Code });
-                        case "vnpay":
-                            return RedirectToAction("VNPay", "Pay", new { orderCode = order.Code });
-                        default:
-                            _orderService.UpdateOrderStatus(order.Code, "Confirmed");
-                            _cartService.ClearCart();
-                            if (!string.IsNullOrEmpty(email))
-                            {
-                                SendEmail(email, order.Name, order.Code);
-                            }
-                            break;
-                    }
-                    return RedirectToAction("CompleteOrder", "Order");
-                }
+                return RedirectToAction("CompleteOrder", "Order");
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                var errorList = new List<string> { ex.Message };
+                ViewBag.Carts = cart;
+                ViewBag.Errors = errorList;
+                TempData["Errors"] = errorList;
+                return View(model);
             }
-            TempData["Errors"] = errors;
-            return RedirectToAction("CheckOut", "Order");
+        }
+
+        [NonAction]
+        public ActionResult CheckOut(FormCollection formCollection)
+        {
+            var model = new CheckOutViewModel
+            {
+                Name = formCollection?["name"] ?? formCollection?["Name"],
+                Email = formCollection?["email"] ?? formCollection?["Email"],
+                PhoneNumber = formCollection?["phoneNumber"] ?? formCollection?["PhoneNumber"],
+                Address = formCollection?["address"] ?? formCollection?["Address"],
+                Payment = formCollection?["payment"] ?? formCollection?["Payment"] ?? "cash",
+                Note = formCollection?["note"] ?? formCollection?["Note"],
+                UserId = formCollection?["UserId"]
+            };
+            return CheckOut(model);
         }
 
         [Route("Order/SearchOrder")]

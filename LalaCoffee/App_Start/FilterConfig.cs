@@ -5,7 +5,7 @@ using NLog;
 
 namespace LalaCoffee
 {
-    public class AiExceptionFilter : HandleErrorAttribute
+    public class GlobalLoggingExceptionFilter : HandleErrorAttribute
     {
         private static readonly ILogger Logger = LogManager.GetLogger("ErrorLogger");
 
@@ -35,11 +35,16 @@ namespace LalaCoffee
         }
     }
 
+    [Obsolete("Renamed to GlobalLoggingExceptionFilter")]
+    public class AiExceptionFilter : GlobalLoggingExceptionFilter
+    {
+    }
+
     public class FilterConfig
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new AiExceptionFilter());
+            filters.Add(new GlobalLoggingExceptionFilter());
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Unity;
 using Unity.Lifetime;
@@ -12,13 +13,79 @@ using LalaCoffee.Services.Payment;
 
 namespace LalaCoffee
 {
-    public class UnityDependencyResolver : IDependencyResolver
+    public class UnityDependencyResolver : IDependencyResolver, IDisposable
     {
+        private const string PerRequestContainerKey = "PerRequestUnityChildContainer";
         private readonly IUnityContainer _container;
+        private bool _disposed;
 
         public UnityDependencyResolver(IUnityContainer container)
         {
             _container = container ?? throw new ArgumentNullException(nameof(container));
+        }
+
+        public IUnityContainer Container => _container;
+
+        public IUnityContainer CurrentContainer
+        {
+            get
+            {
+                var httpContext = HttpContext.Current;
+                if (httpContext == null)
+                {
+                    return _container;
+                }
+
+                if (httpContext.Items[PerRequestContainerKey] is IUnityContainer existingChild)
+                {
+                    return existingChild;
+                }
+
+                var childContainer = _container.CreateChildContainer();
+                httpContext.Items[PerRequestContainerKey] = childContainer;
+
+                try
+                {
+                    httpContext.AddOnRequestCompleted(ctx =>
+                    {
+                        DisposePerRequestContainer(ctx);
+                    });
+                }
+                catch
+                {
+                    // Fall back to Application_EndRequest in unmocked/test environments
+                }
+
+                return childContainer;
+            }
+        }
+
+        public static void DisposePerRequestContainer(HttpContext context)
+        {
+            if (context?.Items[PerRequestContainerKey] is IUnityContainer child)
+            {
+                context.Items.Remove(PerRequestContainerKey);
+                child.Dispose();
+            }
+        }
+
+        public static void DisposePerRequestContainer(HttpContextBase context)
+        {
+            if (context?.Items[PerRequestContainerKey] is IUnityContainer child)
+            {
+                context.Items.Remove(PerRequestContainerKey);
+                child.Dispose();
+            }
+        }
+
+        public IUnityContainer CreateChildContainer()
+        {
+            return _container.CreateChildContainer();
+        }
+
+        public UnityDependencyResolver CreateChildScope()
+        {
+            return new UnityDependencyResolver(_container.CreateChildContainer());
         }
 
         public object GetService(Type serviceType)
@@ -27,11 +94,12 @@ namespace LalaCoffee
 
             try
             {
-                if (!_container.IsRegistered(serviceType) && (serviceType.IsAbstract || serviceType.IsInterface))
+                var container = CurrentContainer;
+                if (!container.IsRegistered(serviceType) && (serviceType.IsAbstract || serviceType.IsInterface))
                 {
                     return null;
                 }
-                return _container.Resolve(serviceType);
+                return container.Resolve(serviceType);
             }
             catch
             {
@@ -45,11 +113,29 @@ namespace LalaCoffee
 
             try
             {
-                return _container.ResolveAll(serviceType);
+                return CurrentContainer.ResolveAll(serviceType);
             }
             catch
             {
                 return Enumerable.Empty<object>();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _container?.Dispose();
+                }
+                _disposed = true;
             }
         }
     }
@@ -75,7 +161,7 @@ namespace LalaCoffee
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
 
-            // Register DbContext
+            // Register DbContext with HierarchicalLifetimeManager for per-request/child-container disposal
             container.RegisterType<ApplicationDbContext>(new HierarchicalLifetimeManager());
 
             // Register Repositories

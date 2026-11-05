@@ -198,6 +198,7 @@
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\PayController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -277,6 +278,7 @@
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\OptionProduct.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\CheckOutViewModel.cs" />
     <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\Payment.cs" />
     <Compile Include="Models\Product.cs" />
