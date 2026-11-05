@@ -1,6 +1,6 @@
 # Ticket 08: Dọn dẹp tàn dư Git conflict, file swap và mã nguồn chết (Dead Code)
 
-Status: claimed
+Status: closed
 Type: task
 
 ## Vấn đề
@@ -25,3 +25,9 @@ Type: task
 4. Đảm bảo file `.gitignore` bỏ qua các định dạng file tạm của Vim/Visual Studio (`*.swp`, `*.suo`, `*.user`).
 
 ## Comments
+- Đã xóa 4 file conflict `ManageCategoryController_*_273.cs` trong `LalaCoffee/Areas/Admin/Controllers/`.
+- Đã xóa controller chết `LalaCoffee/Controllers/CollectionController.cs` và thư mục view `LalaCoffee/Views/Collection/`.
+- Đã loại bỏ 2 model dư thừa `LalaCoffee/Models/User.cs` và `LalaCoffee/Models/Role.cs`. Chuyển `ManageRoleController` sang kế thừa `BaseController<IdentityRole>` và cập nhật view liên quan.
+- Đã chuẩn hóa namespace `AccountController` về `LalaCoffee.Controllers`.
+- Đã xóa các tham chiếu tương ứng trong `LalaCoffee.csproj`.
+- Đã bổ sung bộ test tự động `LalaCoffee.Tests/CleanupTests.cs` xác nhận không còn file rác và `AccountController` thuộc đúng namespace.

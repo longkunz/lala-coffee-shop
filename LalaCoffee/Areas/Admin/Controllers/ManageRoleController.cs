@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using LalaCoffee.Models;
 namespace LalaCoffee.Areas.Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class ManageRoleController : BaseController<Role>
+    public class ManageRoleController : BaseController<IdentityRole>
     {
         // GET: Admin/ManageRole
         public ActionResult Index()
@@ -39,7 +39,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 }
                 if (errors.Count == 0)
                 {
-                    Role role = new Role();
+                    IdentityRole role = new IdentityRole();
                     role.Name = name;
                     Context.Roles.Add(role);
                     Context.SaveChanges();
@@ -64,7 +64,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Role không tồn tại" });
             }
-            Remove((Role)role);
+            Remove((IdentityRole)role);
             return Json(new { success = true, message = "Xóa role thành công" });
         }
         public ActionResult SetRole()
