@@ -60,6 +60,7 @@ namespace LalaCoffee.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult CheckOut(FormCollection formCollection)
         {
             List<string> errors = new List<string>();

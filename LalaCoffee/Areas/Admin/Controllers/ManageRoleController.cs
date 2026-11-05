@@ -22,6 +22,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return View(roles);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -53,6 +54,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return RedirectToAction("Index", "ManageRole");
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid? Id)
         {
             if (Id == null)
@@ -94,6 +96,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return View(roleUserList);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SetRole(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -128,6 +131,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return RedirectToAction("SetRole", "ManageRole");
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteSetRole(Guid? UserId, Guid? RoleId)
         {
             try

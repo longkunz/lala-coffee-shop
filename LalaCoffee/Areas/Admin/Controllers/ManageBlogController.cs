@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -20,6 +20,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
         }
         [ValidateInput(false)]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, Blog blog)
         {
             List<string> errors = new List<string>();
@@ -68,6 +69,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
         }
         [ValidateInput(false)]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -110,6 +112,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return RedirectToAction("Index", "ManageBlog");
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(int? Id)
         {
             if (Id == null)

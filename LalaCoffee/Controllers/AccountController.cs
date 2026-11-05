@@ -49,6 +49,7 @@ namespace LalaCoffee.Controllers
             return regex.IsMatch(password);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Register(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -126,6 +127,7 @@ namespace LalaCoffee.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Login(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -157,6 +159,15 @@ namespace LalaCoffee.Controllers
             TempData["Errors"] = errors;
             return View();
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LogOff()
+        {
+            var authenticationManager = HttpContext.GetOwinContext().Authentication;
+            authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index", "Home");
+        }
+
         public ActionResult Logout()
         {
             var AuthenticationManager = HttpContext.GetOwinContext().Authentication;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,6 +21,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return View(categories);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, Category category)
         {
             List<string> errors = new List<string>();
@@ -73,6 +74,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return View(category);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -116,6 +118,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return RedirectToAction("Index", "ManageCategory");
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(int? Id)
         {
             if (Id == null)

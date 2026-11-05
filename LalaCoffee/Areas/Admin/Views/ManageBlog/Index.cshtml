@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LalaCoffee.Models.Blog>
+@model IEnumerable<LalaCoffee.Models.Blog>
 
 @{
     ViewBag.Title = "Blog Manager";
@@ -17,6 +17,7 @@
         <div class="modal-content">
             @using (Html.BeginForm("Create", "ManageBlog", FormMethod.Post))
             {
+                @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h4 class="modal-title">Tạo bài viết mới</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -127,7 +128,7 @@
             $.ajax({
                 url: "@Url.Action("Delete", "ManageBlog")",
                 type: "POST",
-                data: { id: id },
+                data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);
