@@ -10,6 +10,7 @@
 - [x] **Ticket 01**: Vá lỗ hổng Arbitrary File Upload / RCE trong ImageController (Bổ sung `[Authorize(Roles = "Admin")]`, Whitelist định dạng/kích thước ảnh, sinh tên file GUID ngẫu nhiên). Chi tiết: [`01-fix-image-upload-rce.md`](file:///D:/UniCafe/.scratch/code-review-fixes/issues/01-fix-image-upload-rce.md).
 - [x] **Ticket 02**: Tách mật khẩu ứng dụng Gmail và Payment Keys sang `secrets.config` & biến môi trường, xây dựng `EmailService` tập trung, xóa bỏ hoàn toàn hardcoded credentials. Chi tiết: [`02-revoke-and-secure-hardcoded-credentials.md`](file:///D:/UniCafe/.scratch/code-review-fixes/issues/02-revoke-and-secure-hardcoded-credentials.md).
 - [x] **Ticket 04**: Loại bỏ các action và view CRUD (Create, Edit, Delete) công khai ngoài Admin Area tại `CategoryController`, `OptionProductController`, `PropertyProductController`. Toàn quyền quản trị được bảo vệ tại Area Admin. Chi tiết: [`04-protect-public-crud-controllers.md`](file:///D:/UniCafe/.scratch/code-review-fixes/issues/04-protect-public-crud-controllers.md).
+- [x] **Ticket 06**: Bổ sung `[ValidateAntiForgeryToken]` cho toàn bộ action POST xử lý form (Account, Order CheckOut, Admin CRUD controllers), cập nhật Cookie Authentication `LoginPath` thành `/Account/Login`, đồng bộ token trong Ajax & Razor views. Chi tiết: [`06-add-anti-forgery-tokens-and-fix-login-path.md`](file:///D:/UniCafe/.scratch/code-review-fixes/issues/06-add-anti-forgery-tokens-and-fix-login-path.md).
 - [x] **Ticket 08**: Dọn dẹp tàn dư Git conflict (*_273.cs), controller chết (CollectionController), model dư thừa (User, Role), chuẩn hóa namespace AccountController. Chi tiết: [`08-clean-git-conflict-artifacts-and-dead-code.md`](file:///D:/UniCafe/.scratch/code-review-fixes/issues/08-clean-git-conflict-artifacts-and-dead-code.md).
 
 ## Danh sách công việc (Task Graph)
@@ -19,7 +20,7 @@
 - [ ] Ticket 03: Xác thực chữ ký số Checksum cho cổng thanh toán MoMo và VNPay (Sẵn sàng triển khai - Ticket 02 đã xong)
 - [x] Ticket 04: Bảo vệ hoặc loại bỏ các endpoint CRUD công khai ngoài Admin Area (Đã hoàn thành)
 - [ ] Ticket 05: Sửa lỗi tính tổng tiền đơn hàng bị bỏ quên số lượng (Quantity) và lưu đơn hàng vào DB (Blocked by: 03)
-- [ ] Ticket 06: Bổ sung CSRF Protection [ValidateAntiForgeryToken] và sửa LoginPath
+- [x] Ticket 06: Bổ sung CSRF Protection [ValidateAntiForgeryToken] và sửa LoginPath (Đã hoàn thành)
 - [ ] Ticket 07: Khắc phục rò rỉ DbContext và tối ưu hóa truy vấn N+1 (Blocked by: 05)
 - [x] Ticket 08: Dọn dẹp tàn dư Git conflict, file swap và mã nguồn chết (Dead Code) (Đã hoàn thành)
 
