@@ -7,10 +7,11 @@
 
 ## Quyết định đã chốt (Decisions)
 - [x] **Ticket 00**: Nâng cấp .NET 4.8, đổi tên toàn diện sang `LalaCoffee`, reset Git sang `main` tại remote `https://github.com/longkunz/lala-coffee-shop.git`. Chi tiết: [`00-upgrade-net48-rename-lalacoffee-reset-git.md`](file:///D:/UniCafe/.scratch/code-review-fixes/issues/00-upgrade-net48-rename-lalacoffee-reset-git.md).
+- [x] **Ticket 01**: Vá lỗ hổng Arbitrary File Upload / RCE trong ImageController (Bổ sung `[Authorize(Roles = "Admin")]`, Whitelist định dạng/kích thước ảnh, sinh tên file GUID ngẫu nhiên). Chi tiết: [`01-fix-image-upload-rce.md`](file:///D:/UniCafe/.scratch/code-review-fixes/issues/01-fix-image-upload-rce.md).
 
 ## Danh sách công việc (Task Graph)
 - [x] Ticket 00: Nâng lên .NET 4.8, Đổi tên toàn diện sang LalaCoffee và Reset Git sang repo mới (Đã hoàn thành)
-- [ ] Ticket 01: Vá lỗ hổng Arbitrary File Upload / RCE trong ImageController
+- [x] Ticket 01: Vá lỗ hổng Arbitrary File Upload / RCE trong ImageController (Đã hoàn thành)
 - [ ] Ticket 02: Thu hồi và bảo vệ thông tin mật nhạy cảm (Email App Password & Payment Keys)
 - [ ] Ticket 03: Xác thực chữ ký số Checksum cho cổng thanh toán MoMo và VNPay (Blocked by: 02)
 - [ ] Ticket 04: Bảo vệ hoặc loại bỏ các endpoint CRUD công khai ngoài Admin Area

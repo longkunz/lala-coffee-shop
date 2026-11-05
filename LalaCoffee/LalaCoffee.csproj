@@ -219,6 +219,7 @@
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationUser.cs" />
     <Compile Include="Helpers\MenuHelper.cs" />
+    <Compile Include="Helpers\ImageUploadValidator.cs" />
     <Compile Include="Migrations\202303030337250_InitCreate.cs" />
     <Compile Include="Migrations\202303030337250_InitCreate.designer.cs">
       <DependentUpon>202303030337250_InitCreate.cs</DependentUpon>
