@@ -4,7 +4,7 @@
 
 **Blocked by:** 10 (Tách tầng Service Layer và tích hợp Unity Dependency Injection)
 
-**Status:** ready-for-agent
+**Status:** claimed
 
 - [ ] Tập tin cấu hình quản lý thư viện (`libman.json`) tải và quản lý các thư viện giao diện Bootstrap 5 mới nhất vào dự án.
 - [ ] Giao diện người dùng trên các màn hình chính (Trang chủ, Menu, Chi tiết đồ uống, Giỏ hàng, Đặt hàng) tương thích hoàn toàn với Bootstrap 5 và hiển thị mượt mà trên thiết bị di động.
