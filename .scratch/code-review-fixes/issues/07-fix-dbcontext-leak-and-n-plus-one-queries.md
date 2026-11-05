@@ -1,6 +1,6 @@
 # Ticket 07: Khắc phục rò rỉ DbContext và tối ưu hóa truy vấn N+1
 
-Status: claimed
+Status: closed
 Type: task
 
 ## Vấn đề
@@ -29,3 +29,9 @@ Type: task
 4. Tối ưu hóa truy vấn gán quyền trong `ManageRoleController.SetRole` bằng LINQ `Join`.
 
 ## Comments
+- Đã override `Dispose(bool disposing)` trong `BaseController<T>` để dispose `Context`, `UnitOfWork`, `UserManager`, `RoleManager`.
+- Đã override `Dispose(bool disposing)` trong `AccountController` để dispose `_context`.
+- Đã dùng `Context.OrderDetails.AddRange(orderDetails)` và đảm bảo `Context.SaveChanges()` không bao giờ nằm trong vòng lặp foreach trong `OrderController`.
+- Đã refactor `MenuHelper.RenderMenuHtml` để load toàn bộ categories bằng 1 câu query duy nhất, sau đó dựng cây phân cấp cha - con in-memory bằng LINQ (`ToLookup`).
+- Đã tối ưu hóa `ManageRoleController.SetRole()`: query 1 lần toàn bộ bảng `IdentityUserRole` và lọc in-memory với `HashSet<string>` roleIds & userIds, loại bỏ 2 query/role trong vòng lặp.
+- Bộ test TDD `DbContextOptimizationTests.cs` (7 test mới) kiểm thử reflection lifecycle, static code audit, và in-memory tree building; toàn bộ 115 test của solution đều vượt qua (100% PASS).
