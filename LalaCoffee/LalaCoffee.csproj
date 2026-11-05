@@ -197,15 +197,13 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\CartController.cs" />
-    <Compile Include="Controllers\CollectionController.cs" />
+
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\OptionProductController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PayController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
-    <Compile Include="Controllers\PropertyProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Data\ApplicationRole.cs" />
     <Compile Include="Data\ApplicationUserManager.cs" />
@@ -219,6 +217,7 @@
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationUser.cs" />
     <Compile Include="Helpers\MenuHelper.cs" />
+    <Compile Include="Helpers\ImageUploadValidator.cs" />
     <Compile Include="Migrations\202303030337250_InitCreate.cs" />
     <Compile Include="Migrations\202303030337250_InitCreate.designer.cs">
       <DependentUpon>202303030337250_InitCreate.cs</DependentUpon>
@@ -287,13 +286,18 @@
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\PropertyProduct.cs" />
     <Compile Include="Models\ResultMomo.cs" />
-    <Compile Include="Models\Role.cs" />
-    <Compile Include="Models\User.cs" />
+
+
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CartManager.cs" />
+    <Compile Include="Services\OrderCalculator.cs" />
+    <Compile Include="Services\Email\IEmailService.cs" />
+    <Compile Include="Services\Email\EmailService.cs" />
     <Compile Include="Services\Payment\Momo\MomoSecurity.cs" />
     <Compile Include="Services\Payment\Momo\PaymentRequest.cs" />
     <Compile Include="Services\Payment\Momo\MomoResult.cs" />
+    <Compile Include="Services\Payment\MomoSecurityHelper.cs" />
+    <Compile Include="Services\Payment\VnPaySecurityHelper.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2587,6 +2591,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
+    <Content Include="secrets.config.example" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -2602,17 +2607,9 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\ErrorsAlert.cshtml" />
-    <Content Include="Views\OptionProduct\Index.cshtml" />
-    <Content Include="Views\OptionProduct\Edit.cshtml" />
-    <Content Include="Views\OptionProduct\Delete.cshtml" />
-    <Content Include="Views\PropertyProduct\Delete.cshtml" />
-    <Content Include="Views\PropertyProduct\Edit.cshtml" />
-    <Content Include="Views\PropertyProduct\Index.cshtml" />
-    <Content Include="Views\Collection\Index.cshtml" />
+
     <Content Include="Views\Home\Collection.cshtml" />
-    <Content Include="Views\Category\Delete.cshtml" />
     <Content Include="Views\Category\Details.cshtml" />
-    <Content Include="Views\Category\Edit.cshtml" />
     <Content Include="Views\Category\Index.cshtml" />
     <Content Include="Views\Category\Index2.cshtml" />
     <Content Include="Views\Category\Collection.cshtml" />

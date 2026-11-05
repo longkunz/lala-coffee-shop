@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System;
@@ -11,9 +11,10 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Security;
 using System.Web.UI.WebControls;
+using LalaCoffee.Data;
 using LalaCoffee.Models;
 
-namespace LalaCoffee.Data
+namespace LalaCoffee.Controllers
 {
     public class AccountController : Controller
     {
@@ -48,6 +49,7 @@ namespace LalaCoffee.Data
             return regex.IsMatch(password);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Register(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -125,6 +127,7 @@ namespace LalaCoffee.Data
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Login(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -156,11 +159,29 @@ namespace LalaCoffee.Data
             TempData["Errors"] = errors;
             return View();
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LogOff()
+        {
+            var authenticationManager = HttpContext.GetOwinContext().Authentication;
+            authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index", "Home");
+        }
+
         public ActionResult Logout()
         {
             var AuthenticationManager = HttpContext.GetOwinContext().Authentication;
             AuthenticationManager.SignOut();
             return RedirectToAction("Index", "Home");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _context?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

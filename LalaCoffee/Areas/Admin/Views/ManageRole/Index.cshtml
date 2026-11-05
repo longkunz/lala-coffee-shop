@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LalaCoffee.Models.Role>
+@model IEnumerable<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>
 @{
     ViewBag.Title = "Role Manager";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
@@ -9,6 +9,7 @@
         <div class="modal-content">
             @using (Html.BeginForm("Create", "ManageRole", FormMethod.Post))
             {
+                @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h4 class="modal-title">Tạo role mới</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -80,7 +81,7 @@
             $.ajax({
                 url: "@Url.Action("Delete", "ManageRole")",
                 type: "POST",
-                data: { id: id },
+                data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);

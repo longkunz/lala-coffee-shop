@@ -1,6 +1,6 @@
 # Ticket 08: Dọn dẹp tàn dư Git conflict, file swap và mã nguồn chết (Dead Code)
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 
 ## Vấn đề
@@ -25,3 +25,17 @@ Type: task
 4. Đảm bảo file `.gitignore` bỏ qua các định dạng file tạm của Vim/Visual Studio (`*.swp`, `*.suo`, `*.user`).
 
 ## Comments
+- Đã xóa 4 file conflict `ManageCategoryController_*_273.cs` trong `LalaCoffee/Areas/Admin/Controllers/`.
+- Đã xóa controller chết `LalaCoffee/Controllers/CollectionController.cs` và thư mục view `LalaCoffee/Views/Collection/`.
+- Đã loại bỏ 2 model dư thừa `LalaCoffee/Models/User.cs` và `LalaCoffee/Models/Role.cs`. Chuyển `ManageRoleController` sang kế thừa `BaseController<IdentityRole>` và cập nhật view liên quan.
+- Đã chuẩn hóa namespace `AccountController` về `LalaCoffee.Controllers`.
+- Đã xóa các tham chiếu tương ứng trong `LalaCoffee.csproj`.
+- Đã bổ sung bộ test tự động `LalaCoffee.Tests/CleanupTests.cs` xác nhận không còn file rác và `AccountController` thuộc đúng namespace.
+
+## Kết quả (Answer)
+- Đã xóa triệt để 4 file Git conflict sót lại trong thư mục `LalaCoffee/Areas/Admin/Controllers/`: `ManageCategoryController_BACKUP_273.cs`, `ManageCategoryController_BASE_273.cs`, `ManageCategoryController_LOCAL_273.cs`, `ManageCategoryController_REMOTE_273.cs`.
+- Đã xóa dead controller `CollectionController.cs` (bị comment out 100%) và view đi kèm `LalaCoffee/Views/Collection/Index.cshtml`.
+- Đã dọn dẹp các class model trùng lặp không sử dụng `LalaCoffee/Models/User.cs` và `LalaCoffee/Models/Role.cs`. Chuẩn hóa `ManageRoleController` sử dụng `IdentityRole` từ ASP.NET Identity và cập nhật `ManageRole/Index.cshtml`.
+- Đã chuẩn hóa namespace của `AccountController` từ `UniCafe.Data` về `LalaCoffee.Controllers`.
+- Đã gỡ bỏ toàn bộ tham chiếu file chết/conflict khỏi project file `LalaCoffee.csproj`.
+- Đã viết unit test tự động `LalaCoffee.Tests/CleanupTests.cs` kiểm tra đảm bảo không còn file rác/conflict trên disk và xác minh `AccountController` nằm đúng namespace `LalaCoffee.Controllers`. Toàn bộ 49/49 test cases trong solution đều PASS.

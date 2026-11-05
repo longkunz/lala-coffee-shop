@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using LalaCoffee.Models;
 namespace LalaCoffee.Areas.Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class ManageRoleController : BaseController<Role>
+    public class ManageRoleController : BaseController<IdentityRole>
     {
         // GET: Admin/ManageRole
         public ActionResult Index()
@@ -22,6 +22,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return View(roles);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -39,7 +40,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 }
                 if (errors.Count == 0)
                 {
-                    Role role = new Role();
+                    IdentityRole role = new IdentityRole();
                     role.Name = name;
                     Context.Roles.Add(role);
                     Context.SaveChanges();
@@ -53,6 +54,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return RedirectToAction("Index", "ManageRole");
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid? Id)
         {
             if (Id == null)
@@ -64,36 +66,30 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Role không tồn tại" });
             }
-            Remove((Role)role);
+            Remove((IdentityRole)role);
             return Json(new { success = true, message = "Xóa role thành công" });
         }
         public ActionResult SetRole()
         {
             var roles = Context.Roles.ToList();
             var users = Context.Users.ToList();
-            var roleUserList = new List<AspNetUserRoles>();
 
-            foreach (var role in roles)
-            {
-                // Get all the users assigned to the role
-                var userIds = Context.Set<IdentityUserRole>()
-                    .Where(ur => ur.RoleId == role.Id)
-                    .Select(ur => ur.UserId)
-                    .ToList();
+            var userIds = new HashSet<string>(users.Select(u => u.Id));
+            var roleIds = new HashSet<string>(roles.Select(r => r.Id));
 
-                // Get all the users assigned to the role
-                var roleUsers = Context.Set<ApplicationUser>()
-                    .Where(u => userIds.Contains(u.Id))
-                    .ToList();
+            // Single query to get all user-role mappings, filtered in-memory against valid users and roles
+            var userRoles = Context.Set<IdentityUserRole>().ToList();
+            var roleUserList = userRoles
+                .Where(ur => userIds.Contains(ur.UserId) && roleIds.Contains(ur.RoleId))
+                .Select(ur => new AspNetUserRoles { RoleId = ur.RoleId, UserId = ur.UserId })
+                .ToList();
 
-                // Add the role-user mappings to the list
-                roleUserList.AddRange(roleUsers.Select(u => new AspNetUserRoles { RoleId = role.Id, UserId = u.Id }));
-            }
             ViewBag.Roles = roles;
             ViewBag.Users = users;
             return View(roleUserList);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SetRole(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -128,6 +124,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return RedirectToAction("SetRole", "ManageRole");
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteSetRole(Guid? UserId, Guid? RoleId)
         {
             try

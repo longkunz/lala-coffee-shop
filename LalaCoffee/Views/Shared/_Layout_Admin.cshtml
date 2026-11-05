@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,6 +160,10 @@
                 </div>
             </section>
         </div>
+
+        <form id="__AjaxAntiForgeryForm" action="#" method="post" style="display:none;">
+            @Html.AntiForgeryToken()
+        </form>
 
         <footer class="main-footer">
             <strong>Copyright &copy; 2023 by <a href="#">LalaCoffee</a>.</strong> All rights reserved.

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -33,6 +33,11 @@ namespace LalaCoffee.Services
 
         public List<CartItem> GetCartItems()
         {
+            if (HttpContext.Current == null || HttpContext.Current.Session == null)
+            {
+                return new List<CartItem>();
+            }
+
             var cart = HttpContext.Current.Session[CartSessionKey] as List<CartItem>;
             if (cart == null)
             {
@@ -45,8 +50,8 @@ namespace LalaCoffee.Services
         {
             var cart = GetCartItems();
             var existingItem = cart.FirstOrDefault(c => c.ProductId == item.ProductId
-                                                     && c.PropertyProduct.Id == item.PropertyProduct.Id
-                                                     && CompareListOptions(c.Options, item.Options));
+                                                     && c.PropertyProduct?.Id == item.PropertyProduct?.Id
+                                                     && CompareListOptions(c.Options ?? new List<OptionProduct>(), item.Options ?? new List<OptionProduct>()));
             if (existingItem != null)
             {
                 existingItem.Quantity += item.Quantity;
@@ -58,7 +63,10 @@ namespace LalaCoffee.Services
         }
         public void UpdateCart(IEnumerable<CartItem> cart)
         {
-            HttpContext.Current.Session[CartSessionKey] = cart.ToList();
+            if (HttpContext.Current?.Session != null)
+            {
+                HttpContext.Current.Session[CartSessionKey] = cart.ToList();
+            }
         }
 
         public void RemoveFromCart(Guid cartItemId)
@@ -72,24 +80,12 @@ namespace LalaCoffee.Services
         }
         public decimal GetCartTotal(IEnumerable<CartItem> cart)
         {
-            decimal total = 0;
-            foreach (var item in cart)
-            {
-                total += item.Price * item.Quantity;
-            }
-            return total;
+            return OrderCalculator.CalculateCartTotal(cart);
         }
         public decimal GetTotal()
         {
             var cart = GetCartItems();
-            decimal total = 0;
-
-            foreach (var item in cart)
-            {
-                total += (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity;
-            }
-
-            return total;
+            return OrderCalculator.CalculateCartTotal(cart);
         }
 
         public void ClearCart()

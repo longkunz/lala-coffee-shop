@@ -1,4 +1,4 @@
-﻿@model LalaCoffee.Models.Order
+@model LalaCoffee.Models.Order
 @{
     Page.Title = "Thanh toán";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
@@ -34,7 +34,7 @@
                             <div class="shop-checkout-left">
                                 @Html.Partial("ErrorsAlert")
                                 @*<h6>Returning customer? Click here to <a href="login_register.html">login</a></h6>*@
-                                <form class="form-checkout" name="form" method="post">
+                                <div class="form-checkout">
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <h5>THÔNG TIN NHẬN HÀNG</h5>
@@ -65,7 +65,7 @@
                                             <textarea class="form-control" rows="5" name="Note" id="Note" placeholder="Thêm hướng dẫn giao hàng hoặc gì đó về đơn hàng"></textarea>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
@@ -83,8 +83,8 @@
                                             <div class="col-lg-4 text-right">@item.Price.ToString("N0")<span>đ</span></div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-lg-8">Size: @item.PropertyProduct.Name</div>
-                                            <div class="col-lg-4 text-right">@item.PropertyProduct.Price.ToString("N0")<span>đ</span></div>
+                                            <div class="col-lg-8">Size: @(item.PropertyProduct != null ? item.PropertyProduct.Name : "")</div>
+                                            <div class="col-lg-4 text-right">@(item.PropertyProduct != null ? item.PropertyProduct.Price.ToString("N0") : "0")<span>đ</span></div>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-8">Topping: </div>
@@ -95,19 +95,22 @@
                                                 @{
                                                     List<int> optionIds = new List<int>();
                                                 }
-                                                @foreach (var option in item.Options)
+                                                @if (item.Options != null)
                                                 {
-                                                    <div class="col-lg-1"></div>
-                                                    optionIds.Add(option.Id);
-                                                    <div class="col-lg-7">@option.Name</div>
-                                                    <div class="col-lg-4 text-right">@option.Price.ToString("N0")<span>đ</span></div>
+                                                    foreach (var option in item.Options)
+                                                    {
+                                                        <div class="col-lg-1"></div>
+                                                        optionIds.Add(option.Id);
+                                                        <div class="col-lg-7">@option.Name</div>
+                                                        <div class="col-lg-4 text-right">@option.Price.ToString("N0")<span>đ</span></div>
+                                                    }
                                                 }
                                             </div>
                                         </div>
                                         <hr />
                                     }
                                     <div class="checkout-total">
-                                        <h6>TỔNG CỘNG<small class="price-big">@carts.Sum(item => (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0")đ</small></h6>
+                                        <h6>TỔNG CỘNG<small class="price-big">@LalaCoffee.Services.OrderCalculator.CalculateCartTotal(carts).ToString("N0")đ</small></h6>
                                     </div>
                                 </div>
                                 <div class="shop-checkout-box">

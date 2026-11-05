@@ -1,32 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using LalaCoffee.Helpers;
 
 namespace LalaCoffee.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ImageController : Controller
     {
         [HttpPost]
-        public string ProcessUpload(HttpPostedFileBase file)
+        public ActionResult ProcessUpload(HttpPostedFileBase file)
         {
-            if (file == null)
+            if (file == null || file.ContentLength <= 0)
             {
-                return "";
+                return new HttpStatusCodeResult(400, "Vui lòng chọn file tải lên.");
             }
 
-            var fileName = file.FileName;
-            var path = Path.Combine(Server.MapPath("~/Content/images/"), fileName);
-            if (System.IO.File.Exists(path))
+            string rawFileName = Path.GetFileName(file.FileName);
+            if (!ImageUploadValidator.IsValidExtension(rawFileName))
             {
-                var extension = Path.GetExtension(fileName);
-                fileName = Path.GetFileNameWithoutExtension(fileName) + "_" + Guid.NewGuid().ToString() + extension;
+                return new HttpStatusCodeResult(400, "Định dạng file không được phép. Chỉ chấp nhận JPG, JPEG, PNG, WEBP, GIF.");
             }
 
-            file.SaveAs(Path.Combine(Server.MapPath("~/Content/images/"), fileName));
-            return "/Content/images/" + fileName;
+            if (!ImageUploadValidator.IsValidMimeType(file.ContentType))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Định dạng MIME không hợp lệ.");
+            }
+
+            if (!ImageUploadValidator.IsValidSize(file.ContentLength))
+            {
+                return new HttpStatusCodeResult(400, "Dung lượng file vượt quá giới hạn cho phép (tối đa 5MB).");
+            }
+
+            string uploadDir = Server.MapPath("~/Content/images/");
+            if (!Directory.Exists(uploadDir))
+            {
+                Directory.CreateDirectory(uploadDir);
+            }
+
+            string safeFileName = ImageUploadValidator.GenerateSafeFileName(rawFileName);
+            string fullPath = Path.Combine(uploadDir, safeFileName);
+            file.SaveAs(fullPath);
+
+            return Content("/Content/images/" + safeFileName);
         }
     }
 }

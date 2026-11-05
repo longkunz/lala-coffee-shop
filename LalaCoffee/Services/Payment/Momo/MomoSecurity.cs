@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -106,16 +107,17 @@ namespace LalaCoffee.Services.Payment.Momo
         }
         public string signSHA256(string message, string key)
         {
-            byte[] keyByte = Encoding.UTF8.GetBytes(key);
-            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
-            using (var hmacsha256 = new HMACSHA256(keyByte))
-            {
-                byte[] hashmessage = hmacsha256.ComputeHash(messageBytes);
-                string hex = BitConverter.ToString(hashmessage);
-                hex = hex.Replace("-", "").ToLower();
-                return hex;
+            return MomoSecurityHelper.ComputeHmacSha256(message, key);
+        }
 
-            }
+        public static bool ValidateResponseSignature(MomoResult result, string secretKey, string accessKey = null)
+        {
+            return MomoSecurityHelper.ValidateResponseSignature(result, secretKey, accessKey);
+        }
+
+        public static bool ValidateResponseSignature(NameValueCollection parameters, string secretKey, string accessKey = null)
+        {
+            return MomoSecurityHelper.ValidateResponseSignature(parameters, secretKey, accessKey);
         }
     }
 }
