@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -20,6 +20,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
         }
         //--Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, Order order)
         {
             List<string> errors = new List<string>();
@@ -64,6 +65,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return View(order);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
             List<string> errors = new List<string>();
@@ -101,6 +103,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
         }
         //---DELETE
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(int? Id)
         {
             if (Id == null)

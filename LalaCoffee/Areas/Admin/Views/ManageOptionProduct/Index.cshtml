@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LalaCoffee.Models.OptionProduct>
+@model IEnumerable<LalaCoffee.Models.OptionProduct>
 
 @{
     ViewBag.Title = "Option Product Manager";
@@ -16,6 +16,7 @@
         <div class="modal-content">
             @using (Html.BeginForm("Create", "ManageOptionProduct", FormMethod.Post))
             {
+                @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h4 class="modal-title">Tạo tùy chọn sản phẩm mới</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -125,7 +126,7 @@
             $.ajax({
                 url: "@Url.Action("Delete", "ManageOptionProduct")",
                 type: "POST",
-                data: { id: id },
+                data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);

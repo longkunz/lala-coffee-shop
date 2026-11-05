@@ -1,4 +1,4 @@
-﻿@model LalaCoffee.Models.Order
+@model LalaCoffee.Models.Order
 @{
     Page.Title = "Thanh toán";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
@@ -34,7 +34,7 @@
                             <div class="shop-checkout-left">
                                 @Html.Partial("ErrorsAlert")
                                 @*<h6>Returning customer? Click here to <a href="login_register.html">login</a></h6>*@
-                                <form class="form-checkout" name="form" method="post">
+                                <div class="form-checkout">
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
                                             <h5>THÔNG TIN NHẬN HÀNG</h5>
@@ -65,7 +65,7 @@
                                             <textarea class="form-control" rows="5" name="Note" id="Note" placeholder="Thêm hướng dẫn giao hàng hoặc gì đó về đơn hàng"></textarea>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
