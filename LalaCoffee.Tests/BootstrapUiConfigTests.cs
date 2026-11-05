@@ -202,5 +202,40 @@ namespace LalaCoffee.Tests
             StringAssert.Contains(content, "LalaCoffee", "Error.cshtml must display LalaCoffee branding");
             StringAssert.Contains(content, "Về Trang Chủ", "Error.cshtml must provide a friendly home navigation link");
         }
+
+        [TestMethod]
+        public void Typography_UsesVietnameseSupportedGoogleFontsAndFallbacks()
+        {
+            var projectRoot = GetProjectRoot();
+
+            // 1. Check _Layout_User.cshtml
+            var userLayoutPath = Path.Combine(projectRoot, "Views", "Shared", "_Layout_User.cshtml");
+            Assert.IsTrue(File.Exists(userLayoutPath), "_Layout_User.cshtml must exist");
+            var userContent = File.ReadAllText(userLayoutPath);
+            StringAssert.Contains(userContent, "<html lang=\"vi\">", "_Layout_User.cshtml must specify Vietnamese language");
+            StringAssert.Contains(userContent, "fonts.googleapis.com/css2", "_Layout_User.cshtml must use Google Fonts v2 API for full unicode Vietnamese support");
+            StringAssert.Contains(userContent, "family=Quicksand", "_Layout_User.cshtml must request Quicksand font");
+
+            // 2. Check _Layout_Admin.cshtml
+            var adminLayoutPath = Path.Combine(projectRoot, "Views", "Shared", "_Layout_Admin.cshtml");
+            Assert.IsTrue(File.Exists(adminLayoutPath), "_Layout_Admin.cshtml must exist");
+            var adminContent = File.ReadAllText(adminLayoutPath);
+            StringAssert.Contains(adminContent, "<html lang=\"vi\">", "_Layout_Admin.cshtml must specify Vietnamese language");
+            StringAssert.Contains(adminContent, "fonts.googleapis.com/css2", "_Layout_Admin.cshtml must use Google Fonts v2 API");
+
+            // 3. Check style.css for unified Quicksand font stack
+            var styleCssPath = Path.Combine(projectRoot, "Content", "Layout", "User", "css", "style.css");
+            Assert.IsTrue(File.Exists(styleCssPath), "style.css must exist");
+            var styleContent = File.ReadAllText(styleCssPath);
+            StringAssert.Contains(styleContent, "font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;",
+                "style.css body and headings must specify Vietnamese-compatible font fallback stack");
+
+            // 4. Check Web.config globalization
+            var webConfigPath = Path.Combine(projectRoot, "Web.config");
+            Assert.IsTrue(File.Exists(webConfigPath), "Web.config must exist");
+            var webConfigContent = File.ReadAllText(webConfigPath);
+            StringAssert.Contains(webConfigContent, "fileEncoding=\"utf-8\"", "Web.config must enforce UTF-8 fileEncoding in globalization");
+            StringAssert.Contains(webConfigContent, "responseEncoding=\"utf-8\"", "Web.config must enforce UTF-8 responseEncoding in globalization");
+        }
     }
 }

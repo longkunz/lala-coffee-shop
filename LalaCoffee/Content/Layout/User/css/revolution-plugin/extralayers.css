@@ -51,7 +51,7 @@
     border-width: 0px;
     border-style: none;
     white-space: nowrap;
-    font-family: 'QuicksandBook-Regular';
+    font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .tp-caption.large_text {
