@@ -30,7 +30,7 @@ namespace LalaCoffee.Helpers
             foreach (var category in parentCategories)
             {
                 result.Append("<li class='lv2_title'>");
-                result.AppendFormat("<a href='{0}/Collections/{1}'>{2}</a>", host, category.Slug, category.Name);
+                result.AppendFormat("<a href='{0}/Category/Details/{1}'>{2}</a>", host, category.Slug, category.Name);
                 result.Append("<ul class='menu_child_lv3'>");
 
                 var subCategories = subCategoryLookup[category.Id].ToList();
@@ -38,7 +38,7 @@ namespace LalaCoffee.Helpers
                 {
                     foreach (var subCategory in subCategories)
                     {
-                        result.AppendFormat("<li class='lv3_title'><a href='{0}/Collections/{1}'>{2}</a></li>", host, subCategory.Slug, subCategory.Name);
+                        result.AppendFormat("<li class='lv3_title'><a href='{0}/Category/Details/{1}'>{2}</a></li>", host, subCategory.Slug, subCategory.Name);
                     }
                 }
 

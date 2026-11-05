@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using LalaCoffee.Helpers;
@@ -21,6 +22,11 @@ namespace LalaCoffee.Controllers
             if (!ImageUploadValidator.IsValidExtension(rawFileName))
             {
                 return new HttpStatusCodeResult(400, "Định dạng file không được phép. Chỉ chấp nhận JPG, JPEG, PNG, WEBP, GIF.");
+            }
+
+            if (!ImageUploadValidator.IsValidMimeType(file.ContentType))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Định dạng MIME không hợp lệ.");
             }
 
             if (!ImageUploadValidator.IsValidSize(file.ContentLength))

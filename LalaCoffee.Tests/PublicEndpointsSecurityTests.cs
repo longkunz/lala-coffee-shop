@@ -20,15 +20,14 @@ namespace LalaCoffee.Tests
         }
 
         [TestMethod]
-        public void OptionProductController_ShouldNotHavePublicCrudMethods()
+        public void PublicControllers_ShouldNotContainOptionOrPropertyControllers()
         {
-            AssertControllerHasNoProhibitedMethods(typeof(OptionProductController));
-        }
+            var assembly = typeof(CategoryController).Assembly;
+            var optionController = assembly.GetType("LalaCoffee.Controllers.OptionProductController");
+            var propertyController = assembly.GetType("LalaCoffee.Controllers.PropertyProductController");
 
-        [TestMethod]
-        public void PropertyProductController_ShouldNotHavePublicCrudMethods()
-        {
-            AssertControllerHasNoProhibitedMethods(typeof(PropertyProductController));
+            Assert.IsNull(optionController, "OptionProductController must not exist outside Admin area.");
+            Assert.IsNull(propertyController, "PropertyProductController must not exist outside Admin area.");
         }
 
         [TestMethod]

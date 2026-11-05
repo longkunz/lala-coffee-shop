@@ -145,15 +145,15 @@ namespace LalaCoffee.Tests
             Assert.IsFalse(string.IsNullOrWhiteSpace(html), "Generated HTML must not be empty.");
 
             // Verify parent categories exist as lv2_title
-            StringAssert.Contains(html, "<li class='lv2_title'><a href='https://lalacoffee.vn/Collections/ca-phe'>Cà phê</a>");
-            StringAssert.Contains(html, "<li class='lv2_title'><a href='https://lalacoffee.vn/Collections/tra-trai-cay'>Trà trái cây</a>");
-            StringAssert.Contains(html, "<li class='lv2_title'><a href='https://lalacoffee.vn/Collections/banh-ngot'>Bánh ngọt</a>");
+            StringAssert.Contains(html, "<li class='lv2_title'><a href='https://lalacoffee.vn/Category/Details/ca-phe'>Cà phê</a>");
+            StringAssert.Contains(html, "<li class='lv2_title'><a href='https://lalacoffee.vn/Category/Details/tra-trai-cay'>Trà trái cây</a>");
+            StringAssert.Contains(html, "<li class='lv2_title'><a href='https://lalacoffee.vn/Category/Details/banh-ngot'>Bánh ngọt</a>");
 
             // Verify sub-categories exist inside menu_child_lv3
             StringAssert.Contains(html, "<ul class='menu_child_lv3'>");
-            StringAssert.Contains(html, "<li class='lv3_title'><a href='https://lalacoffee.vn/Collections/ca-phe-den'>Cà phê Đen</a></li>");
-            StringAssert.Contains(html, "<li class='lv3_title'><a href='https://lalacoffee.vn/Collections/ca-phe-sua'>Cà phê Sữa</a></li>");
-            StringAssert.Contains(html, "<li class='lv3_title'><a href='https://lalacoffee.vn/Collections/tra-dao'>Trà đào</a></li>");
+            StringAssert.Contains(html, "<li class='lv3_title'><a href='https://lalacoffee.vn/Category/Details/ca-phe-den'>Cà phê Đen</a></li>");
+            StringAssert.Contains(html, "<li class='lv3_title'><a href='https://lalacoffee.vn/Category/Details/ca-phe-sua'>Cà phê Sữa</a></li>");
+            StringAssert.Contains(html, "<li class='lv3_title'><a href='https://lalacoffee.vn/Category/Details/tra-dao'>Trà đào</a></li>");
 
             // Verify Bánh ngọt closes properly
             Assert.Contains("</ul></li>", html);
