@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System;
@@ -11,9 +11,10 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Security;
 using System.Web.UI.WebControls;
+using LalaCoffee.Data;
 using LalaCoffee.Models;
 
-namespace LalaCoffee.Data
+namespace LalaCoffee.Controllers
 {
     public class AccountController : Controller
     {
