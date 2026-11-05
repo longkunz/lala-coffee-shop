@@ -1,48 +1,54 @@
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Mail;
-using System.Net;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 using LalaCoffee.Data;
 using LalaCoffee.Models;
 using LalaCoffee.Services;
 using LalaCoffee.Services.Email;
-using Unity.Policy;
-using System.Web.Helpers;
 
 namespace LalaCoffee.Controllers
 {
     public class OrderController : BaseController<Order>
     {
-        private readonly CartManager _cartManager;
+        private readonly IOrderService _orderService;
+        private readonly ICartService _cartService;
         private readonly IEmailService _emailService;
-        public OrderController() : this(new EmailService(), new CartManager())
+
+        public OrderController()
+            : this(null, null, null)
         {
         }
+
         public OrderController(IEmailService emailService, CartManager cartManager = null)
+            : this(null, (ICartService)cartManager, emailService)
         {
-            _emailService = emailService ?? new EmailService();
-            _cartManager = cartManager ?? new CartManager();
         }
+
+        public OrderController(IOrderService orderService, ICartService cartService, IEmailService emailService)
+        {
+            _orderService = orderService ?? new OrderService(Context);
+            _cartService = cartService ?? new CartService();
+            _emailService = emailService ?? new EmailService();
+        }
+
         public static bool ValidateVNPhoneNumber(string phoneNumber)
         {
-            phoneNumber = phoneNumber.Replace("+84", "0");
-            Regex regex = new Regex(@"^(0)(86|96|97|98|32|33|34|35|36|37|38|39|91|94|83|84|85|81|82|90|93|70|79|77|76|78|92|56|58|99|59|55|87)\d{7}$");
+            if (string.IsNullOrWhiteSpace(phoneNumber)) return false;
+            phoneNumber = phoneNumber.Replace("+84", "0").Trim();
+            var regex = new Regex(@"^(0)(86|96|97|98|32|33|34|35|36|37|38|39|91|94|83|84|85|81|82|90|93|70|79|77|76|78|92|56|58|99|59|55|87)\d{7}$");
             return regex.IsMatch(phoneNumber);
         }
+
         public static string RandomString(int length)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var random = new Random();
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray()).ToUpper();
         }
+
         public void SendEmail(string email, string name, string orderCode)
         {
             _emailService.SendOrderConfirmation(email, name, orderCode);
@@ -52,13 +58,15 @@ namespace LalaCoffee.Controllers
         // GET: Order
         public ActionResult CheckOut()
         {
-            var cart = _cartManager.GetCartItems();
-            if(cart.Count() < 1){
+            var cart = _cartService.GetCartItems();
+            if (cart.Count < 1)
+            {
                 return RedirectToAction("Index", "Home");
             }
             ViewBag.Carts = cart;
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CheckOut(FormCollection formCollection)
@@ -72,7 +80,7 @@ namespace LalaCoffee.Controllers
                 var address = formCollection["address"];
                 var payment = formCollection["payment"];
                 var note = formCollection["note"];
-                var UserId = formCollection["UserId"];
+                var userId = formCollection["UserId"];
 
                 if (string.IsNullOrEmpty(name))
                 {
@@ -84,7 +92,8 @@ namespace LalaCoffee.Controllers
                     errors.Add("Vui lòng nhập địa chỉ.");
                 }
 
-                if(ValidateVNPhoneNumber(phoneNumber) != true){
+                if (!_orderService.ValidatePhoneNumber(phoneNumber) && !ValidateVNPhoneNumber(phoneNumber))
+                {
                     errors.Add("Số điện thoại không hợp lệ.");
                 }
 
@@ -99,7 +108,7 @@ namespace LalaCoffee.Controllers
                         break;
                 }
 
-                var cart = _cartManager.GetCartItems();
+                var cart = _cartService.GetCartItems();
                 if (cart == null || cart.Count < 1)
                 {
                     errors.Add("Giỏ hàng của bạn đang trống.");
@@ -107,70 +116,29 @@ namespace LalaCoffee.Controllers
 
                 if (errors.Count == 0)
                 {
-                    Order order = new Order();
-                    
-                    string code = RandomString(12);
-                    order.Code = code;
-                    order.Name = name;
-                    order.PhoneNumber = phoneNumber;
-                    order.Address = address;
-                    order.Payment = payment;
-                    order.Note = note;
-                    order.UserId = UserId;
-                    order.Status = "Pending";
-                    order.Paid = 0;
-                    order.CreatedAt = DateTime.Now;
-                    order.UpdatedAt = DateTime.Now;
-
-                    decimal totalOrder = 0;
-                    var orderDetails = new List<OrderDetail>();
-
-                    foreach (var item in cart)
+                    Order order = new Order
                     {
-                        var propertyPrice = item.PropertyProduct != null ? item.PropertyProduct.Price : 0m;
-                        var optionPrices = item.Options != null ? item.Options.Select(o => o.Price) : Enumerable.Empty<decimal>();
-                        var lineTotal = OrderCalculator.CalculateLineTotal(item.Price, propertyPrice, optionPrices, item.Quantity);
+                        Name = name,
+                        PhoneNumber = phoneNumber,
+                        Address = address,
+                        Payment = payment,
+                        Note = note,
+                        UserId = userId,
+                        Status = "Pending",
+                        Paid = 0,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
 
-                        string propertyProduct = item.PropertyProduct != null
-                            ? $"{item.PropertyProduct.Name} - {item.PropertyProduct.Price:N0}đ"
-                            : "";
-                        string optionProduct = "";
-                        if (item.Options != null)
-                        {
-                            foreach (var option in item.Options)
-                            {
-                                optionProduct += $"{option.Name} - {option.Price:N0}đ\n";
-                            }
-                        }
+                    // Persist order and details to database via IOrderService (encapsulating Context.Orders.Add(order) and details)
+                    order = _orderService.CreateOrder(order, cart);
 
-                        OrderDetail orderDetail = new OrderDetail
-                        {
-                            Order = order,
-                            ProductId = item.ProductId,
-                            ProductName = item.ProductName,
-                            Price = item.Price,
-                            Total = lineTotal,
-                            Quantity = item.Quantity,
-                            PropertyProduct = propertyProduct,
-                            OptionProduct = optionProduct
-                        };
-                        orderDetails.Add(orderDetail);
-                        totalOrder += lineTotal;
-                    }
-
-                    order.Total = totalOrder;
-
-                    // Lưu đơn hàng và chi tiết đơn hàng vào Database trước khi chuyển sang cổng thanh toán
-                    Context.Orders.Add(order);
-                    foreach (var detail in orderDetails)
+                    if (Session != null)
                     {
-                        Context.OrderDetails.Add(detail);
+                        Session["orderCode"] = order.Code;
+                        Session["order"] = order;
+                        Session["email"] = email;
                     }
-                    Context.SaveChanges();
-
-                    Session["orderCode"] = code;
-                    Session["order"] = order;
-                    Session["email"] = email;
 
                     switch (payment)
                     {
@@ -179,9 +147,8 @@ namespace LalaCoffee.Controllers
                         case "vnpay":
                             return RedirectToAction("VNPay", "Pay", new { orderCode = order.Code });
                         default:
-                            order.Status = "Confirmed";
-                            Context.SaveChanges();
-                            _cartManager.ClearCart();
+                            _orderService.UpdateOrderStatus(order.Code, "Confirmed");
+                            _cartService.ClearCart();
                             if (!string.IsNullOrEmpty(email))
                             {
                                 SendEmail(email, order.Name, order.Code);
@@ -198,29 +165,30 @@ namespace LalaCoffee.Controllers
             TempData["Errors"] = errors;
             return RedirectToAction("CheckOut", "Order");
         }
+
         [Route("Order/SearchOrder")]
         public ActionResult SearchOrder()
         {
             return View();
         }
+
         [Route("Order/SearchOrder/{orderCode}")]
         public ActionResult SearchOrder(string orderCode)
         {
-
-            if (orderCode == null)
+            if (string.IsNullOrEmpty(orderCode))
             {
                 return View();
             }
-            var order = Context.Orders.FirstOrDefault(p => p.Code == orderCode); 
-            //var find =  from o in Context.Orders join od in Context.OrderDetails on o.Id equals od.Id where o.Code== orderCode
-            //            select o;
 
+            var order = _orderService.GetOrderByCode(orderCode);
 
             if (order != null)
             {
-                // Xóa OrderCode
-                Session["orderCode"] = null;
-                var orderDetails = Context.OrderDetails.Where(p => p.Order.Code == orderCode).ToList();
+                if (Session != null)
+                {
+                    Session["orderCode"] = null;
+                }
+                var orderDetails = _orderService.GetOrderDetails(orderCode);
                 ViewBag.OrderDetails = orderDetails;
                 return View(order);
             }

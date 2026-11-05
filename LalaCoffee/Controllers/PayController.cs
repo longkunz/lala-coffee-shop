@@ -1,17 +1,7 @@
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Configuration;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using System.Windows.Input;
 using LalaCoffee.Data;
 using LalaCoffee.Models;
 using LalaCoffee.Services;
@@ -23,19 +13,37 @@ namespace LalaCoffee.Controllers
 {
     public class PayController : BaseController<Payment>
     {
-        private readonly IRepository<Order> _orderRepository;
-        private readonly CartManager _cartManager;
+        private readonly IPaymentService _paymentService;
+        private readonly IOrderService _orderService;
+        private readonly ICartService _cartService;
         private readonly IEmailService _emailService;
+        private readonly IRepository<Order> _orderRepository;
 
-        public PayController() : this(new EmailService(), null, null)
+        public PayController()
+            : this(null, null, null, null)
         {
         }
 
-        public PayController(IEmailService emailService, IRepository<Order> orderRepository = null, CartManager cartManager = null)
+        public PayController(
+            IEmailService emailService,
+            IRepository<Order> orderRepository = null,
+            CartManager cartManager = null)
+            : this(null, null, (ICartService)cartManager, emailService)
         {
-            _emailService = emailService ?? new EmailService();
             _orderRepository = orderRepository ?? new Repository<Order>(Context);
-            _cartManager = cartManager ?? new CartManager();
+        }
+
+        public PayController(
+            IPaymentService paymentService,
+            IOrderService orderService,
+            ICartService cartService,
+            IEmailService emailService)
+        {
+            _paymentService = paymentService ?? new PaymentService();
+            _orderService = orderService ?? new OrderService(Context);
+            _cartService = cartService ?? new CartService();
+            _emailService = emailService ?? new EmailService();
+            _orderRepository = new Repository<Order>(Context);
         }
 
         public ActionResult ErrorPayment()
@@ -49,99 +57,45 @@ namespace LalaCoffee.Controllers
             ViewBag.Message = "Email sent successfully.";
         }
 
-        // GET: Pay
+        // GET: Pay/MomoPay
         public ActionResult MomoPay(string orderCode = null)
         {
-            if (string.IsNullOrEmpty(orderCode) && Session["orderCode"] != null)
+            if (string.IsNullOrEmpty(orderCode) && Session != null && Session["orderCode"] != null)
             {
                 orderCode = Session["orderCode"].ToString();
             }
 
             var order = !string.IsNullOrEmpty(orderCode)
-                ? Context.Orders.FirstOrDefault(x => x.Code == orderCode)
-                : Session["order"] as Order;
+                ? _orderService.GetOrderByCode(orderCode) // Context.Orders.FirstOrDefault
+                : (Session != null ? Session["order"] as Order : null);
 
             if (order == null)
             {
-                // Lỗi không tìm thấy order
                 return RedirectToAction("CheckOut", "Order");
             }
-            string endPoint = System.Configuration.ConfigurationManager.AppSettings["endPoint_Momo"];
-            string partnerCode = System.Configuration.ConfigurationManager.AppSettings["partnerCode_Momo"];
-            string accessKey = System.Configuration.ConfigurationManager.AppSettings["accessKey_Momo"];
-            string secretKey = System.Configuration.ConfigurationManager.AppSettings["secretKey_Momo"];
-            string redirectUrl = System.Configuration.ConfigurationManager.AppSettings["redirectUrl_Momo"];
-            string ipnUrl = System.Configuration.ConfigurationManager.AppSettings["ipnUrl_Momo"];
-            string requestType = "captureWallet";
-            string orderInfo = "Thanh toan LalaCoffee #" + order.Code + "";
-            string amount = Convert.ToInt64(order.Total).ToString();
-            string orderId = order.Code;
-            string requestId = Guid.NewGuid().ToString();
-            string extraData = "";
 
-            //Before sign HMAC SHA256 signature
-            string rawHash = "accessKey=" + accessKey +
-                "&amount=" + amount +
-                "&extraData=" + extraData +
-                "&ipnUrl=" + ipnUrl +
-                "&orderId=" + orderId +
-                "&orderInfo=" + orderInfo +
-                "&partnerCode=" + partnerCode +
-                "&redirectUrl=" + redirectUrl +
-                "&requestId=" + requestId +
-                "&requestType=" + requestType
-                ;
-
-            MomoSecurity crypto = new MomoSecurity();
-            //sign signature SHA256
-            string signature = crypto.signSHA256(rawHash, secretKey);
-
-            //build body json request
-            JObject message = new JObject
-            {
-                { "partnerCode", partnerCode },
-                { "partnerName", "Test" },
-                { "storeId", "MomoTestStore" },
-                { "requestId", requestId },
-                { "amount", amount },
-                { "orderId", orderId },
-                { "orderInfo", orderInfo },
-                { "redirectUrl", redirectUrl },
-                { "ipnUrl", ipnUrl },
-                { "lang", "en" },
-                { "extraData", extraData },
-                { "requestType", requestType },
-                { "signature", signature }
-            };
-            string responseFromMomo = PaymentRequest.sendPaymentRequest(endPoint, message.ToString());
-            JObject jmessage = JObject.Parse(responseFromMomo);
-            return Redirect(jmessage.GetValue("payUrl").ToString());
+            string payUrl = _paymentService.CreateMomoPaymentUrl(order);
+            return Redirect(payUrl);
         }
 
         public ActionResult MomoProcessing(MomoResult result)
         {
-            string secretKey = ConfigurationManager.AppSettings["secretKey_Momo"]
-                ?? Environment.GetEnvironmentVariable("secretKey_Momo");
-            string accessKey = ConfigurationManager.AppSettings["accessKey_Momo"]
-                ?? Environment.GetEnvironmentVariable("accessKey_Momo");
-
-            if (result == null || !MomoSecurityHelper.ValidateResponseSignature(result, secretKey, accessKey))
+            if (result == null || !_paymentService.ValidateMomoResponse(result))
             {
                 return RedirectToAction("ErrorPayment", "Pay");
             }
 
-            //errorCode = 0 : thanh toán thành công (Request.QueryString["errorCode"])
             if (result.resultCode == 0)
             {
                 string orderCode = result.orderId;
                 var order = !string.IsNullOrEmpty(orderCode)
-                    ? Context.Orders.FirstOrDefault(o => o.Code == orderCode)
+                    ? _orderService.GetOrderByCode(orderCode)
                     : null;
 
-                if (order == null && Session["orderCode"] != null)
+                if (order == null && Session != null && Session["orderCode"] != null)
                 {
                     string sCode = Session["orderCode"].ToString();
-                    order = Context.Orders.FirstOrDefault(o => o.Code == sCode);
+                    order = _orderService.GetOrderByCode(sCode);
                 }
 
                 if (order == null)
@@ -149,14 +103,10 @@ namespace LalaCoffee.Controllers
                     return RedirectToAction("ErrorPayment", "Pay");
                 }
 
-                order.Paid = 1;
-                order.Status = "Paid";
-                order.UpdatedAt = DateTime.Now;
+                _orderService.UpdateOrderStatus(order.Code, "Paid", paid: 1);
+                _cartService.ClearCart();
 
-                Context.SaveChanges();
-                _cartManager.ClearCart();
-
-                string email = Session["email"]?.ToString();
+                string email = Session != null ? Session["email"]?.ToString() : null;
                 if (string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(order.UserId))
                 {
                     var user = Context.Users.Find(order.UserId);
@@ -166,18 +116,18 @@ namespace LalaCoffee.Controllers
                 {
                     SendEmail(email, order.Name, order.Code);
                 }
-                Session["email"] = null;
-                Session["order"] = null;
-                Session["orderCode"] = null;
+
+                if (Session != null)
+                {
+                    Session["email"] = null;
+                    Session["order"] = null;
+                    Session["orderCode"] = null;
+                }
 
                 return RedirectToAction("CompleteOrder", "Order");
             }
-            return RedirectToAction("ErrorPayment", "Pay");
-        }
 
-        public static String HmacSHA512(string key, String inputData)
-        {
-            return VnPaySecurityHelper.ComputeHmacSha512(key, inputData);
+            return RedirectToAction("ErrorPayment", "Pay");
         }
 
         public string GetIpAddress()
@@ -198,76 +148,25 @@ namespace LalaCoffee.Controllers
             return ipAddress;
         }
 
-        public string CreateRequestUrl(string baseUrl, string vnp_HashSecret, Dictionary<string, string> _requestData)
-        {
-            StringBuilder data = new StringBuilder();
-            foreach (KeyValuePair<string, string> kv in _requestData)
-            {
-                if (!String.IsNullOrEmpty(kv.Value))
-                {
-                    data.Append(WebUtility.UrlEncode(kv.Key) + "=" + WebUtility.UrlEncode(kv.Value) + "&");
-                }
-            }
-            string queryString = data.ToString();
-
-            baseUrl += "?" + queryString;
-            String signData = queryString;
-            if (signData.Length > 0)
-            {
-                signData = signData.Remove(data.Length - 1, 1);
-            }
-            string vnp_SecureHash = HmacSHA512(vnp_HashSecret, signData);
-            baseUrl += "vnp_SecureHash=" + vnp_SecureHash;
-
-            return baseUrl;
-        }
-
+        // GET: Pay/VNPay
         public ActionResult VNPay(string orderCode = null)
         {
-            if (string.IsNullOrEmpty(orderCode) && Session["orderCode"] != null)
+            if (string.IsNullOrEmpty(orderCode) && Session != null && Session["orderCode"] != null)
             {
                 orderCode = Session["orderCode"].ToString();
             }
 
             var order = !string.IsNullOrEmpty(orderCode)
-                ? Context.Orders.FirstOrDefault(x => x.Code == orderCode)
-                : Session["order"] as Order;
+                ? _orderService.GetOrderByCode(orderCode) // Context.Orders.FirstOrDefault
+                : (Session != null ? Session["order"] as Order : null);
 
             if (order == null)
             {
-                // Lỗi không tìm thấy order
                 return RedirectToAction("CheckOut", "Order");
             }
-            string vnp_Url = System.Configuration.ConfigurationManager.AppSettings["vnp_Url"];
-            string vnp_ReturnUrl = System.Configuration.ConfigurationManager.AppSettings["vnp_ReturnUrl"];
-            string vnp_HashSecret = System.Configuration.ConfigurationManager.AppSettings["vnp_HashSecret"];
-            string vnp_TmnCode = System.Configuration.ConfigurationManager.AppSettings["vnp_TmnCode"]; // Mã website của merchant trên hệ thống của VNPAY
-            var vnp_Params = new Dictionary<string, string>();
-            vnp_Params.Add("vnp_Version", "2.1.0");
-            vnp_Params.Add("vnp_Command", "pay");
-            vnp_Params.Add("vnp_TmnCode", vnp_TmnCode);
-            vnp_Params.Add("vnp_Locale", "vn"); //en= English, vn=Tiếng Việt
-            vnp_Params.Add("vnp_CurrCode", "VND");
-            vnp_Params.Add("vnp_TxnRef", order.Code); // Mã tham chiếu của giao dịch đơn hàng gửi sang VNPAY. Không được trùng lặp trong ngày
-            vnp_OrderInfo(order, vnp_Params);
-            vnp_Params.Add("vnp_OrderType", "topup"); //Mã danh mục hàng hóa.
-            string amount = (Convert.ToInt64(order.Total) * 100).ToString();
-            vnp_Params.Add("vnp_Amount", amount); // Số tiền thanh toán
-            vnp_Params.Add("vnp_ReturnUrl", vnp_ReturnUrl);
-            vnp_Params.Add("vnp_IpAddr", GetIpAddress());
-            vnp_Params.Add("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
-            //vnp_Params.Add("vnp_BankCode", "NCB");
-            vnp_Params = vnp_Params.OrderBy(o => o.Key).ToDictionary(k => k.Key, v => v.Value);
-            String signData = string.Join("&",
-            vnp_Params.Where(x => !string.IsNullOrEmpty(x.Value))
-            .Select(k => k.Key + "=" + k.Value));
-            string paymentUrl = CreateRequestUrl(vnp_Url, vnp_HashSecret, vnp_Params);
-            return Redirect(paymentUrl);
-        }
 
-        private static void vnp_OrderInfo(Order order, Dictionary<string, string> vnp_Params)
-        {
-            vnp_Params.Add("vnp_OrderInfo", "Thanh toan LalaCoffee #" + order.Code + "");
+            string paymentUrl = _paymentService.CreateVnPayPaymentUrl(order, GetIpAddress());
+            return Redirect(paymentUrl);
         }
 
         public ActionResult VNPayProcessing(int vnp_ResponseCode, NameValueCollection queryString = null)
@@ -277,26 +176,22 @@ namespace LalaCoffee.Controllers
 
         public ActionResult ProcessVNPay(int vnp_ResponseCode, NameValueCollection queryString)
         {
-            string hashSecret = ConfigurationManager.AppSettings["vnp_HashSecret"]
-                ?? Environment.GetEnvironmentVariable("vnp_HashSecret");
-
-            if (queryString == null || !VnPaySecurityHelper.ValidateResponseSignature(queryString, hashSecret))
+            if (queryString == null || !_paymentService.ValidateVnPayResponse(queryString))
             {
                 return RedirectToAction("ErrorPayment", "Pay");
             }
 
-            //errorCode = 0 : thanh toán thành công (Request.QueryString["errorCode"])
             if (vnp_ResponseCode == 00)
             {
                 string orderCode = queryString["vnp_TxnRef"];
                 var order = !string.IsNullOrEmpty(orderCode)
-                    ? Context.Orders.FirstOrDefault(o => o.Code == orderCode)
+                    ? _orderService.GetOrderByCode(orderCode)
                     : null;
 
-                if (order == null && Session["orderCode"] != null)
+                if (order == null && Session != null && Session["orderCode"] != null)
                 {
                     string sCode = Session["orderCode"].ToString();
-                    order = Context.Orders.FirstOrDefault(o => o.Code == sCode);
+                    order = _orderService.GetOrderByCode(sCode);
                 }
 
                 if (order == null)
@@ -304,14 +199,10 @@ namespace LalaCoffee.Controllers
                     return RedirectToAction("ErrorPayment", "Pay");
                 }
 
-                order.Paid = 1;
-                order.Status = "Paid";
-                order.UpdatedAt = DateTime.Now;
+                _orderService.UpdateOrderStatus(order.Code, "Paid", paid: 1);
+                _cartService.ClearCart();
 
-                Context.SaveChanges();
-                _cartManager.ClearCart();
-
-                string email = Session["email"]?.ToString();
+                string email = Session != null ? Session["email"]?.ToString() : null;
                 if (string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(order.UserId))
                 {
                     var user = Context.Users.Find(order.UserId);
@@ -321,12 +212,17 @@ namespace LalaCoffee.Controllers
                 {
                     SendEmail(email, order.Name, order.Code);
                 }
-                Session["email"] = null;
-                Session["order"] = null;
-                Session["orderCode"] = null;
+
+                if (Session != null)
+                {
+                    Session["email"] = null;
+                    Session["order"] = null;
+                    Session["orderCode"] = null;
+                }
 
                 return RedirectToAction("CompleteOrder", "Order");
             }
+
             return RedirectToAction("ErrorPayment", "Pay");
         }
     }
