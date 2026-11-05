@@ -180,17 +180,27 @@ namespace LalaCoffee.Tests
             Assert.AreEqual("TEST12345678", order.Code);
         }
 
+        private static string GetSolutionDirectory()
+        {
+            var testAssemblyDir = Path.GetDirectoryName(typeof(OrderCalculationTests).Assembly.Location)
+                ?? AppDomain.CurrentDomain.BaseDirectory;
+            var dir = new DirectoryInfo(testAssemblyDir);
+            while (dir != null)
+            {
+                if (File.Exists(Path.Combine(dir.FullName, "LalaCoffee.sln")))
+                {
+                    return dir.FullName;
+                }
+                dir = dir.Parent;
+            }
+            return Path.GetFullPath(Path.Combine(testAssemblyDir, @"..\..\..\.."));
+        }
+
         [TestMethod]
         public void SourceAudit_OrderController_DoesNotHaveBuggyTotalAssignmentWithoutQuantity()
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string solutionDir = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\.."));
+            string solutionDir = GetSolutionDirectory();
             string orderControllerPath = Path.Combine(solutionDir, @"LalaCoffee\Controllers\OrderController.cs");
-
-            if (!File.Exists(orderControllerPath))
-            {
-                orderControllerPath = @"D:\UniCafe-wt-05\LalaCoffee\Controllers\OrderController.cs";
-            }
 
             Assert.IsTrue(File.Exists(orderControllerPath), $"OrderController.cs not found at {orderControllerPath}");
 
@@ -211,14 +221,8 @@ namespace LalaCoffee.Tests
         [TestMethod]
         public void SourceAudit_PayController_DoesNotHaveBuggyTotalAssignmentWithoutQuantity()
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string solutionDir = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\.."));
+            string solutionDir = GetSolutionDirectory();
             string payControllerPath = Path.Combine(solutionDir, @"LalaCoffee\Controllers\PayController.cs");
-
-            if (!File.Exists(payControllerPath))
-            {
-                payControllerPath = @"D:\UniCafe-wt-05\LalaCoffee\Controllers\PayController.cs";
-            }
 
             Assert.IsTrue(File.Exists(payControllerPath), $"PayController.cs not found at {payControllerPath}");
 
