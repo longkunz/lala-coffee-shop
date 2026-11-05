@@ -204,18 +204,19 @@ namespace LalaCoffee.Tests
         }
 
         [TestMethod]
-        public void WebConfig_UsesSecretsConfigFile_AndHasNoLeakedPaymentKeys()
+        public void WebConfig_ContainsSafeConfigurations_AndHasNoLeakedPaymentKeys()
         {
             var projectDir = GetProjectDirectory();
             string webConfigPath = Path.Combine(projectDir, "Web.config");
-            string examplePath = Path.Combine(projectDir, "secrets.config.example");
+
 
             Assert.IsTrue(File.Exists(webConfigPath), "Web.config must exist.");
-            Assert.IsTrue(File.Exists(examplePath), "secrets.config.example must exist.");
+
 
             string webConfigContent = File.ReadAllText(webConfigPath);
 
-            StringAssert.Contains(webConfigContent, "file=\"secrets.config\"");
+            StringAssert.Contains(webConfigContent, "debug=\"true\"");
+            StringAssert.DoesNotMatch(webConfigContent, new System.Text.RegularExpressions.Regex("file=\"secrets\\.config\""));
 
             // Leaked payment keys from original repository
             string[] leakedSecrets =

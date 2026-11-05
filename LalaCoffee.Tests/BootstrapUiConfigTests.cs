@@ -173,8 +173,8 @@ namespace LalaCoffee.Tests
 
             var compilation = systemWeb.Element("compilation");
             Assert.IsNotNull(compilation, "<compilation> element must exist");
-            Assert.AreEqual("false", (string)compilation.Attribute("debug")!,
-                "Compilation debug attribute must be 'false' for safe production operation");
+            Assert.AreEqual("true", (string)compilation.Attribute("debug")!,
+                "Compilation debug attribute must be 'true' in development Web.config to enable local debugging");
 
             var customErrors = systemWeb.Element("customErrors");
             Assert.IsNotNull(customErrors, "<customErrors> element must exist in <system.web>");
