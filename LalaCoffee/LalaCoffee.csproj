@@ -2603,16 +2603,10 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\ErrorsAlert.cshtml" />
     <Content Include="Views\OptionProduct\Index.cshtml" />
-    <Content Include="Views\OptionProduct\Edit.cshtml" />
-    <Content Include="Views\OptionProduct\Delete.cshtml" />
-    <Content Include="Views\PropertyProduct\Delete.cshtml" />
-    <Content Include="Views\PropertyProduct\Edit.cshtml" />
     <Content Include="Views\PropertyProduct\Index.cshtml" />
     <Content Include="Views\Collection\Index.cshtml" />
     <Content Include="Views\Home\Collection.cshtml" />
-    <Content Include="Views\Category\Delete.cshtml" />
     <Content Include="Views\Category\Details.cshtml" />
-    <Content Include="Views\Category\Edit.cshtml" />
     <Content Include="Views\Category\Index.cshtml" />
     <Content Include="Views\Category\Index2.cshtml" />
     <Content Include="Views\Category\Collection.cshtml" />
