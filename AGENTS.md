@@ -31,6 +31,15 @@ Dự án này sử dụng công cụ MCP `codebase-memory-mcp` để duy trì đ
 
 ---
 
+## Ưu tiên tốc độ và xác minh
+
+- Ưu tiên hoàn thành task nhanh, thay đổi gọn và đúng phạm vi yêu cầu.
+- Mặc định không cần tạo test phức tạp, bộ test mới hoặc hạ tầng test cho task; chỉ làm khi người dùng yêu cầu rõ ràng.
+- Khi cần, thực hiện kiểm tra nhẹ phù hợp với thay đổi (ví dụ: xem diff, build hoặc chạy test sẵn có liên quan), tránh mở rộng kiểm thử gây chậm tiến độ.
+- Human sẽ verify chức năng và nghiệm thu. Khi bàn giao, nêu ngắn gọn thay đổi, kiểm tra đã thực hiện và phần cần human verify; chỉ báo đã kiểm tra những gì thực sự đã chạy.
+
+---
+
 ## Kỹ năng Agent (Agent skills)
 
 ### Trình theo dõi vấn đề (Issue tracker)
