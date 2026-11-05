@@ -1,6 +1,6 @@
 # Ticket 05: Sửa lỗi tính tổng tiền đơn hàng bị bỏ quên số lượng (Quantity) và lưu đơn hàng vào DB
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 
 ## Vấn đề
