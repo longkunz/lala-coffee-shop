@@ -174,5 +174,14 @@ namespace LalaCoffee.Controllers
             AuthenticationManager.SignOut();
             return RedirectToAction("Index", "Home");
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _context?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

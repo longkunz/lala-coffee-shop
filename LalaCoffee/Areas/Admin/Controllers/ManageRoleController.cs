@@ -73,24 +73,17 @@ namespace LalaCoffee.Areas.Admin.Controllers
         {
             var roles = Context.Roles.ToList();
             var users = Context.Users.ToList();
-            var roleUserList = new List<AspNetUserRoles>();
 
-            foreach (var role in roles)
-            {
-                // Get all the users assigned to the role
-                var userIds = Context.Set<IdentityUserRole>()
-                    .Where(ur => ur.RoleId == role.Id)
-                    .Select(ur => ur.UserId)
-                    .ToList();
+            var userIds = new HashSet<string>(users.Select(u => u.Id));
+            var roleIds = new HashSet<string>(roles.Select(r => r.Id));
 
-                // Get all the users assigned to the role
-                var roleUsers = Context.Set<ApplicationUser>()
-                    .Where(u => userIds.Contains(u.Id))
-                    .ToList();
+            // Single query to get all user-role mappings, filtered in-memory against valid users and roles
+            var userRoles = Context.Set<IdentityUserRole>().ToList();
+            var roleUserList = userRoles
+                .Where(ur => userIds.Contains(ur.UserId) && roleIds.Contains(ur.RoleId))
+                .Select(ur => new AspNetUserRoles { RoleId = ur.RoleId, UserId = ur.UserId })
+                .ToList();
 
-                // Add the role-user mappings to the list
-                roleUserList.AddRange(roleUsers.Select(u => new AspNetUserRoles { RoleId = role.Id, UserId = u.Id }));
-            }
             ViewBag.Roles = roles;
             ViewBag.Users = users;
             return View(roleUserList);
