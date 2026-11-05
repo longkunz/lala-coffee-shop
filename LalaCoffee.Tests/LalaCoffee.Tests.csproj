@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LalaCoffee\LalaCoffee.csproj" />
   </ItemGroup>
 
