@@ -91,6 +91,16 @@ Press **F5** (Debug) or **Ctrl+F5** (Run without debugging).
 
 The application will launch in your default browser using IIS Express.
 
+## Default Accounts / Tài khoản mặc định
+
+Sau khi khởi tạo database hoặc chạy script `Database_Seed.sql`, bạn có thể sử dụng các tài khoản có sẵn dưới đây:
+
+| Vai trò | Tên đăng nhập (Username) | Email | Mật khẩu | Quyền (Role) | Khu vực truy cập |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Quản trị viên (Admin)** | `admin` | `admin@lalacoffee.vn` | `Admin@123` | `Admin` | `/Account/Login` hoặc trực tiếp `/Admin` |
+| **Khách hàng (User)** | `user` | `user@lalacoffee.vn` | `User@123` | `User` | `/Account/Login` (đặt hàng, xem đơn cá nhân) |
+
+
 ## Project Structure
 
 ```
