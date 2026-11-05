@@ -235,5 +235,28 @@ namespace LalaCoffee.Tests
             Assert.Contains("Context.Orders.FirstOrDefault", content,
                 "PayController.cs must query Context.Orders.FirstOrDefault by orderCode instead of relying solely on Session!");
         }
+
+        [TestMethod]
+        public void SourceAudit_PayController_MomoAndVNPayProcessing_DoNotUseSessionOrderFallback()
+        {
+            string solutionDir = GetSolutionDirectory();
+            string payControllerPath = Path.Combine(solutionDir, @"LalaCoffee\Controllers\PayController.cs");
+
+            Assert.IsTrue(File.Exists(payControllerPath), $"PayController.cs not found at {payControllerPath}");
+
+            string content = File.ReadAllText(payControllerPath);
+
+            // Ensure MomoProcessing and ProcessVNPay do not reconstruct order details from cart
+            Assert.DoesNotContain("Context.OrderDetails.Add", content,
+                "PayController.cs should not reconstruct order details from cart as they are already saved during checkout!");
+
+            // Ensure MomoProcessing and ProcessVNPay do not fall back to Session["order"] as Order
+            int momoIndex = content.IndexOf("MomoProcessing", StringComparison.Ordinal);
+            Assert.AreNotEqual(-1, momoIndex, "MomoProcessing action method must exist.");
+            string processingCode = content.Substring(momoIndex);
+
+            Assert.DoesNotContain("order = Session[\"order\"] as Order;", processingCode,
+                "MomoProcessing and ProcessVNPay must not fall back to Session[\"order\"]!");
+        }
     }
 }

@@ -201,11 +201,9 @@
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\OptionProductController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\PayController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
-    <Compile Include="Controllers\PropertyProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Data\ApplicationRole.cs" />
     <Compile Include="Data\ApplicationUserManager.cs" />
@@ -2609,8 +2607,6 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\ErrorsAlert.cshtml" />
-    <Content Include="Views\OptionProduct\Index.cshtml" />
-    <Content Include="Views\PropertyProduct\Index.cshtml" />
 
     <Content Include="Views\Home\Collection.cshtml" />
     <Content Include="Views\Category\Details.cshtml" />

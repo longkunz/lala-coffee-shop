@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 using System.Web.Mvc;
 using LalaCoffee.Controllers;
 using LalaCoffee.Helpers;
@@ -12,6 +13,24 @@ namespace LalaCoffee.Tests
     [TestClass]
     public class ImageUploadValidatorTests
     {
+        private class FakeHttpPostedFileBase : HttpPostedFileBase
+        {
+            private readonly string _fileName;
+            private readonly string _contentType;
+            private readonly int _contentLength;
+
+            public FakeHttpPostedFileBase(string fileName, string contentType, int contentLength)
+            {
+                _fileName = fileName;
+                _contentType = contentType;
+                _contentLength = contentLength;
+            }
+
+            public override string FileName => _fileName;
+            public override string ContentType => _contentType;
+            public override int ContentLength => _contentLength;
+        }
+
         [TestMethod]
         [DataRow("avatar.jpg")]
         [DataRow("photo.jpeg")]
@@ -158,6 +177,45 @@ namespace LalaCoffee.Tests
                 var result = controller.ProcessUpload(null) as HttpStatusCodeResult;
                 Assert.IsNotNull(result);
                 Assert.AreEqual(400, result.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ProcessUpload_WithInvalidMimeType_ReturnsBadRequest()
+        {
+            using (var controller = new ImageController())
+            {
+                var file = new FakeHttpPostedFileBase("photo.png", "application/x-msdownload", 1024);
+                var result = controller.ProcessUpload(file) as HttpStatusCodeResult;
+                Assert.IsNotNull(result);
+                Assert.AreEqual(400, result.StatusCode);
+                Assert.AreEqual("Định dạng MIME không hợp lệ.", result.StatusDescription);
+            }
+        }
+
+        [TestMethod]
+        public void ProcessUpload_WithInvalidExtension_ReturnsBadRequest()
+        {
+            using (var controller = new ImageController())
+            {
+                var file = new FakeHttpPostedFileBase("photo.exe", "image/png", 1024);
+                var result = controller.ProcessUpload(file) as HttpStatusCodeResult;
+                Assert.IsNotNull(result);
+                Assert.AreEqual(400, result.StatusCode);
+                Assert.AreEqual("Định dạng file không được phép. Chỉ chấp nhận JPG, JPEG, PNG, WEBP, GIF.", result.StatusDescription);
+            }
+        }
+
+        [TestMethod]
+        public void ProcessUpload_WithOversizedFile_ReturnsBadRequest()
+        {
+            using (var controller = new ImageController())
+            {
+                var file = new FakeHttpPostedFileBase("photo.png", "image/png", 6 * 1024 * 1024);
+                var result = controller.ProcessUpload(file) as HttpStatusCodeResult;
+                Assert.IsNotNull(result);
+                Assert.AreEqual(400, result.StatusCode);
+                Assert.AreEqual("Dung lượng file vượt quá giới hạn cho phép (tối đa 5MB).", result.StatusDescription);
             }
         }
     }

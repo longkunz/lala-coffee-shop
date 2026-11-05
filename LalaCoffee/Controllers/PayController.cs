@@ -37,15 +37,18 @@ namespace LalaCoffee.Controllers
             _orderRepository = orderRepository ?? new Repository<Order>(Context);
             _cartManager = cartManager ?? new CartManager();
         }
+
         public ActionResult ErrorPayment()
         {
             return View();
         }
+
         public void SendEmail(string email, string name, string orderCode)
         {
             _emailService.SendOrderConfirmation(email, name, orderCode);
             ViewBag.Message = "Email sent successfully.";
         }
+
         // GET: Pay
         public ActionResult MomoPay(string orderCode = null)
         {
@@ -114,6 +117,7 @@ namespace LalaCoffee.Controllers
             JObject jmessage = JObject.Parse(responseFromMomo);
             return Redirect(jmessage.GetValue("payUrl").ToString());
         }
+
         public ActionResult MomoProcessing(MomoResult result)
         {
             string secretKey = ConfigurationManager.AppSettings["secretKey_Momo"]
@@ -142,81 +146,40 @@ namespace LalaCoffee.Controllers
 
                 if (order == null)
                 {
-                    order = Session["order"] as Order;
+                    return RedirectToAction("ErrorPayment", "Pay");
                 }
 
-                if (order != null)
+                order.Paid = 1;
+                order.Status = "Paid";
+                order.UpdatedAt = DateTime.Now;
+
+                Context.SaveChanges();
+                _cartManager.ClearCart();
+
+                string email = Session["email"]?.ToString();
+                if (string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(order.UserId))
                 {
-                    order.Paid = 1;
-                    order.Status = "Paid";
-                    order.UpdatedAt = DateTime.Now;
-
-                    // Fallback: nếu chi tiết đơn hàng chưa được tạo thì tạo với công thức nhân số lượng đúng
-                    var existingDetails = Context.OrderDetails.Where(d => d.Order.Id == order.Id).ToList();
-                    if (existingDetails.Count == 0)
-                    {
-                        var cart = _cartManager.GetCartItems();
-                        decimal totalOrder = 0;
-                        foreach (var item in cart)
-                        {
-                            var propPrice = item.PropertyProduct != null ? item.PropertyProduct.Price : 0m;
-                            var optPrices = item.Options != null ? item.Options.Select(o => o.Price) : Enumerable.Empty<decimal>();
-                            var lineTotal = OrderCalculator.CalculateLineTotal(item.Price, propPrice, optPrices, item.Quantity);
-
-                            string propertyProduct = item.PropertyProduct != null ? $"{item.PropertyProduct.Name} - {item.PropertyProduct.Price:N0}đ" : "";
-                            string optionProduct = "";
-                            if (item.Options != null)
-                            {
-                                foreach (var option in item.Options)
-                                {
-                                    optionProduct += $"{option.Name} - {option.Price:N0}đ\n";
-                                }
-                            }
-                            OrderDetail orderDetail = new OrderDetail
-                            {
-                                Order = order,
-                                ProductId = item.ProductId,
-                                ProductName = item.ProductName,
-                                Price = item.Price,
-                                Total = lineTotal,
-                                Quantity = item.Quantity,
-                                PropertyProduct = propertyProduct,
-                                OptionProduct = optionProduct
-                            };
-                            totalOrder += lineTotal;
-                            Context.OrderDetails.Add(orderDetail);
-                        }
-                        if (totalOrder > 0)
-                        {
-                            order.Total = totalOrder;
-                        }
-                    }
-
-                    Context.SaveChanges();
-                    _cartManager.ClearCart();
-
-                    string email = Session["email"]?.ToString();
-                    if (string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(order.UserId))
-                    {
-                        var user = Context.Users.Find(order.UserId);
-                        if (user != null) email = user.Email;
-                    }
-                    if (!string.IsNullOrEmpty(email))
-                    {
-                        SendEmail(email, order.Name, order.Code);
-                    }
-                    Session["email"] = null;
-                    Session["order"] = null;
-                    Session["orderCode"] = null;
+                    var user = Context.Users.Find(order.UserId);
+                    if (user != null) email = user.Email;
                 }
+                if (!string.IsNullOrEmpty(email))
+                {
+                    SendEmail(email, order.Name, order.Code);
+                }
+                Session["email"] = null;
+                Session["order"] = null;
+                Session["orderCode"] = null;
+
                 return RedirectToAction("CompleteOrder", "Order");
             }
             return RedirectToAction("ErrorPayment", "Pay");
         }
+
         public static String HmacSHA512(string key, String inputData)
         {
             return VnPaySecurityHelper.ComputeHmacSha512(key, inputData);
         }
+
         public string GetIpAddress()
         {
             string ipAddress;
@@ -234,6 +197,7 @@ namespace LalaCoffee.Controllers
 
             return ipAddress;
         }
+
         public string CreateRequestUrl(string baseUrl, string vnp_HashSecret, Dictionary<string, string> _requestData)
         {
             StringBuilder data = new StringBuilder();
@@ -250,7 +214,6 @@ namespace LalaCoffee.Controllers
             String signData = queryString;
             if (signData.Length > 0)
             {
-
                 signData = signData.Remove(data.Length - 1, 1);
             }
             string vnp_SecureHash = HmacSHA512(vnp_HashSecret, signData);
@@ -258,6 +221,7 @@ namespace LalaCoffee.Controllers
 
             return baseUrl;
         }
+
         public ActionResult VNPay(string orderCode = null)
         {
             if (string.IsNullOrEmpty(orderCode) && Session["orderCode"] != null)
@@ -337,73 +301,29 @@ namespace LalaCoffee.Controllers
 
                 if (order == null)
                 {
-                    order = Session["order"] as Order;
+                    return RedirectToAction("ErrorPayment", "Pay");
                 }
 
-                if (order != null)
+                order.Paid = 1;
+                order.Status = "Paid";
+                order.UpdatedAt = DateTime.Now;
+
+                Context.SaveChanges();
+                _cartManager.ClearCart();
+
+                string email = Session["email"]?.ToString();
+                if (string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(order.UserId))
                 {
-                    order.Paid = 1;
-                    order.Status = "Paid";
-                    order.UpdatedAt = DateTime.Now;
-
-                    // Fallback: nếu chi tiết đơn hàng chưa được tạo thì tạo với công thức nhân số lượng đúng
-                    var existingDetails = Context.OrderDetails.Where(d => d.Order.Id == order.Id).ToList();
-                    if (existingDetails.Count == 0)
-                    {
-                        var cart = _cartManager.GetCartItems();
-                        decimal totalOrder = 0;
-                        foreach (var item in cart)
-                        {
-                            var propPrice = item.PropertyProduct != null ? item.PropertyProduct.Price : 0m;
-                            var optPrices = item.Options != null ? item.Options.Select(o => o.Price) : Enumerable.Empty<decimal>();
-                            var lineTotal = OrderCalculator.CalculateLineTotal(item.Price, propPrice, optPrices, item.Quantity);
-
-                            string propertyProduct = item.PropertyProduct != null ? $"{item.PropertyProduct.Name} - {item.PropertyProduct.Price:N0}đ" : "";
-                            string optionProduct = "";
-                            if (item.Options != null)
-                            {
-                                foreach (var option in item.Options)
-                                {
-                                    optionProduct += $"{option.Name} - {option.Price:N0}đ\n";
-                                }
-                            }
-                            OrderDetail orderDetail = new OrderDetail
-                            {
-                                Order = order,
-                                ProductId = item.ProductId,
-                                ProductName = item.ProductName,
-                                Price = item.Price,
-                                Total = lineTotal,
-                                Quantity = item.Quantity,
-                                PropertyProduct = propertyProduct,
-                                OptionProduct = optionProduct
-                            };
-                            totalOrder += lineTotal;
-                            Context.OrderDetails.Add(orderDetail);
-                        }
-                        if (totalOrder > 0)
-                        {
-                            order.Total = totalOrder;
-                        }
-                    }
-
-                    Context.SaveChanges();
-                    _cartManager.ClearCart();
-
-                    string email = Session["email"]?.ToString();
-                    if (string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(order.UserId))
-                    {
-                        var user = Context.Users.Find(order.UserId);
-                        if (user != null) email = user.Email;
-                    }
-                    if (!string.IsNullOrEmpty(email))
-                    {
-                        SendEmail(email, order.Name, order.Code);
-                    }
-                    Session["email"] = null;
-                    Session["order"] = null;
-                    Session["orderCode"] = null;
+                    var user = Context.Users.Find(order.UserId);
+                    if (user != null) email = user.Email;
                 }
+                if (!string.IsNullOrEmpty(email))
+                {
+                    SendEmail(email, order.Name, order.Code);
+                }
+                Session["email"] = null;
+                Session["order"] = null;
+                Session["orderCode"] = null;
 
                 return RedirectToAction("CompleteOrder", "Order");
             }
