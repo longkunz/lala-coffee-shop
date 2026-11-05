@@ -1,6 +1,6 @@
 # Ticket 07: Khắc phục rò rỉ DbContext và tối ưu hóa truy vấn N+1
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 
 ## Vấn đề
