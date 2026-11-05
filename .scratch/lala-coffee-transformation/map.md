@@ -18,6 +18,7 @@ Tài liệu này theo dõi tiến trình triển khai bản đặc tả `lala-co
 - [x] **Ticket 07**: Sửa lỗi tính tiền đơn hàng theo `Quantity` qua `OrderCalculator`, lưu đơn hàng vào DB ngay lúc Checkout với trạng thái `Pending` (`Paid = 0`), gán mã `OrderCode` duy nhất. Chi tiết: [`07-fix-order-quantity-calculation-and-db-persistence.md`](file:///D:/UniCafe/.scratch/lala-coffee-transformation/issues/07-fix-order-quantity-calculation-and-db-persistence.md).
 - [x] **Ticket 08**: Xác thực chữ ký số 2 chiều cho MoMo (HMAC-SHA256) và VNPay (HMAC-SHA512), tách secrets sang `secrets.config` và environment variables. Chi tiết: [`08-verify-payment-signatures-for-momo-and-vnpay.md`](file:///D:/UniCafe/.scratch/lala-coffee-transformation/issues/08-verify-payment-signatures-for-momo-and-vnpay.md).
 - [x] **Ticket 09**: Khắc phục rò rỉ DbContext bằng `Dispose(disposing)` trong controllers, tối ưu hóa truy vấn N+1 menu bằng `ToLookup` in-memory, gom `SaveChanges()` đơn hàng 1 lần. Chi tiết: [`09-fix-dbcontext-leak-and-n-plus-one-queries.md`](file:///D:/UniCafe/.scratch/lala-coffee-transformation/issues/09-fix-dbcontext-leak-and-n-plus-one-queries.md).
+- [x] **Ticket 10**: Tách tầng Service Layer (`IOrderService`, `ICartService`, `IPaymentService`, `IEmailService`), chuyển sang `HttpClient` hiện đại, cấu hình Unity DI DependencyResolver và Constructor Injection cho Controllers. Chi tiết: [`10-extract-service-layer-and-integrate-unity-di.md`](file:///D:/UniCafe/.scratch/lala-coffee-transformation/issues/10-extract-service-layer-and-integrate-unity-di.md).
 
 ## Danh sách Ticket & Trạng thái hiện tại
 - [x] Ticket 01: Nâng cấp Target Framework lên .NET 4.8 và Thiết lập Git Repository mới (resolved)
@@ -29,8 +30,8 @@ Tài liệu này theo dõi tiến trình triển khai bản đặc tả `lala-co
 - [x] Ticket 07: Sửa lỗi tính tiền đơn hàng theo số lượng và lưu trữ đơn hàng bền vững trong Database (resolved)
 - [x] Ticket 08: Xác thực chữ ký số bảo mật hai chiều cho cổng thanh toán MoMo và VNPay (resolved)
 - [x] Ticket 09: Giải phóng kết nối cơ sở dữ liệu và tối ưu hóa truy vấn lặp N+1 (resolved)
-- [ ] Ticket 10: Tách tầng Service Layer và tích hợp Unity Dependency Injection (ready-for-agent - FRONTIER)
-- [ ] Ticket 11: Nâng cấp giao diện người dùng lên Bootstrap 5 qua LibMan và tích hợp NLog (blocked by 10)
+- [x] Ticket 10: Tách tầng Service Layer và tích hợp Unity Dependency Injection (resolved)
+- [ ] Ticket 11: Nâng cấp giao diện người dùng lên Bootstrap 5 qua LibMan và tích hợp NLog (ready-for-agent - FRONTIER)
 
 ## Vấn đề chưa rõ (Open Questions)
 - Không có. Kế hoạch và đặc tả cho Ticket 10 và 11 đã được định hình rõ ràng theo kiến trúc Clean Architecture & Bootstrap 5 LibMan.
