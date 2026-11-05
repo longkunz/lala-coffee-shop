@@ -4,10 +4,14 @@
 
 **Blocked by:** 07 (Sửa lỗi tính tiền đơn hàng theo số lượng và lưu trữ đơn hàng bền vững trong Database)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Hệ thống băm lại dữ liệu phản hồi từ VNPay và đối chiếu với mã kiểm tra chữ ký an toàn (`vnp_SecureHash`); từ chối mọi yêu cầu có chữ ký không trùng khớp.
-- [ ] Hệ thống băm lại dữ liệu phản hồi từ MoMo và đối chiếu với mã chữ ký (`signature`); từ chối mọi yêu cầu có chữ ký không trùng khớp.
-- [ ] Hành vi giả mạo truy cập trực tiếp vào URL hoàn tất thanh toán bị phát hiện và chuyển hướng đến trang thông báo lỗi thanh toán.
-- [ ] Khi chữ ký số hợp lệ và cổng thanh toán xác nhận thành công, đơn hàng tương ứng trong cơ sở dữ liệu được tìm thấy qua mã đơn và cập nhật trạng thái `Paid = 1`, `Status = "Paid"`.
-- [ ] Thông tin cấu hình khóa bí mật của các cổng thanh toán được chuyển sang quản lý an toàn và không còn hardcode trong mã nguồn.
+- [x] Hệ thống băm lại dữ liệu phản hồi từ VNPay và đối chiếu với mã kiểm tra chữ ký an toàn (`vnp_SecureHash`); từ chối mọi yêu cầu có chữ ký không trùng khớp.
+- [x] Hệ thống băm lại dữ liệu phản hồi từ MoMo và đối chiếu với mã chữ ký (`signature`); từ chối mọi yêu cầu có chữ ký không trùng khớp.
+- [x] Hành vi giả mạo truy cập trực tiếp vào URL hoàn tất thanh toán bị phát hiện và chuyển hướng đến trang thông báo lỗi thanh toán.
+- [x] Khi chữ ký số hợp lệ và cổng thanh toán xác nhận thành công, đơn hàng tương ứng trong cơ sở dữ liệu được tìm thấy qua mã đơn và cập nhật trạng thái `Paid = 1`, `Status = "Paid"`.
+- [x] Thông tin cấu hình khóa bí mật của các cổng thanh toán được chuyển sang quản lý an toàn và không còn hardcode trong mã nguồn.
+
+## Kết quả (Answer)
+
+Đã hoàn thành trong commit [`b0a9dbc`](file:///D:/UniCafe). Triển khai `VnPaySecurityHelper` (HMAC SHA512) và `MomoSecurityHelper` (HMAC SHA256), xác thực chữ ký trong `PayController.PaymentConfirm` và `ReturnMomo`. Secret keys được tách sang `secrets.config` / Environment variables. Kiểm thử đầy đủ trong `PaymentSignatureTests`.

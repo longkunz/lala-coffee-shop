@@ -4,9 +4,13 @@
 
 **Blocked by:** 02 (Tái cấu trúc chuyển đổi tên thương hiệu sang LalaCoffee toàn diện)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Tất cả các hành động tiếp nhận dữ liệu HTTP POST trong toàn bộ hệ thống đều áp dụng bộ lọc xác thực token chống CSRF.
-- [ ] Các biểu mẫu tương ứng trên giao diện Razor Views sinh mã token hợp lệ và gửi kèm dữ liệu biểu mẫu.
-- [ ] Các yêu cầu POST giả mạo thiếu token hoặc sai lệch token bị từ chối với mã lỗi bảo mật phù hợp.
-- [ ] Cấu hình xác thực người dùng chuyển hướng các yêu cầu chưa có quyền về đúng trang đăng nhập `/Account/Login`.
+- [x] Tất cả các hành động tiếp nhận dữ liệu HTTP POST trong toàn bộ hệ thống đều áp dụng bộ lọc xác thực token chống CSRF.
+- [x] Các biểu mẫu tương ứng trên giao diện Razor Views sinh mã token hợp lệ và gửi kèm dữ liệu biểu mẫu.
+- [x] Các yêu cầu POST giả mạo thiếu token hoặc sai lệch token bị từ chối với mã lỗi bảo mật phù hợp.
+- [x] Cấu hình xác thực người dùng chuyển hướng các yêu cầu chưa có quyền về đúng trang đăng nhập `/Account/Login`.
+
+## Kết quả (Answer)
+
+Đã hoàn thành trong commit [`17dd534`](file:///D:/UniCafe). Toàn bộ action POST nhận form đều có `[ValidateAntiForgeryToken]`, các Razor view và AJAX headers gửi token đồng bộ, `LoginPath` cấu hình trỏ đúng `/Account/Login`.

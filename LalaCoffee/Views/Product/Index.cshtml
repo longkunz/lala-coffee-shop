@@ -1,4 +1,4 @@
-Ôªø@model IEnumerable<LalaCoffee.Models.Product>
+@model IEnumerable<LalaCoffee.Models.Product>
 
 @{
     ViewBag.Title = "Index";
@@ -58,7 +58,7 @@
                 <a href="/Product/@Html.DisplayFor(modelItem => item.Slug)">@Html.DisplayFor(modelItem => item.Name)</a>
             </td>
             <td>
-                @item.Price.ToString("N0")ƒë
+                @item.Price.ToString("N0")d
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
@@ -90,27 +90,27 @@
 </table>
 @using (Html.BeginForm("Create", "Product", FormMethod.Post))
 {
-    <div class="form-group">
+    <div class="mb-3">
         <label>Slug</label>
         <input type="text" class="form-control" name="Slug">
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label>Name</label>
         <input type="text" class="form-control" name="Name">
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label>Price</label>
         <input type="number" class="form-control" name="Price">
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label>Description</label>
         <textarea rows="5" class="form-control" name="Description"></textarea>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label>Image</label>
         <input type="text" class="form-control" name="Image">
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <label>Category_Id</label>
         <select class="form-control" name="Category_Id">
             @foreach (var category in ViewBag.Categories)
@@ -119,7 +119,7 @@
             }
         </select>
     </div>
-    <div class="form-group form-check">
+    <div class="mb-3 form-check">
         <input type="checkbox" class="form-check-input" name="Status" value="1">
         <label class="form-check-label">Active</label>
     </div>
@@ -136,8 +136,8 @@
                 type: 'POST',
                 data: { productId: productId, quantity: quantity },
                 success: function (data) {
-                    alert("Th√™m th√†nh c√¥ng");
-                    // Th·ª±c hi·ªán c√°c thay ƒë·ªïi tr√™n giao di·ªán ƒë·ªÉ hi·ªÉn th·ªã gi·ªè h√†ng m·ªõi nh·∫•t
+                    alert("ThÍm th‡nh cÙng");
+                    // Th?c hi?n c·c thay d?i trÍn giao di?n d? hi?n th? gi? h‡ng m?i nh?t
                 },
                 error: function () {
                     alert('An error occurred while adding to cart.');
@@ -162,29 +162,29 @@
         <section class="default-section shop-page">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3 col-sm-4 col-xs-12">
+                    <div class="col-md-3 col-sm-4 col-12">
                         <div class="blog-left-section">
                             <div class="blog-left-search blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                 <input type="text" name="txt" placeholder="Search" fdprocessedid="w8rqs">
-                                <input type="submit" name="submit" value="ÔÄÇ" fdprocessedid="cze44f">
+                                <input type="submit" name="submit" value="?" fdprocessedid="cze44f">
                             </div>
                             <div class="blog-left-categories blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
-                                <h5>DANH M·ª§C</h5>
+                                <h5>DANH M?C</h5>
                                 <ul class="list">
-                                    <li><a href="#">C√† ph√™</a></li>
-                                    <li><a href="#">Tr√†</a></li>
-                                    <li><a href="#">Tr√† s·ªØa</a></li>
+                                    <li><a href="#">C‡ phÍ</a></li>
+                                    <li><a href="#">Tr‡</a></li>
+                                    <li><a href="#">Tr‡ s?a</a></li>
                                 </ul>
                             </div>
                             <div class="blog-left-deal blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
-                                <h5>S·∫¢N PH·∫®M N·ªîI B·∫¨T</h5>
+                                <h5>S?N PH?M N?I B?T</h5>
                                 <div class="best-deal-blog">
                                     <div class="best-deal-left">
                                         <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
                                     </div>
                                     <div class="best-deal-right">
-                                        <p>C√† Ph√™ S·ªØa ƒê√°</p>
-                                        <p><strong>39.000ƒë</strong></p>
+                                        <p>C‡ PhÍ S?a –·</p>
+                                        <p><strong>39.000d</strong></p>
                                     </div>
                                 </div>
                                 <div class="best-deal-blog">
@@ -192,8 +192,8 @@
                                         <img src="~/Content/Layout/User/images/tra-dao-cam-sa.jpg" alt="">
                                     </div>
                                     <div class="best-deal-right">
-                                        <p>Tr√† ƒê√†o Cam S·∫£</p>
-                                        <p><strong>49.000ƒë</strong></p>
+                                        <p>Tr‡ –‡o Cam S?</p>
+                                        <p><strong>49.000d</strong></p>
                                     </div>
                                 </div>
                                 <div class="best-deal-blog">
@@ -201,285 +201,285 @@
                                         <img src="~/Content/Layout/User/images/tra-sua-oolong-nuong-tran-chau.jpg" alt="">
                                     </div>
                                     <div class="best-deal-right">
-                                        <p>Tr√† S·ªØa Olong Tr√¢n Ch√¢u</p>
-                                        <p><strong>55.000ƒë</strong></p>
+                                        <p>Tr‡ S?a Olong Tr‚n Ch‚u</p>
+                                        <p><strong>55.000d</strong></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9 col-sm-8 col-xs-12">
+                    <div class="col-md-9 col-sm-8 col-12">
                         <div class="blog-right-section">
                             <h3 class="block_menu_item_title">
-                                <span class="line_after_heading section_heading" style="color: #c19942">C√† Ph√™</span>
+                                <span class="line_after_heading section_heading" style="color: #c19942">C‡ PhÍ</span>
                             </h3>
                             <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/ca-phe-den-da.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>C√† Ph√™ ƒêen ƒê√°</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>C‡ PhÍ –en –·</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>C√† Ph√™ S·ªØa ƒê√°</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>C‡ PhÍ S?a –·</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/bac-xiu.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>B·∫°c X·ªâu</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>B?c X?u</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/ca-phe-den-da.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>C√† Ph√™ ƒêen ƒê√°</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>C‡ PhÍ –en –·</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>C√† Ph√™ S·ªØa ƒê√°</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>C‡ PhÍ S?a –·</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/bac-xiu.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>B·∫°c X·ªâu</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>B?c X?u</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
                             </div>
                             <h3 class="block_menu_item_title">
-                                <span class="line_after_heading section_heading" style="color: #c19942">Tr√†</span>
+                                <span class="line_after_heading section_heading" style="color: #c19942">Tr‡</span>
                             </h3>
                             <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-sen-nhan.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† Long Nh√£n H·∫°t Sen</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ Long Nh„n H?t Sen</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-dao-cam-sa.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† ƒê√†o Cam S·∫£</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ –‡o Cam S?</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-sen.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† Sen V√†ng</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ Sen V‡ng</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-sen-nhan.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† Long Nh√£n H·∫°t Sen</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ Long Nh„n H?t Sen</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-dao-cam-sa.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† ƒê√†o Cam S·∫£</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ –‡o Cam S?</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-sen.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† Sen V√†ng</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ Sen V‡ng</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
                             </div>
                             <h3 class="block_menu_item_title">
-                                <span class="line_after_heading section_heading" style="color: #c19942">Tr√† S·ªØa</span>
+                                <span class="line_after_heading section_heading" style="color: #c19942">Tr‡ S?a</span>
                             </h3>
                             <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra=sua-macca.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† S·ªØa Macca Tr√¢n Ch√¢u</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ S?a Macca Tr‚n Ch‚u</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-sua-oolong-nuong-tran-chau.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† S·ªØa Olong N∆∞·ªõng Tr√¢n Ch√¢u</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ S?a Olong Nu?ng Tr‚n Ch‚u</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-den-matchiato.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† ƒêen Macchiato</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ –en Macchiato</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra=sua-macca.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† S·ªØa Macca Tr√¢n Ch√¢u</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ S?a Macca Tr‚n Ch‚u</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-sua-oolong-nuong-tran-chau.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† S·ªØa Olong N∆∞·ªõng Tr√¢n Ch√¢u</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ S?a Olong Nu?ng Tr‚n Ch‚u</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-sm-4 col-xs-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                     <div class="shop-main-list">
                                         <div class="shop-product">
                                             <img src="~/Content/Layout/User/images/tra-den-matchiato.jpg" alt="">
                                             <div class="cart-overlay-wrap">
                                                 <div class="cart-overlay">
-                                                    <a href="#" class="shop-cart-btn">Th√™m</a>
+                                                    <a href="#" class="shop-cart-btn">ThÍm</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="shop_single.html"><h5>Tr√† ƒêen Macchiato</h5></a>
-                                        <h5><strong>39.000ƒë</strong></h5>
+                                        <a href="shop_single.html"><h5>Tr‡ –en Macchiato</h5></a>
+                                        <h5><strong>39.000d</strong></h5>
                                     </div>
                                 </div>
                             </div>
@@ -487,7 +487,7 @@
                             @*<div class="gallery-pagination">
             <div class="gallery-pagination-inner">
                 <ul>
-                    <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>Trang Tr∆∞·ªõc</span></a></li>
+                    <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>Trang Tru?c</span></a></li>
                     <li class="active"><a href="#"><span>1</span></a></li>
                     <li><a href="#"><span>2</span></a></li>
                     <li><a href="#"><span>3</span></a></li>

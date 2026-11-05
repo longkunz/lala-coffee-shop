@@ -1,11 +1,7 @@
-﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using LalaCoffee.Data;
 using LalaCoffee.Models;
 using LalaCoffee.Services;
@@ -18,38 +14,51 @@ namespace LalaCoffee.Controllers
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<PropertyProduct> _propertyProductRepository;
         private readonly IRepository<OptionProduct> _optionProductRepository;
-        private readonly CartManager _cartManager;
+        private readonly ICartService _cartService;
+
         public CartController()
+            : this(null, null, null, null, null)
         {
-            _context = new ApplicationDbContext();
-            _productRepository = new Repository<Product>(_context);
-            _propertyProductRepository = new Repository<PropertyProduct>(_context);
-            _optionProductRepository = new Repository<OptionProduct>(_context);
-            _cartManager = new CartManager();
         }
+
+        public CartController(
+            ICartService cartService,
+            IRepository<Product> productRepository = null,
+            IRepository<PropertyProduct> propertyProductRepository = null,
+            IRepository<OptionProduct> optionProductRepository = null,
+            ApplicationDbContext context = null)
+        {
+            _context = context ?? new ApplicationDbContext();
+            _productRepository = productRepository ?? new Repository<Product>(_context);
+            _propertyProductRepository = propertyProductRepository ?? new Repository<PropertyProduct>(_context);
+            _optionProductRepository = optionProductRepository ?? new Repository<OptionProduct>(_context);
+            _cartService = cartService ?? new CartService();
+        }
+
         public ActionResult Index()
         {
-            var cart = _cartManager.GetCartItems();
-            if (cart.Count() < 1)
+            var cart = _cartService.GetCartItems();
+            if (cart.Count < 1)
             {
                 return RedirectToAction("Index", "Home");
             }
             return View(cart);
         }
+
         [HttpPost]
         public ActionResult AddToCart(int productId, int quantity, List<int> optionProductIds, int propertyId)
         {
             var product = _productRepository.GetById(productId);
             var propertyProduct = _propertyProductRepository.GetById(propertyId);
             List<OptionProduct> optionProducts = new List<OptionProduct>();
-            if(optionProductIds != null)
+            if (optionProductIds != null)
             {
                 foreach (var optionProductId in optionProductIds)
                 {
                     optionProducts.Add(_optionProductRepository.GetById(optionProductId));
                 }
             }
-            if(quantity <= 0)
+            if (quantity <= 0)
             {
                 return Json(new { status = false, message = "Số lượng không hợp lệ" });
             }
@@ -57,86 +66,55 @@ namespace LalaCoffee.Controllers
             {
                 ProductId = productId,
                 Quantity = quantity,
-                ProductName = product.Name,
-                Price = product.Price,
+                ProductName = product != null ? product.Name : string.Empty,
+                Price = product != null ? product.Price : 0,
                 Options = optionProducts,
                 PropertyProduct = propertyProduct
             };
-            _cartManager.AddToCart(item);
+            _cartService.AddToCart(item);
             return Json(new { status = true, message = "Thêm vào giỏ hàng thành công" });
         }
+
         [HttpPost]
         public JsonResult UpdateCart(Guid itemId, int quantity)
         {
-            // Get the cart and find the item to update
-            var cart = _cartManager.GetCartItems();
+            var cart = _cartService.GetCartItems();
             var item = cart.FirstOrDefault(x => x.Id == itemId);
-            // Check if the item was found
             if (item == null)
             {
                 return Json(new { success = false, message = "Item not found" });
             }
 
-            // Update the item properties
             item.Quantity = quantity;
-
-            // Update the cart
-            _cartManager.UpdateCart(cart);
+            _cartService.UpdateCart(cart);
 
             return Json(new { success = true, message = "Item updated" });
         }
+
         [HttpGet]
         public JsonResult GetTotal()
         {
             int total = 0;
-            // Get the cart and find the item to update
-            var cart = _cartManager.GetCartItems();
-            foreach(var item in cart)
+            var cart = _cartService.GetCartItems();
+            foreach (var item in cart)
             {
                 total += item.Quantity;
             }
             return Json(new { success = true, total = total }, JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        public ActionResult UpdateCart1(int productId, int quantity, List<int> optionProductIds, int propertyId)
-        {
-            //var item = new CartItem()
-            //{
-            //    Id = model.Id,
-            //    ProductId = model.ProductId,
-            //    PropertyProduct = new PropertyProductModel()
-            //    {
-            //        Id = model.PropertyProductId,
-            //        Name = model.PropertyName,
-            //        Price = model.PropertyPrice
-            //    },
-            //    Options = model.Options,
-            //    Quantity = model.Quantity,
-            //    Price = model.Price
-            //};
-
-            //var cartManager = new CartManager();
-            //cartManager.UpdateCart(item);
-
-            return RedirectToAction("Index");
-        }
 
         [HttpPost]
         public ActionResult RemoveFromCart(Guid cartItemId)
         {
-            _cartManager.RemoveFromCart(cartItemId);
-
+            _cartService.RemoveFromCart(cartItemId);
             return Json(new { success = true });
         }
+
         [HttpPost]
         public ActionResult ClearCart()
         {
-            _cartManager.ClearCart();
-
+            _cartService.ClearCart();
             return Json(new { success = true });
         }
-
-
     }
-
 }

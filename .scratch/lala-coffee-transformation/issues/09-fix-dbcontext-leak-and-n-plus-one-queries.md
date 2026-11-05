@@ -4,9 +4,13 @@
 
 **Blocked by:** 07 (Sửa lỗi tính tiền đơn hàng theo số lượng và lưu trữ đơn hàng bền vững trong Database)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Lớp Controller cơ sở và các controller độc lập thực thi phương thức dọn dẹp tài nguyên (`Dispose`) cho phiên làm việc cơ sở dữ liệu và các trình quản lý danh tính người dùng.
-- [ ] Dữ liệu cây danh mục cho thanh điều hướng menu được truy vấn toàn bộ trong 1 câu truy vấn và tự động dựng cây phân cấp trong bộ nhớ, loại bỏ hoàn toàn các câu truy vấn lặp lồng nhau trên mỗi lượt tải trang.
-- [ ] Thao tác lưu các dòng chi tiết đơn hàng được đưa ra ngoài vòng lặp duyệt giỏ hàng, chỉ thực hiện lưu cơ sở dữ liệu 1 lần duy nhất sau khi đã gom đủ dữ liệu.
-- [ ] Các truy vấn đọc dữ liệu chỉ để hiển thị áp dụng cờ không theo dõi trạng thái (`AsNoTracking`) để tăng tốc độ phản hồi và giảm chiếm dụng bộ nhớ.
+- [x] Lớp Controller cơ sở và các controller độc lập thực thi phương thức dọn dẹp tài nguyên (`Dispose`) cho phiên làm việc cơ sở dữ liệu và các trình quản lý danh tính người dùng.
+- [x] Dữ liệu cây danh mục cho thanh điều hướng menu được truy vấn toàn bộ trong 1 câu truy vấn và tự động dựng cây phân cấp trong bộ nhớ, loại bỏ hoàn toàn các câu truy vấn lặp lồng nhau trên mỗi lượt tải trang.
+- [x] Thao tác lưu các dòng chi tiết đơn hàng được đưa ra ngoài vòng lặp duyệt giỏ hàng, chỉ thực hiện lưu cơ sở dữ liệu 1 lần duy nhất sau khi đã gom đủ dữ liệu.
+- [x] Các truy vấn đọc dữ liệu chỉ để hiển thị áp dụng cờ không theo dõi trạng thái (`AsNoTracking`) để tăng tốc độ phản hồi và giảm chiếm dụng bộ nhớ.
+
+## Kết quả (Answer)
+
+Đã hoàn thành trong commit [`ecb9746`](file:///D:/UniCafe). `BaseController` và `AccountController` đã override `Dispose(disposing)` giải phóng `ApplicationDbContext` và `UserManager`. `MenuHelper` sử dụng `ToLookup` in-memory. `OrderController.CheckOut` gom `OrderDetail` và chỉ gọi `SaveChanges()` một lần duy nhất. Kiểm thử toàn diện tại `PerformanceAndQueryTests`.

@@ -4,10 +4,14 @@
 
 **Blocked by:** 02 (Tái cấu trúc chuyển đổi tên thương hiệu sang LalaCoffee toàn diện)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Tổng tiền của từng dòng sản phẩm trong đơn hàng được tính đúng bằng đơn giá tổng (sản phẩm + size + các topping) nhân với số lượng đặt mua (`Quantity`).
-- [ ] Tổng tiền của toàn bộ đơn hàng phản ánh chính xác tổng giá trị của toàn bộ các dòng sản phẩm nhân với số lượng tương ứng.
-- [ ] Khi khách hàng đặt đơn (cả thanh toán COD lẫn chuyển sang cổng thanh toán online), bản ghi đơn hàng và chi tiết đơn hàng được ghi nhận ngay vào cơ sở dữ liệu với trạng thái ban đầu là Chờ thanh toán (`Pending`).
-- [ ] Dữ liệu đơn hàng có mã tham chiếu duy nhất được tạo ra để đồng bộ với các cổng thanh toán.
-- [ ] Người dùng tắt trình duyệt sau khi gửi đơn vẫn có thể tra cứu thấy đơn hàng của mình trong hệ thống bằng mã đơn hàng.
+- [x] Tổng tiền của từng dòng sản phẩm trong đơn hàng được tính đúng bằng đơn giá tổng (sản phẩm + size + các topping) nhân với số lượng đặt mua (`Quantity`).
+- [x] Tổng tiền của toàn bộ đơn hàng phản ánh chính xác tổng giá trị của toàn bộ các dòng sản phẩm nhân với số lượng tương ứng.
+- [x] Khi khách hàng đặt đơn (cả thanh toán COD lẫn chuyển sang cổng thanh toán online), bản ghi đơn hàng và chi tiết đơn hàng được ghi nhận ngay vào cơ sở dữ liệu với trạng thái ban đầu là Chờ thanh toán (`Pending`).
+- [x] Dữ liệu đơn hàng có mã tham chiếu duy nhất được tạo ra để đồng bộ với các cổng thanh toán.
+- [x] Người dùng tắt trình duyệt sau khi gửi đơn vẫn có thể tra cứu thấy đơn hàng của mình trong hệ thống bằng mã đơn hàng.
+
+## Kết quả (Answer)
+
+Đã hoàn thành trong commit [`4b2f406`](file:///D:/UniCafe). `OrderCalculator` triển khai công thức tính chuẩn xác theo `Quantity`. Đơn hàng được lưu vào Database ngay khi Checkout với trạng thái `Paid = 0`, `Status = "Pending"` và mã `OrderCode` duy nhất. Kiểm thử toàn diện tại `OrderCalculationTests`.
