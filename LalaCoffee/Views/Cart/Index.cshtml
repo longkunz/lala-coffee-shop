@@ -1,4 +1,4 @@
-@model List<LalaCoffee.Models.CartItem>
+﻿@model List<LalaCoffee.Models.CartItem>
 @{
     ViewBag.Title = "Cart";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
@@ -88,19 +88,19 @@
                 <div class="container">
                     <div class="checkout-wrap wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <ul class="checkout-bar">
-                            <li class="active">Gi? h�ng</li>
-                            <li>Thanh to�n</li>
-                            <li>Ho�n th�nh</li>
+                            <li class="active">Giỏ hàng</li>
+                            <li>Thanh toán</li>
+                            <li>Hoàn thành</li>
                         </ul>
                     </div>
                     <div class="shop-cart-list wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="600ms">
                         <table class="shop-cart-table">
                             <thead>
                                 <tr>
-                                    <th>S?N PH?M</th>
-                                    <th>GI�</th>
-                                    <th>S? LU?NG</th>
-                                    <th>T?NG</th>
+                                    <th>SẢN PHẨM</th>
+                                    <th>GIÁ</th>
+                                    <th>SỐ LƯỢNG</th>
+                                    <th>TỔNG</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -109,7 +109,7 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <th>S?N PH?M</th>
+                                        <th>SẢN PHẨM</th>
                                         <td>
                                             <div class="product-cart-title">
                                                 <span>@item.ProductName</span><br />
@@ -128,12 +128,12 @@
 
                                             </div>
                                         </td>
-                                        <th>GI�</th>
+                                        <th>GIÁ</th>
                                         <td>
                                             <strong>@item.Price.ToString("N0")d</strong>
                                             @*<del>@item.Price.ToString("N0")d</del>*@
                                         </td>
-                                        <th>S? LU?NG</th>
+                                        <th>SỐ LƯỢNG</th>
                                         <td>
                                             <div class="price-textbox">
                                                 <span class="minus-text" onclick="minusQuantity('@item.Id')"><i class="fa fa-minus"></i></span>
@@ -141,12 +141,12 @@
                                                 <span class="plus-text" onclick="plusQuantity('@item.Id')"><i class="fa fa-plus"></i></span>
                                             </div>
                                         </td>
-                                        <th>T?NG</th>
+                                        <th>TỔNG</th>
                                         <td>
                                             @(((item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0"))d
                                         </td>
                                         <td class="product-remove">
-                                            <button class="remove" data-item-cart-id="@item.Id">�</button>
+                                            <button class="remove" data-item-cart-id="@item.Id">×</button>
                                         </td>
                                     </tr>
                                     }
@@ -158,13 +158,13 @@
                                 <input type="text" name="txt" placeholder="Cupon Code">
                             </div>
                             <a href="#" class="btn-medium btn-dark-coffee">Apply Coupon</a>*@
-                            <a href="#" class="clear btn-medium btn-danger">X�a Gi? H�ng</a>
-                            @*<a href="#" class="btn-medium btn-skin float-end">C?p Nh?t Gi? H�ng</a>*@
+                            <a href="#" class="clear btn-medium btn-danger">Xóa Giỏ Hàng</a>
+                            @*<a href="#" class="btn-medium btn-skin float-end">Cập Nhật Giỏ Hàng</a>*@
                         </div>
                     </div>
                     <div class="cart-total wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="900ms">
                         <div class="cart-total-title">
-                            <h5>T?NG C?NG</h5>
+                            <h5>TỔNG CỘNG</h5>
                         </div>
                         @*<div class="product-cart-total">
                             <small>Total products</small>
@@ -175,10 +175,10 @@
                             <span>$15.00</span>
                         </div>*@
                         <div class="grand-total">
-                            <h5>T?NG: <span>@Model.Sum(item => (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0")d</span></h5>
+                            <h5>TỔNG CỘNG: <span>@Model.Sum(item => (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0")d</span></h5>
                         </div>
                         <div class="proceed-check">
-                            <a href="@Url.Action("CheckOut","Order")" class="btn-primary-gold btn-medium">THANH TO�N</a>
+                            <a href="@Url.Action("CheckOut","Order")" class="btn-primary-gold btn-medium">THANH TOÁN</a>
                         </div>
                     </div>
                 </div>
