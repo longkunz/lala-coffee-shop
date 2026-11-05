@@ -1,6 +1,6 @@
 # Ticket 06: Bổ sung CSRF Protection [ValidateAntiForgeryToken] và sửa LoginPath
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 
 ## Vấn đề

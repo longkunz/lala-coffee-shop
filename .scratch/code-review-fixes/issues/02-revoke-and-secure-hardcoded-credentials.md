@@ -1,6 +1,6 @@
 # Ticket 02: Thu hồi và bảo vệ thông tin mật nhạy cảm (Email App Password & Payment Keys)
 
-Status: ready-for-human
+Status: claimed
 Type: task
 
 ## Vấn đề
