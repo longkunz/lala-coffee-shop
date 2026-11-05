@@ -67,6 +67,12 @@ namespace LalaCoffee.Services
             return regex.IsMatch(normalized);
         }
 
+        public virtual Order CreateOrder(CheckOutViewModel model, IEnumerable<CartItem> cartItems)
+        {
+            if (model == null) throw new ArgumentNullException(nameof(model));
+            return CreateOrder(model.Name, model.PhoneNumber, model.Address, model.Payment, model.Note, model.UserId, cartItems);
+        }
+
         public virtual Order CreateOrder(string name, string phoneNumber, string address, string payment, string note, string userId, IEnumerable<CartItem> cartItems)
         {
             if (cartItems == null || !cartItems.Any())

@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NLog;
 using NLog.Config;
 using LalaCoffee;
+using LalaCoffee.Controllers;
 
 namespace LalaCoffee.Tests
 {
@@ -143,10 +144,10 @@ namespace LalaCoffee.Tests
         }
 
         [TestMethod]
-        public void AiExceptionFilter_LogsUnhandledExceptionAndRendersFriendlyError()
+        public void GlobalLoggingExceptionFilter_LogsUnhandledExceptionAndRendersFriendlyError()
         {
-            var filter = new AiExceptionFilter();
-            Assert.IsNotNull(filter, "AiExceptionFilter must be instantiable");
+            var filter = new GlobalLoggingExceptionFilter();
+            Assert.IsNotNull(filter, "GlobalLoggingExceptionFilter must be instantiable");
 
             var routeData = new RouteData();
             routeData.Values.Add("controller", "Home");
@@ -158,21 +159,29 @@ namespace LalaCoffee.Tests
 
             filter.OnException(exceptionContext);
 
-            Assert.IsTrue(exceptionContext.ExceptionHandled, "AiExceptionFilter must mark exception as handled when customErrors is enabled");
+            Assert.IsTrue(exceptionContext.ExceptionHandled, "GlobalLoggingExceptionFilter must mark exception as handled when customErrors is enabled");
             Assert.IsInstanceOfType(exceptionContext.Result, typeof(ViewResult), "Result must be a ViewResult");
             var viewResult = (ViewResult)exceptionContext.Result;
             Assert.AreEqual("Error", viewResult.ViewName, "ViewName must be 'Error'");
         }
 
         [TestMethod]
-        public void FilterConfig_RegistersAiExceptionFilterGlobally()
+        public void AiExceptionFilter_BackwardCompatibilityAlias_InheritsGlobalLoggingExceptionFilter()
+        {
+            var filter = new AiExceptionFilter();
+            Assert.IsNotNull(filter);
+            Assert.IsInstanceOfType(filter, typeof(GlobalLoggingExceptionFilter));
+        }
+
+        [TestMethod]
+        public void FilterConfig_RegistersGlobalLoggingExceptionFilterGlobally()
         {
             var filters = new GlobalFilterCollection();
             FilterConfig.RegisterGlobalFilters(filters);
 
             Assert.IsGreaterThan(0, filters.Count, "Global filters must not be empty");
-            var registeredFilter = filters.FirstOrDefault(f => f.Instance is AiExceptionFilter || f.Instance is HandleErrorAttribute);
-            Assert.IsNotNull(registeredFilter, "FilterConfig must register AiExceptionFilter or HandleErrorAttribute");
+            var registeredFilter = filters.FirstOrDefault(f => f.Instance is GlobalLoggingExceptionFilter);
+            Assert.IsNotNull(registeredFilter, "FilterConfig must register GlobalLoggingExceptionFilter");
         }
 
         [TestMethod]
@@ -183,6 +192,44 @@ namespace LalaCoffee.Tests
                 BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
             Assert.IsNotNull(errorMethod, "MvcApplication must define Application_Error handler for unhandled application-level errors");
+        }
+
+        [TestMethod]
+        public void ErrorController_Index_RendersSharedErrorView()
+        {
+            var controller = new ErrorController();
+            var result = controller.Index() as ViewResult;
+
+            Assert.IsNotNull(result, "ErrorController.Index() must return a ViewResult");
+            Assert.AreEqual("~/Views/Shared/Error.cshtml", result.ViewName, "ErrorController.Index() must render ~/Views/Shared/Error.cshtml");
+        }
+
+        [TestMethod]
+        public void ErrorController_NotFound_RendersSharedErrorView()
+        {
+            var controller = new ErrorController();
+            var result = controller.NotFound() as ViewResult;
+
+            Assert.IsNotNull(result, "ErrorController.NotFound() must return a ViewResult");
+            Assert.AreEqual("~/Views/Shared/Error.cshtml", result.ViewName, "ErrorController.NotFound() must render ~/Views/Shared/Error.cshtml");
+        }
+
+        [TestMethod]
+        public void WebConfig_ConfiguresCustomErrorsRedirectToErrorController()
+        {
+            var projectRoot = GetProjectRoot();
+            var webConfigPath = Path.Combine(projectRoot, "Web.config");
+            var doc = XDocument.Load(webConfigPath);
+
+            var customErrors = doc.Descendants("customErrors").FirstOrDefault();
+            Assert.IsNotNull(customErrors, "Web.config must define <customErrors>");
+            var defaultRedirect = (string)customErrors.Attribute("defaultRedirect")!;
+            Assert.AreEqual("~/Error", defaultRedirect, "defaultRedirect must point to ~/Error (not ~/Shared/Error)");
+
+            // Assert no remaining ~/Shared/Error references in customErrors
+            var errorElements = customErrors.Elements("error").ToList();
+            Assert.IsTrue(errorElements.Any(e => (string)e.Attribute("statusCode")! == "404"), "Must have 404 status mapping");
+            Assert.IsTrue(errorElements.Any(e => (string)e.Attribute("statusCode")! == "500"), "Must have 500 status mapping");
         }
     }
 }

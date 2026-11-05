@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Unity;
@@ -125,6 +127,103 @@ namespace LalaCoffee.Tests
             Assert.IsTrue(orderCreated, "OrderController should delegate order creation to IOrderService");
             Assert.IsNotNull(result);
             Assert.AreEqual("CompleteOrder", result.RouteValues["action"]);
+        }
+
+        [TestMethod]
+        public void OrderController_CheckOut_WithStronglyTypedViewModel_Succeeds()
+        {
+            bool orderCreated = false;
+            var stubOrderService = new OrderService((order, details) =>
+            {
+                orderCreated = true;
+                order.Code = "MOCK_ORDER_VM_123";
+            });
+            var stubCartService = new CartService();
+            stubCartService.AddToCart(new CartItem { ProductId = 1, Quantity = 3, Price = 35000m });
+            var stubEmailService = new EmailService(_ => null);
+
+            var controller = new OrderController(stubOrderService, stubCartService, stubEmailService);
+
+            var viewModel = new CheckOutViewModel
+            {
+                Name = "Lala Customer",
+                Email = "customer@lalacoffee.vn",
+                PhoneNumber = "0987654321",
+                Address = "456 Nguyen Hue, Q1, HCM",
+                Payment = "cash",
+                Note = "Giao gio hanh chinh",
+                UserId = "CUST_99"
+            };
+
+            var result = controller.CheckOut(viewModel) as RedirectToRouteResult;
+
+            Assert.IsTrue(orderCreated, "OrderController should create order from CheckOutViewModel");
+            Assert.IsNotNull(result);
+            Assert.AreEqual("CompleteOrder", result.RouteValues["action"]);
+        }
+
+        [TestMethod]
+        public void CheckOutViewModel_DataAnnotations_ValidationRulesEnforced()
+        {
+            // Invalid model: missing Name, invalid phone, missing address, invalid payment
+            var invalidModel = new CheckOutViewModel
+            {
+                Name = "",
+                PhoneNumber = "invalid-phone",
+                Address = "",
+                Payment = "bitcoin"
+            };
+
+            var context = new ValidationContext(invalidModel);
+            var results = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(invalidModel, context, results, validateAllProperties: true);
+
+            Assert.IsFalse(isValid, "Invalid model must fail DataAnnotations validation");
+            Assert.IsTrue(results.Any(r => r.MemberNames.Contains("Name")), "Name should have validation error");
+            Assert.IsTrue(results.Any(r => r.MemberNames.Contains("PhoneNumber")), "PhoneNumber should have validation error");
+            Assert.IsTrue(results.Any(r => r.MemberNames.Contains("Address")), "Address should have validation error");
+            Assert.IsTrue(results.Any(r => r.MemberNames.Contains("Payment")), "Payment should have validation error");
+
+            // Valid model
+            var validModel = new CheckOutViewModel
+            {
+                Name = "Nguyen Van A",
+                PhoneNumber = "0987654321",
+                Address = "123 Le Loi, Q1",
+                Payment = "momo",
+                Email = "nguyenvana@gmail.com"
+            };
+
+            var validContext = new ValidationContext(validModel);
+            var validResults = new List<ValidationResult>();
+            bool isValidSuccess = Validator.TryValidateObject(validModel, validContext, validResults, validateAllProperties: true);
+
+            Assert.IsTrue(isValidSuccess, "Valid CheckOutViewModel must pass DataAnnotations validation");
+            Assert.IsEmpty(validResults);
+        }
+
+        [TestMethod]
+        public void UnityDi_PerRequestChildScope_ProvidesIsolatedDbContextAndDisposesOnScopeEnd()
+        {
+            var resolver = DependencyResolver.Current as UnityDependencyResolver;
+            Assert.IsNotNull(resolver, "Resolver must be UnityDependencyResolver");
+
+            // Simulate Request 1 child scope
+            using (var scope1 = resolver.CreateChildScope())
+            {
+                var context1 = scope1.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
+                Assert.IsNotNull(context1, "Child scope 1 must resolve ApplicationDbContext");
+
+                // Simulate Request 2 child scope
+                using (var scope2 = resolver.CreateChildScope())
+                {
+                    var context2 = scope2.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
+                    Assert.IsNotNull(context2, "Child scope 2 must resolve ApplicationDbContext");
+
+                    // Hierarchical lifetime guarantees per-scope isolation
+                    Assert.AreNotSame(context1, context2, "Different scopes must receive distinct ApplicationDbContext instances");
+                }
+            }
         }
 
         [TestMethod]

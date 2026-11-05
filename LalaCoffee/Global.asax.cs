@@ -22,6 +22,11 @@ namespace LalaCoffee
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
+        protected void Application_EndRequest(object sender, EventArgs e)
+        {
+            UnityDependencyResolver.DisposePerRequestContainer(HttpContext.Current);
+        }
+
         protected void Application_Error(object sender, EventArgs e)
         {
             var exception = Server.GetLastError();
@@ -29,6 +34,15 @@ namespace LalaCoffee
             {
                 Logger.Error(exception, "Unhandled application error: {0}", exception.Message);
             }
+        }
+
+        public override void Dispose()
+        {
+            if (DependencyResolver.Current is IDisposable disposableResolver)
+            {
+                disposableResolver.Dispose();
+            }
+            base.Dispose();
         }
     }
 }

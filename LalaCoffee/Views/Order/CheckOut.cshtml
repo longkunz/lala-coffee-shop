@@ -1,17 +1,11 @@
-@model LalaCoffee.Models.Order
+@model LalaCoffee.Models.CheckOutViewModel
 @{
     Page.Title = "Thanh toán";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
-    List<LalaCoffee.Models.CartItem> carts = ViewBag.Carts as List<LalaCoffee.Models.CartItem>;
+    List<LalaCoffee.Models.CartItem> carts = ViewBag.Carts as List<LalaCoffee.Models.CartItem> ?? new List<LalaCoffee.Models.CartItem>();
 }
-@using Microsoft.AspNet.Identity
-@using Microsoft.AspNet.Identity.EntityFramework
 @using LalaCoffee.Models
 
-@{
-    var userManager = new UserManager<LalaCoffee.Data.ApplicationUser>(new UserStore<LalaCoffee.Data.ApplicationUser>(new ApplicationDbContext()));
-    var user = userManager.FindById(User.Identity.GetUserId());
-}
 <main>
     <div class="main-part">
 
@@ -26,114 +20,112 @@
                         <li>Order Complete</li>
                     </ul>
                 </div>
-                @using (@Html.BeginForm())
+                @using (Html.BeginForm("CheckOut", "Order", FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
                     <div class="row">
-                        <div class="col-md-7 col-sm-7 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                        <div class="col-lg-7 col-md-7 col-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                             <div class="shop-checkout-left">
                                 @Html.Partial("ErrorsAlert")
-                                @*<h6>Returning customer? Click here to <a href="login_register.html">login</a></h6>*@
                                 <div class="form-checkout">
                                     <div class="row">
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="col-12 mb-3">
                                             <h5>THÔNG TIN NHẬN HÀNG</h5>
                                             <hr />
                                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                         </div>
                                         @if (!User.Identity.IsAuthenticated)
                                         {
-                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="col-12 mb-3">
                                                 <span>Bạn đã có tài khoản? Đăng nhập </span><a href="@Url.Action("Login","Account")">tại đây</a>
                                             </div>
-
                                         }
-                                        <input type="hidden" name="UserId" value="@if (User.Identity.IsAuthenticated){@user.Id}" />
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input class="form-control text-box single-line" id="Name" name="Name" placeholder="Họ Tên" type="text" value="@if (User.Identity.IsAuthenticated){@user.UserName}">
+                                        @Html.HiddenFor(m => m.UserId)
+                                        <div class="col-12 mb-3">
+                                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Họ Tên", id = "Name" })
+                                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                                         </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input class="form-control text-box single-line" id="PhoneNumber" name="PhoneNumber" placeholder="Số Điện Thoại" type="text" value="@if (User.Identity.IsAuthenticated){@user.PhoneNumber}">
+                                        <div class="col-12 mb-3">
+                                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", placeholder = "Số Điện Thoại", id = "PhoneNumber" })
+                                            @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
                                         </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input class="form-control text-box single-line" id="Email" name="Email" placeholder="Địa chỉ Email" type="email" value="@if (User.Identity.IsAuthenticated){@user.Email}">
+                                        <div class="col-12 mb-3">
+                                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Địa chỉ Email", type = "email", id = "Email" })
+                                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                                         </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input class="form-control text-box single-line" id="Address" name="Address" placeholder="Địa chỉ nhận hàng" type="text" value="">
+                                        <div class="col-12 mb-3">
+                                            @Html.TextBoxFor(m => m.Address, new { @class = "form-control", placeholder = "Địa chỉ nhận hàng", id = "Address" })
+                                            @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
                                         </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <textarea class="form-control" rows="5" name="Note" id="Note" placeholder="Thêm hướng dẫn giao hàng hoặc gì đó về đơn hàng"></textarea>
+                                        <div class="col-12 mb-3">
+                                            @Html.TextAreaFor(m => m.Note, 5, 20, new { @class = "form-control", placeholder = "Thêm hướng dẫn giao hàng hoặc gì đó về đơn hàng", id = "Note" })
+                                            @Html.ValidationMessageFor(m => m.Note, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5 col-sm-5 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
+                        <div class="col-lg-5 col-md-5 col-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                             <div class="shop-checkout-right">
-                                <div class="shop-checkout-box">
-                                    <h5>ĐƠN HÀNG</h5>
-                                    <div class="shop-checkout-row">
-                                        <div class="col-lg-8">SẢN PHẨM <span class="badge badge-secondary badge-pill">@carts.Count()</span></div>
-                                        <div class="col-lg-4 text-right">THÀNH TIỀN</div>
-                                    </div>
-                                    @foreach (var item in carts)
-                                    {
-                                        <div class="row">
-                                            <div class="col-lg-8"><b>@item.ProductName </b>x<span>@item.Quantity</span></div>
-                                            <div class="col-lg-4 text-right">@item.Price.ToString("N0")<span>đ</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-8">Size: @(item.PropertyProduct != null ? item.PropertyProduct.Name : "")</div>
-                                            <div class="col-lg-4 text-right">@(item.PropertyProduct != null ? item.PropertyProduct.Price.ToString("N0") : "0")<span>đ</span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-8">Topping: </div>
-                                            <div class="col-lg-4"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div>
-                                                @{
-                                                    List<int> optionIds = new List<int>();
-                                                }
-                                                @if (item.Options != null)
-                                                {
-                                                    foreach (var option in item.Options)
-                                                    {
-                                                        <div class="col-lg-1"></div>
-                                                        optionIds.Add(option.Id);
-                                                        <div class="col-lg-7">@option.Name</div>
-                                                        <div class="col-lg-4 text-right">@option.Price.ToString("N0")<span>đ</span></div>
-                                                    }
-                                                }
-                                            </div>
+                                <div class="shop-checkout-box card mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">ĐƠN HÀNG</h5>
+                                        <div class="shop-checkout-row d-flex justify-content-between mb-2">
+                                            <div>SẢN PHẨM <span class="badge bg-secondary rounded-pill">@carts.Count()</span></div>
+                                            <div class="text-end fw-bold">THÀNH TIỀN</div>
                                         </div>
                                         <hr />
-                                    }
-                                    <div class="checkout-total">
-                                        <h6>TỔNG CỘNG<small class="price-big">@LalaCoffee.Services.OrderCalculator.CalculateCartTotal(carts).ToString("N0")đ</small></h6>
-                                    </div>
-                                </div>
-                                <div class="shop-checkout-box">
-                                    <h5>PHƯƠNG THỨC THANH TOÁN</h5>
-                                    <div class="form-group">
-                                        <div class="col-md-10">
-                                            <div class="custom-control custom-radio">
-                                                <input id="cash" name="Payment" type="radio" class="custom-control-input" checked="" required="" value="cash">
-                                                <label class="custom-control-label" for="cash">Tiền mặt</label>
+                                        @foreach (var item in carts)
+                                        {
+                                            <div class="row mb-1">
+                                                <div class="col-8"><b>@item.ProductName </b>x<span>@item.Quantity</span></div>
+                                                <div class="col-4 text-end">@item.Price.ToString("N0")<span>đ</span></div>
                                             </div>
-                                            <div class="custom-control custom-radio">
-                                                <input id="momo" name="Payment" type="radio" class="custom-control-input" required="" value="momo">
-                                                <label class="custom-control-label" for="momo">MoMo</label>
+                                            <div class="row mb-1">
+                                                <div class="col-8">Size: @(item.PropertyProduct != null ? item.PropertyProduct.Name : "")</div>
+                                                <div class="col-4 text-end">@(item.PropertyProduct != null ? item.PropertyProduct.Price.ToString("N0") : "0")<span>đ</span></div>
                                             </div>
-                                            <div class="custom-control custom-radio">
-                                                <input id="vnpay" name="Payment" type="radio" class="custom-control-input" required="" value="vnpay">
-                                                <label class="custom-control-label" for="vnpay">VNPay</label>
-                                            </div>
+                                            @if (item.Options != null && item.Options.Count > 0)
+                                            {
+                                                <div class="row mb-1">
+                                                    <div class="col-12 text-muted small">Topping:</div>
+                                                    @foreach (var option in item.Options)
+                                                    {
+                                                        <div class="col-8 ps-4 small">- @option.Name</div>
+                                                        <div class="col-4 text-end small">@option.Price.ToString("N0")<span>đ</span></div>
+                                                    }
+                                                </div>
+                                            }
+                                            <hr />
+                                        }
+                                        <div class="checkout-total d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">TỔNG CỘNG</h6>
+                                            <span class="price-big fw-bold text-danger fs-5">@LalaCoffee.Services.OrderCalculator.CalculateCartTotal(carts).ToString("N0")đ</span>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <div class="checkout-button" style="margin-top: 10px;">
-                                            <button class="button-default btn-large btn-primary-gold" type="submit">Đặt hàng</button>
+                                </div>
+                                <div class="shop-checkout-box card mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">PHƯƠNG THỨC THANH TOÁN</h5>
+                                        <div class="mb-3">
+                                            <div class="form-check mb-2">
+                                                @Html.RadioButtonFor(m => m.Payment, "cash", new { id = "cash", @class = "form-check-input" })
+                                                <label class="form-check-label" for="cash">Tiền mặt (COD)</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                @Html.RadioButtonFor(m => m.Payment, "momo", new { id = "momo", @class = "form-check-input" })
+                                                <label class="form-check-label" for="momo">Ví điện tử MoMo</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                @Html.RadioButtonFor(m => m.Payment, "vnpay", new { id = "vnpay", @class = "form-check-input" })
+                                                <label class="form-check-label" for="vnpay">Cổng VNPay</label>
+                                            </div>
+                                            @Html.ValidationMessageFor(m => m.Payment, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="checkout-button mt-2">
+                                                <button class="button-default btn-large btn-primary-gold w-100" type="submit">Đặt hàng</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

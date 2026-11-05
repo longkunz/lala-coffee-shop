@@ -180,8 +180,8 @@ namespace LalaCoffee.Tests
             Assert.IsNotNull(customErrors, "<customErrors> element must exist in <system.web>");
             Assert.AreEqual("RemoteOnly", (string)customErrors.Attribute("mode")!,
                 "customErrors mode must be 'RemoteOnly'");
-            Assert.AreEqual("~/Shared/Error", (string)customErrors.Attribute("defaultRedirect")!,
-                "customErrors defaultRedirect must be '~/Shared/Error'");
+            Assert.AreEqual("~/Error", (string)customErrors.Attribute("defaultRedirect")!,
+                "customErrors defaultRedirect must be '~/Error'");
         }
 
         [TestMethod]
