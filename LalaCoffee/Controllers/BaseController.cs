@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -77,6 +77,18 @@ namespace LalaCoffee.Controllers
                 UnitOfWork.Rollback();
                 throw;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Context?.Dispose();
+                UnitOfWork?.Dispose();
+                UserManager?.Dispose();
+                RoleManager?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
