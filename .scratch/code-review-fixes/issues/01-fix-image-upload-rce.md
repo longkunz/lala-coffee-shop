@@ -1,6 +1,6 @@
 # Ticket 01: Vá lỗ hổng Arbitrary File Upload / RCE trong ImageController
 
-Status: claimed
+Status: resolved
 Type: task
 
 ## Vấn đề
@@ -17,3 +17,17 @@ Tại [`ImageController.cs`](file:///D:/UniCafe/UniCafe/Controllers/ImageControl
 5. Đảm bảo file được lưu an toàn vào `~/Content/images/`.
 
 ## Comments
+
+## Kết quả (Answer)
+- Đã bổ sung thuộc tính `[Authorize(Roles = "Admin")]` cho `ImageController`, ngăn chặn triệt để người dùng chưa xác thực hoặc không có quyền Admin upload file.
+- Đã tạo lớp tiện ích `LalaCoffee.Helpers.ImageUploadValidator` hỗ trợ:
+  - Whitelist các đuôi mở rộng hợp lệ: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`.
+  - Whitelist các Content-Type hợp lệ: `image/jpeg`, `image/pjpeg`, `image/png`, `image/x-png`, `image/gif`, `image/webp`.
+  - Giới hạn dung lượng upload tối đa: 5MB (`MaxFileSizeBytes = 5 * 1024 * 1024`).
+  - Hàm `GenerateSafeFileName()` sinh tên file ngẫu nhiên bằng `Guid.NewGuid():N` kèm phần mở rộng viết thường, loại bỏ nguy cơ trùng lặp và Path Traversal.
+- Cập nhật action `ProcessUpload` trong `ImageController`:
+  - Kiểm tra `file == null || file.ContentLength <= 0`.
+  - Dùng `Path.GetFileName(file.FileName)` để loại bỏ path traversal trước khi kiểm tra extension.
+  - Kiểm tra dung lượng hợp lệ và tự động khởi tạo thư mục lưu trữ nếu chưa tồn tại.
+  - Lưu file an toàn bằng tên GUID ngẫu nhiên và trả về mã lỗi HTTP 400 kèm thông báo rõ ràng nếu vi phạm.
+- Đã xây dựng bộ unit test gồm 47 test cases trong `LalaCoffee.Tests.ImageUploadValidatorTests`, xác minh 100% các kịch bản upload hợp lệ và bất hợp pháp (file exe, aspx, bat, js, cshtml, rỗng, vượt kích thước, v.v.). Toàn bộ test đều PASS.
