@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -14,6 +16,7 @@ using LalaCoffee.Data;
 using LalaCoffee.Models;
 using LalaCoffee.Services;
 using LalaCoffee.Services.Email;
+using LalaCoffee.Services.Payment;
 using LalaCoffee.Services.Payment.Momo;
 
 namespace LalaCoffee.Controllers
@@ -112,6 +115,16 @@ namespace LalaCoffee.Controllers
         }
         public ActionResult MomoProcessing(MomoResult result)
         {
+            string secretKey = ConfigurationManager.AppSettings["secretKey_Momo"]
+                ?? Environment.GetEnvironmentVariable("secretKey_Momo");
+            string accessKey = ConfigurationManager.AppSettings["accessKey_Momo"]
+                ?? Environment.GetEnvironmentVariable("accessKey_Momo");
+
+            if (result == null || !MomoSecurityHelper.ValidateResponseSignature(result, secretKey, accessKey))
+            {
+                return RedirectToAction("ErrorPayment", "Pay");
+            }
+
             //errorCode = 0 : thanh toán thành công (Request.QueryString["errorCode"])
             if (result.resultCode == 0)
             {
@@ -160,19 +173,7 @@ namespace LalaCoffee.Controllers
         }
         public static String HmacSHA512(string key, String inputData)
         {
-            var hash = new StringBuilder();
-            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-            byte[] inputBytes = Encoding.UTF8.GetBytes(inputData);
-            using (var hmac = new HMACSHA512(keyBytes))
-            {
-                byte[] hashValue = hmac.ComputeHash(inputBytes);
-                foreach (var theByte in hashValue)
-                {
-                    hash.Append(theByte.ToString("x2"));
-                }
-            }
-
-            return hash.ToString();
+            return VnPaySecurityHelper.ComputeHmacSha512(key, inputData);
         }
         public string GetIpAddress()
         {
@@ -250,8 +251,21 @@ namespace LalaCoffee.Controllers
             string paymentUrl = CreateRequestUrl(vnp_Url, vnp_HashSecret, vnp_Params);
             return Redirect(paymentUrl);
         }
-        public ActionResult VNPayProcessing(int vnp_ResponseCode)
+        public ActionResult VNPayProcessing(int vnp_ResponseCode, NameValueCollection queryString = null)
         {
+            return ProcessVNPay(vnp_ResponseCode, queryString ?? (Request != null ? Request.QueryString : null));
+        }
+
+        public ActionResult ProcessVNPay(int vnp_ResponseCode, NameValueCollection queryString)
+        {
+            string hashSecret = ConfigurationManager.AppSettings["vnp_HashSecret"]
+                ?? Environment.GetEnvironmentVariable("vnp_HashSecret");
+
+            if (queryString == null || !VnPaySecurityHelper.ValidateResponseSignature(queryString, hashSecret))
+            {
+                return RedirectToAction("ErrorPayment", "Pay");
+            }
+
             //errorCode = 0 : thanh toán thành công (Request.QueryString["errorCode"])
             if (vnp_ResponseCode == 00)
             {
@@ -294,7 +308,6 @@ namespace LalaCoffee.Controllers
                     order.Paid = 1;
                     Context.SaveChanges();
                 }
-
 
                 return RedirectToAction("CompleteOrder", "Order");
             }

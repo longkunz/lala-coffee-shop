@@ -297,6 +297,8 @@
     <Compile Include="Services\Payment\Momo\MomoSecurity.cs" />
     <Compile Include="Services\Payment\Momo\PaymentRequest.cs" />
     <Compile Include="Services\Payment\Momo\MomoResult.cs" />
+    <Compile Include="Services\Payment\MomoSecurityHelper.cs" />
+    <Compile Include="Services\Payment\VnPaySecurityHelper.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
