@@ -292,6 +292,8 @@
 
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CartManager.cs" />
+    <Compile Include="Services\Email\IEmailService.cs" />
+    <Compile Include="Services\Email\EmailService.cs" />
     <Compile Include="Services\Payment\Momo\MomoSecurity.cs" />
     <Compile Include="Services\Payment\Momo\PaymentRequest.cs" />
     <Compile Include="Services\Payment\Momo\MomoResult.cs" />
@@ -2588,6 +2590,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
+    <Content Include="secrets.config.example" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

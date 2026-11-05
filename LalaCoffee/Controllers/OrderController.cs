@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +12,7 @@ using System.Web.UI.WebControls;
 using LalaCoffee.Data;
 using LalaCoffee.Models;
 using LalaCoffee.Services;
+using LalaCoffee.Services.Email;
 using Unity.Policy;
 using System.Web.Helpers;
 
@@ -20,8 +21,14 @@ namespace LalaCoffee.Controllers
     public class OrderController : BaseController<Order>
     {
         private readonly CartManager _cartManager;
-        public OrderController() {
-            _cartManager = new CartManager();
+        private readonly IEmailService _emailService;
+        public OrderController() : this(new EmailService(), new CartManager())
+        {
+        }
+        public OrderController(IEmailService emailService, CartManager cartManager = null)
+        {
+            _emailService = emailService ?? new EmailService();
+            _cartManager = cartManager ?? new CartManager();
         }
         public static bool ValidateVNPhoneNumber(string phoneNumber)
         {
@@ -38,35 +45,8 @@ namespace LalaCoffee.Controllers
         }
         public void SendEmail(string email, string name, string orderCode)
         {
-            var fromAddress = new MailAddress("hphcplnh7@gmail.com", "LalaCoffee");
-            var toAddress = new MailAddress(email, name);
-            const string fromPassword = "phhrqqdawnyalkpr";
-            string subject = "Thông tin đơn hàng LalaCoffee #" + orderCode + "";
-            const string emailBody = "<div class='text-center'>" +
-                                "<p>Bạn đã đặt hàng thành công</p>" +
-                                "<p>Cảm ơn bạn vì giữa muôn vàn sự lựa chọn đã chọn <b>LalaCoffee</b></p>" +
-                                "<p>Xem chi tiết đơn đặt hàng của bạn <a href='https://unicafe.phuchautea.com/Order/SearchOrder/{0}'>tại đây</a></p>";
-            string body = string.Format(emailBody, orderCode);
-            var smtp = new SmtpClient
-            {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-            };
-
-            using (var message = new MailMessage(fromAddress, toAddress)
-            {
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            })
-            {
-                smtp.Send(message);
-                ViewBag.Message = "Email sent successfully.";
-            }
+            _emailService.SendOrderConfirmation(email, name, orderCode);
+            ViewBag.Message = "Email sent successfully.";
         }
 
         // GET: Order
