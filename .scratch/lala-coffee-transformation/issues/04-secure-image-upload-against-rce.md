@@ -4,10 +4,14 @@
 
 **Blocked by:** 02 (Tái cấu trúc chuyển đổi tên thương hiệu sang LalaCoffee toàn diện)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Chức năng tải tệp tin yêu cầu quyền quản trị viên (`Admin`) mới được phép truy cập; người dùng chưa xác thực bị từ chối ngay lập tức.
-- [ ] Chỉ các định dạng ảnh nằm trong danh sách an toàn (`.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`) mới được phép tải lên; các file thực thi hoặc script (`.aspx`, `.ashx`, `.exe`,...) bị chặn tuyệt đối.
-- [ ] Tên file tải lên được trích xuất an toàn và sinh ngẫu nhiên bằng mã định danh duy nhất (GUID) để ngăn chặn tấn công duyệt thư mục hoặc ghi đè file hệ thống.
-- [ ] Dung lượng file tải lên được giới hạn tối đa hợp lý (ví dụ: không vượt quá 5MB).
-- [ ] Ảnh được lưu trữ vào thư mục tài sản tĩnh an toàn và trả về đường dẫn chính xác để hiển thị trên giao diện quản trị.
+- [x] Chức năng tải tệp tin yêu cầu quyền quản trị viên (`Admin`) mới được phép truy cập; người dùng chưa xác thực bị từ chối ngay lập tức.
+- [x] Chỉ các định dạng ảnh nằm trong danh sách an toàn (`.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`) mới được phép tải lên; các file thực thi hoặc script (`.aspx`, `.ashx`, `.exe`,...) bị chặn tuyệt đối.
+- [x] Tên file tải lên được trích xuất an toàn và sinh ngẫu nhiên bằng mã định danh duy nhất (GUID) để ngăn chặn tấn công duyệt thư mục hoặc ghi đè file hệ thống.
+- [x] Dung lượng file tải lên được giới hạn tối đa hợp lý (ví dụ: không vượt quá 5MB).
+- [x] Ảnh được lưu trữ vào thư mục tài sản tĩnh an toàn và trả về đường dẫn chính xác để hiển thị trên giao diện quản trị.
+
+## Kết quả (Answer)
+
+Đã hoàn thành trong commit [`2fc0600`](file:///D:/UniCafe). `ImageController` đã được bảo vệ bằng `[Authorize(Roles = "Admin")]`, whitelist đuôi file (`.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`), giới hạn kích thước 5MB và sinh tên file GUID ngẫu nhiên, lưu vào `/Uploads/Images/`. Có bộ unit test đầy đủ trong `LalaCoffee.Tests`.
