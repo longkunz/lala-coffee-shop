@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -11,15 +12,35 @@ using LalaCoffee.Models;
 
 namespace LalaCoffee.Areas.Admin.Controllers
 {
-
     [Authorize(Roles = "Admin")]
     public class ManageProductController : BaseController<Product>
     {
         private readonly IRepository<Category> _categoryRepository;
+
         public ManageProductController()
         {
             _categoryRepository = new Repository<Category>(Context);
         }
+
+        private static bool TryParsePrice(string priceInput, out decimal price)
+        {
+            price = 0;
+            if (string.IsNullOrWhiteSpace(priceInput))
+            {
+                return false;
+            }
+
+            var cleanPrice = priceInput.Trim();
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out price) ||
+                decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.CurrentCulture, out price))
+            {
+                return true;
+            }
+
+            var normalized = cleanPrice.Replace(",", "").Replace(".", "");
+            return decimal.TryParse(normalized, NumberStyles.Any, CultureInfo.InvariantCulture, out price);
+        }
+
         // GET: Admin/ManageProduct
         public ActionResult Index()
         {
@@ -28,6 +49,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             var listProduct = GetAll().ToList();
             return View(listProduct);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, Product product)
@@ -37,12 +59,12 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 var name = formCollection["name"];
                 var slug = formCollection["slug"];
-                var price = formCollection["price"];
+                var priceStr = formCollection["price"];
                 var description = formCollection["description"];
                 var image = formCollection["image"];
-                var status = formCollection["status"];
+                var status = formCollection["status"] == "1" ? "1" : "0";
                 var checkSlug = Context.Products.Count(x => x.Slug == slug);
-                if(string.IsNullOrEmpty(name))
+                if (string.IsNullOrEmpty(name))
                 {
                     errors.Add("Chưa nhập tên sản phẩm");
                 }
@@ -54,13 +76,20 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 {
                     errors.Add("Chưa nhập mô tả sản phẩm");
                 }
-                if(Convert.ToDecimal(price) < 1000 || string.IsNullOrEmpty(price))
+                decimal parsedPrice = 0;
+                if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 1000)
                 {
                     errors.Add("Nhập giá ít nhất là 1000đ");
                 }
-                if (errors.Count == 0) {
-                    var Category_Id = Int32.Parse(formCollection["category_id"]);
-                    product.Category = _categoryRepository.GetById(Category_Id);
+                if (errors.Count == 0)
+                {
+                    int categoryId = 0;
+                    if (int.TryParse(formCollection["category_id"], out categoryId))
+                    {
+                        product.Category = _categoryRepository.GetById(categoryId);
+                    }
+                    product.Price = parsedPrice;
+                    product.Status = status;
                     Add(product);
                 }
             }
@@ -72,14 +101,15 @@ namespace LalaCoffee.Areas.Admin.Controllers
             
             return RedirectToAction("Index", "ManageProduct");
         }
+
         public ActionResult Edit(int? Id)
         {
-            if(Id == null)
+            if (Id == null)
             {
                 return RedirectToAction("Index", "ManageProduct");
             }
             var checkId = GetById(Id.Value);
-            if(checkId == null)
+            if (checkId == null)
             {
                 return RedirectToAction("Index", "ManageProduct");
             }
@@ -88,6 +118,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             Product product = GetById(Id.Value);
             return View(product);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
@@ -95,20 +126,27 @@ namespace LalaCoffee.Areas.Admin.Controllers
             List<string> errors = new List<string>();
             try
             {
-                var id = formCollection["id"];
+                var idStr = formCollection["id"] ?? formCollection["Id"];
                 var name = formCollection["name"];
                 var slug = formCollection["slug"];
-                var price = formCollection["price"];
+                var priceStr = formCollection["price"];
                 var description = formCollection["description"];
                 var image = formCollection["image"];
-                var status = formCollection["status"];
+                var status = formCollection["status"] == "1" ? "1" : "0";
+
+                int productId = 0;
+                if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out productId))
+                {
+                    errors.Add("ID sản phẩm không hợp lệ");
+                }
+
                 var checkSlug = Context.Products.Count(x => x.Slug == slug);
                 var getProductContainsSlug = Context.Products.FirstOrDefault(x => x.Slug == slug);
                 if (string.IsNullOrEmpty(name))
                 {
                     errors.Add("Chưa nhập tên sản phẩm");
                 }
-                if (checkSlug > 0 && getProductContainsSlug.Id != Convert.ToInt32(id))
+                if (checkSlug > 0 && getProductContainsSlug != null && getProductContainsSlug.Id != productId)
                 {
                     errors.Add("Slug đã tồn tại");
                 }
@@ -116,24 +154,35 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 {
                     errors.Add("Chưa nhập mô tả sản phẩm");
                 }
-                if (Convert.ToDecimal(price) < 1000 || string.IsNullOrEmpty(price))
+                decimal parsedPrice = 0;
+                if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 1000)
                 {
                     errors.Add("Nhập giá ít nhất là 1000đ");
                 }
                 if (errors.Count == 0)
                 {
-                    var product = GetById(Int32.Parse(formCollection["Id"]));
-                    product.Name = name;
-                    product.Slug = slug;
-                    product.Price = Convert.ToDecimal(price);
-                    product.Description = description;
-                    product.Image = image;
-                    product.Status = status;
-                    product.UpdatedAt = DateTime.Now;
+                    var product = GetById(productId);
+                    if (product == null)
+                    {
+                        errors.Add("Không tìm thấy sản phẩm");
+                    }
+                    else
+                    {
+                        product.Name = name;
+                        product.Slug = slug;
+                        product.Price = parsedPrice;
+                        product.Description = description;
+                        product.Image = image;
+                        product.Status = status;
+                        product.UpdatedAt = DateTime.Now;
 
-                    var Category_Id = Int32.Parse(formCollection["category_id"]);
-                    product.Category = _categoryRepository.GetById(Category_Id);
-                    Update(product);
+                        int categoryId = 0;
+                        if (int.TryParse(formCollection["category_id"], out categoryId))
+                        {
+                            product.Category = _categoryRepository.GetById(categoryId);
+                        }
+                        Update(product);
+                    }
                 }
             }
             catch (Exception ex)
@@ -143,6 +192,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             TempData["Errors"] = errors;
             return RedirectToAction("Index", "ManageProduct");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int? Id)
@@ -161,4 +211,3 @@ namespace LalaCoffee.Areas.Admin.Controllers
         }
     }
 }
-//Areas

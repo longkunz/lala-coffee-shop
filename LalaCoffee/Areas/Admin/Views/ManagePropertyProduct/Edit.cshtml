@@ -1,8 +1,12 @@
-﻿@model LalaCoffee.Models.PropertyProduct
+@model LalaCoffee.Models.PropertyProduct
 
 @{
     ViewBag.Title = "Edit Property Product";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    bool isActive = Model.Status == "1" 
+        || string.Equals(Model.Status, "Show", StringComparison.OrdinalIgnoreCase) 
+        || string.Equals(Model.Status, "Active", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(Model.Status, "True", StringComparison.OrdinalIgnoreCase);
 }
 @Html.Partial("ErrorsAlert")
 <div class="row">
@@ -10,7 +14,7 @@
         <div class="card card-info">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fa fa-edit"></i> CHỈNH SỬA THUỘC TÍNH SẢN PHẨM: @Model.Product.Name (@Model.Name)
+                    <i class="fa fa-edit"></i> CHỈNH SỬA THUỘC TÍNH SẢN PHẨM: @(Model.Product != null ? Model.Product.Name : "") (@Model.Name)
                 </h3>
             </div>
             @using (Html.BeginForm())
@@ -24,12 +28,15 @@
                     </div>
                     <div class="form-group">
                         <label>Giá</label>
-                        <input class="form-control" id="price" name="price" type="text" value="@Model.Price.ToString("N0")">
+                        <input class="form-control" id="price" name="price" type="number" step="any" min="0" value="@Model.Price.ToString("0", System.Globalization.CultureInfo.InvariantCulture)">
                     </div>
                     <div class="form-group">
                         <label>Sản phẩm</label>
                         <select class="form-control" name="product_id">
-                            <option value="@Html.DisplayFor(model => model.Product.Id)">Giữ nguyên: @Html.DisplayFor(model => model.Product.Name)</option>
+                            @if (Model.Product != null)
+                            {
+                                <option value="@Model.Product.Id">Giữ nguyên: @Model.Product.Name</option>
+                            }
                             @foreach (var product in ViewBag.Product)
                             {
                                 <option value="@product.Id">@product.Name</option>
@@ -38,15 +45,8 @@
                     </div>
                     <div class="form-group">
                         <label>Trạng thái</label>
-                        @if (Convert.ToInt32(Model.Status) == 1)
-                        {
-                            <input type="checkbox" name="status" id="status" value="1" checked>
-                        }
-                        else
-                        {
-                            <input type="checkbox" name="status" id="status" value="1">
-                        }
-                        <label class="form-check-label">ON</label>
+                        <input type="checkbox" name="status" id="status" value="1" @(isActive ? "checked" : "")>
+                        <label class="form-check-label" for="status">ON</label>
                     </div>
                 </div>
                 <div class="card-footer">

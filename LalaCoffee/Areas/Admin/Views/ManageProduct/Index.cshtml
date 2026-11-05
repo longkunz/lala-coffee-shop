@@ -4,9 +4,17 @@
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
 @functions{
+    public static bool IsActive(string active)
+    {
+        if (string.IsNullOrWhiteSpace(active)) return false;
+        return active == "1" 
+            || string.Equals(active, "Show", StringComparison.OrdinalIgnoreCase) 
+            || string.Equals(active, "Active", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(active, "True", StringComparison.OrdinalIgnoreCase);
+    }
     public string NorActive(string active = "1")
     {
-        return active == "1" ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
+        return IsActive(active) ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
     }
 }
 @Html.Partial("ErrorsAlert")

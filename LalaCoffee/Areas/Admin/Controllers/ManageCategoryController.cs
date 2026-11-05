@@ -14,11 +14,15 @@ namespace LalaCoffee.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class ManageCategoryController : BaseController<Category>
     {
+        public ManageCategoryController()
+        {
+
+        }
         // GET: Admin/ManageCategory
         public ActionResult Index()
         {
-            var categories = GetAll().ToList();
-            return View(categories);
+            var listCategory = GetAll().ToList();
+            return View(listCategory);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -31,7 +35,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 var slug = formCollection["slug"];
                 var description = formCollection["description"];
                 var parentid = formCollection["parentid"];
-                var status = formCollection["status"];
+                var status = formCollection["status"] == "1" ? "1" : "0";
                 var checkSlug = Context.Categories.Count(x => x.Slug == slug);
                 if (string.IsNullOrEmpty(name))
                 {
@@ -47,6 +51,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 }
                 if (errors.Count == 0)
                 {
+                    category.Status = status;
                     Add(category);
                 }
             }
@@ -80,18 +85,25 @@ namespace LalaCoffee.Areas.Admin.Controllers
             List<string> errors = new List<string>();
             try
             {
-                var id = formCollection["id"];
+                var idStr = formCollection["id"] ?? formCollection["Id"];
                 var name = formCollection["name"];
                 var slug = formCollection["slug"];
                 var description = formCollection["description"];
-                var status = formCollection["status"];
+                var status = formCollection["status"] == "1" ? "1" : "0";
+
+                int categoryId = 0;
+                if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out categoryId))
+                {
+                    errors.Add("ID danh mục không hợp lệ");
+                }
+
                 var checkSlug = Context.Categories.Count(x => x.Slug == slug);
                 var getCategoryContainsSlug = Context.Categories.FirstOrDefault(x => x.Slug == slug);
                 if (string.IsNullOrEmpty(name))
                 {
                     errors.Add("Chưa nhập tên danh mục");
                 }
-                if (checkSlug > 0 && getCategoryContainsSlug.Id != Convert.ToInt32(id))
+                if (checkSlug > 0 && getCategoryContainsSlug != null && getCategoryContainsSlug.Id != categoryId)
                 {
                     errors.Add("Slug đã tồn tại");
                 }
@@ -101,13 +113,20 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 }
                 if (errors.Count == 0)
                 {
-                    var category = GetById(Int32.Parse(formCollection["Id"]));
-                    category.Name = name;
-                    category.Slug = slug;
-                    category.Status = status;
-                    category.Description = description;
-                    category.UpdatedAt = DateTime.Now;
-                    Update(category);
+                    var category = GetById(categoryId);
+                    if (category == null)
+                    {
+                        errors.Add("Không tìm thấy danh mục");
+                    }
+                    else
+                    {
+                        category.Name = name;
+                        category.Slug = slug;
+                        category.Status = status;
+                        category.Description = description;
+                        category.UpdatedAt = DateTime.Now;
+                        Update(category);
+                    }
                 }
             }
             catch (Exception ex)

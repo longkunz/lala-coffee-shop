@@ -1,4 +1,4 @@
-﻿@model LalaCoffee.Models.Blog
+@model LalaCoffee.Models.Blog
 
 @{
     ViewBag.Title = "Edit Blog";
@@ -50,7 +50,7 @@
                     </div>
                     <div class="form-group">
                         <label>Hiện hành</label>
-                        @if (Convert.ToInt32(Model.Published) == 1)
+                        @if (Model.Published)
                         {
                             <input type="checkbox" name="Published" id="Published" value="true" checked>
                         }
