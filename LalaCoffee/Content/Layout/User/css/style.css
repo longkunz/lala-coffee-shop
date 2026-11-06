@@ -1,4 +1,4 @@
-﻿/*------------------------------------------------------------------
+/*------------------------------------------------------------------
 Project:  UniCafe
 Version:  1.0
 -------------------------------------------------------------------*/
@@ -4019,6 +4019,10 @@ textarea {
     top: 15px;
     left: 15px;
     cursor: pointer;
+    z-index: 2;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: color 0.2s ease;
 }
 
 .plus-text {
@@ -4026,6 +4030,15 @@ textarea {
     top: 15px;
     right: 15px;
     cursor: pointer;
+    z-index: 2;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: color 0.2s ease;
+}
+
+.minus-text:hover,
+.plus-text:hover {
+    color: #c66d55;
 }
 
 /* General Tab Style */

@@ -44,6 +44,11 @@ namespace LalaCoffee.Controllers
             return Repository.GetAll();
         }
 
+        public IQueryable<T> GetQueryable()
+        {
+            return Repository.GetQueryable();
+        }
+
         public T GetById(int Id)
         {
             return Repository.GetById(Id);

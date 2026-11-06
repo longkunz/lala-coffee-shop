@@ -1,4 +1,4 @@
-﻿-- =============================================
+-- =============================================
 -- LalaCoffee Database Seed Script (Completely Fresh)
 -- Target Database: UniCafe (.NET 4.8 LalaCoffee)
 -- Encoding: UTF-8 with N'...' for perfect Vietnamese
@@ -80,12 +80,12 @@ SET IDENTITY_INSERT Categories ON;
 
 INSERT INTO Categories (Id, Name, Slug, Description, ParentId, Status, CreatedAt, UpdatedAt)
 VALUES
-(1, N'Cà Phê Truyền Thống', N'ca-phe-truyen-thong', N'Hương vị Robusta Đắk Lắk đậm đà nguyên bản, nét văn hóa cà phê Việt Nam.', 0, N'Show', GETDATE(), GETDATE()),
-(2, N'Cà Phê Pha Máy', N'ca-phe-pha-may', N'Espresso, Latte, Caramel Macchiato chuẩn vị phong cách Ý từ hạt Arabica Cầu Đất.', 0, N'Show', GETDATE(), GETDATE()),
-(3, N'Cold Brew Đặc Sản', N'cold-brew', N'Cà phê ủ lạnh 16 tiếng thanh mát, hương hoa quả tự nhiên.', 0, N'Show', GETDATE(), GETDATE()),
-(4, N'Trà Trái Cây & Macchiato', N'tra-trai-cay', N'Trà hoa quả tươi mát kết hợp lớp bọt kem cheese béo mịn ngất ngây.', 0, N'Show', GETDATE(), GETDATE()),
-(5, N'Trà Sữa & Đá Xay', N'tra-sua-da-xay', N'Trà sữa Oolong nướng thơm ngậy cùng các món đá xay mát lạnh giải nhiệt.', 0, N'Show', GETDATE(), GETDATE()),
-(6, N'Bánh Mì & Tráng Miệng', N'banh-mi-trang-mieng', N'Bánh mì Việt Nam giòn rụm, bánh ngọt croissant và mochi kem tuyệt hảo.', 0, N'Show', GETDATE(), GETDATE());
+(1, N'Cà Phê Truyền Thống', N'ca-phe-truyen-thong', N'Hương vị Robusta Đắk Lắk đậm đà nguyên bản, nét văn hóa cà phê Việt Nam.', 0, N'1', GETDATE(), GETDATE()),
+(2, N'Cà Phê Pha Máy', N'ca-phe-pha-may', N'Espresso, Latte, Caramel Macchiato chuẩn vị phong cách Ý từ hạt Arabica Cầu Đất.', 0, N'1', GETDATE(), GETDATE()),
+(3, N'Cold Brew Đặc Sản', N'cold-brew', N'Cà phê ủ lạnh 16 tiếng thanh mát, hương hoa quả tự nhiên.', 0, N'1', GETDATE(), GETDATE()),
+(4, N'Trà Trái Cây & Macchiato', N'tra-trai-cay', N'Trà hoa quả tươi mát kết hợp lớp bọt kem cheese béo mịn ngất ngây.', 0, N'1', GETDATE(), GETDATE()),
+(5, N'Trà Sữa & Đá Xay', N'tra-sua-da-xay', N'Trà sữa Oolong nướng thơm ngậy cùng các món đá xay mát lạnh giải nhiệt.', 0, N'1', GETDATE(), GETDATE()),
+(6, N'Bánh Mì & Tráng Miệng', N'banh-mi-trang-mieng', N'Bánh mì Việt Nam giòn rụm, bánh ngọt croissant và mochi kem tuyệt hảo.', 0, N'1', GETDATE(), GETDATE());
 
 SET IDENTITY_INSERT Categories OFF;
 
@@ -96,76 +96,124 @@ SET IDENTITY_INSERT Products ON;
 
 INSERT INTO Products (Id, Name, Slug, Price, Description, Image, Status, Show, Category_Id, CreatedAt, UpdatedAt)
 VALUES
-(1, N'Cà Phê Đen Đá', N'ca-phe-den-da', 29000, N'Cà phê đen đá đậm đà từ hạt Robusta Buôn Ma Thuột hảo hạng, hậu vị ngọt thanh.', N'/Content/Layout/User/images/ca-phe-den-da.jpg', N'Show', 1, 1, GETDATE(), GETDATE()),
-(2, N'Cà Phê Sữa Đá', N'ca-phe-sua-da', 35000, N'Cà phê sữa đá ngọt béo hài hòa, hương vị quốc hồn quốc túy của người Việt.', N'/Content/Layout/User/images/ca-phe-sua-da.jpg', N'Show', 1, 1, GETDATE(), GETDATE()),
-(3, N'Bạc Xỉu Lala', N'bac-xiu', 39000, N'Nhiều sữa ít cà phê, béo ngậy vị sữa đặc và thơm nồng cà phê dịu nhẹ.', N'/Content/Layout/User/images/bac-xiu.jpg', N'Show', 1, 1, GETDATE(), GETDATE()),
+(1, N'Cà Phê Đen Đá', N'ca-phe-den-da', 29000, N'Cà phê đen đá đậm đà từ hạt Robusta Buôn Ma Thuột hảo hạng, hậu vị ngọt thanh.', N'/Content/Layout/User/images/ca-phe-den-da.jpg', N'1', 1, 1, GETDATE(), GETDATE()),
+(2, N'Cà Phê Sữa Đá', N'ca-phe-sua-da', 35000, N'Cà phê sữa đá ngọt béo hài hòa, hương vị quốc hồn quốc túy của người Việt.', N'/Content/Layout/User/images/ca-phe-sua-da.jpg', N'1', 1, 1, GETDATE(), GETDATE()),
+(3, N'Bạc Xỉu Lala', N'bac-xiu', 39000, N'Nhiều sữa ít cà phê, béo ngậy vị sữa đặc và thơm nồng cà phê dịu nhẹ.', N'/Content/Layout/User/images/bac-xiu.jpg', N'1', 1, 1, GETDATE(), GETDATE()),
 
-(4, N'Latte Đá', N'latte-da', 49000, N'Espresso pha cùng sữa tươi thanh trùng mịn màng, thơm ngậy nhẹ nhàng.', N'/Content/images/latte-da.jpg', N'Show', 1, 2, GETDATE(), GETDATE()),
-(5, N'Caramel Macchiato', N'caramel-macchiato', 55000, N'Sự kết hợp quyến rũ giữa sữa tươi, sốt vani thơm lừng và caramel ngọt ngào.', N'/Content/images/caramel-macchiato.jpg', N'Show', 1, 2, GETDATE(), GETDATE()),
+(4, N'Latte Đá', N'latte-da', 49000, N'Espresso pha cùng sữa tươi thanh trùng mịn màng, thơm ngậy nhẹ nhàng.', N'/Content/images/latte-da.jpg', N'1', 1, 2, GETDATE(), GETDATE()),
+(5, N'Caramel Macchiato', N'caramel-macchiato', 55000, N'Sự kết hợp quyến rũ giữa sữa tươi, sốt vani thơm lừng và caramel ngọt ngào.', N'/Content/images/caramel-macchiato.jpg', N'1', 1, 2, GETDATE(), GETDATE()),
 
-(6, N'Cold Brew Sữa Tươi', N'cold-brew-sua-tuoi', 45000, N'Cà phê ủ lạnh hòa quyện cùng sữa tươi tạo vị béo thanh mát và sảng khoái.', N'/Content/images/cold-brew-sua-tuoi.jpg', N'Show', 1, 3, GETDATE(), GETDATE()),
+(6, N'Cold Brew Sữa Tươi', N'cold-brew-sua-tuoi', 45000, N'Cà phê ủ lạnh hòa quyện cùng sữa tươi tạo vị béo thanh mát và sảng khoái.', N'/Content/images/cold-brew-sua-tuoi.jpg', N'1', 1, 3, GETDATE(), GETDATE()),
 
-(7, N'Trà Đào Cam Sả', N'tra-dao-cam-sa', 45000, N'Trà đào thanh ngọt kết hợp vị cam vàng chua nhẹ và hương sả thơm nồng.', N'/Content/images/tra-dao-cam-sa.jpg', N'Show', 1, 4, GETDATE(), GETDATE()),
-(8, N'Trà Vải Đá Tuyết Yuzu', N'tra-vai-da-tuyet-yuzu', 49000, N'Trà vải thanh tao kết hợp cùng đá tuyết yuzu Nhật Bản mát lạnh độc đáo.', N'/Content/images/tra-vai-da-tuyet-yuzu.jpg', N'Show', 1, 4, GETDATE(), GETDATE()),
-(9, N'Trà Đen Macchiato', N'tra-den-macchiato', 42000, N'Cốt trà đen đậm vị phủ lớp kem sữa phô mai macchiato béo mặn đặc trưng.', N'/Content/images/tra-den-matchiato.jpg', N'Show', 1, 4, GETDATE(), GETDATE()),
+(7, N'Trà Đào Cam Sả', N'tra-dao-cam-sa', 45000, N'Trà đào thanh ngọt kết hợp vị cam vàng chua nhẹ và hương sả thơm nồng.', N'/Content/images/tra-dao-cam-sa.jpg', N'1', 1, 4, GETDATE(), GETDATE()),
+(8, N'Trà Vải Đá Tuyết Yuzu', N'tra-vai-da-tuyet-yuzu', 49000, N'Trà vải thanh tao kết hợp cùng đá tuyết yuzu Nhật Bản mát lạnh độc đáo.', N'/Content/images/tra-vai-da-tuyet-yuzu.jpg', N'1', 1, 4, GETDATE(), GETDATE()),
+(9, N'Trà Đen Macchiato', N'tra-den-macchiato', 42000, N'Cốt trà đen đậm vị phủ lớp kem sữa phô mai macchiato béo mặn đặc trưng.', N'/Content/images/tra-den-matchiato.jpg', N'1', 1, 4, GETDATE(), GETDATE()),
 
-(10, N'Trà Sữa Oolong Nướng Trân Châu', N'tra-sua-oolong-nuong-tran-chau', 49000, N'Hương vị trà Oolong nướng đậm đà, sữa thơm ngậy cùng trân châu dai giòn.', N'/Content/images/tra-sua-oolong-nuong-tran-chau.jpg', N'Show', 1, 5, GETDATE(), GETDATE()),
-(11, N'Chocolate Đá', N'chocolate-da', 45000, N'Cacao nguyên chất pha sữa tươi thơm lừng, đậm vị ngọt ngào ấm áp.', N'/Content/images/chocolate-da.jpg', N'Show', 1, 5, GETDATE(), GETDATE()),
-(12, N'Đào Việt Quất Đá Xay', N'dao-viet-quat-da-xay', 52000, N'Đá xay chua ngọt từ đào mọng nước và quả việt quất tươi ngon hảo hạng.', N'/Content/images/dao-viet-quat-da-xay.jpg', N'Show', 1, 5, GETDATE(), GETDATE()),
+(10, N'Trà Sữa Oolong Nướng Trân Châu', N'tra-sua-oolong-nuong-tran-chau', 49000, N'Hương vị trà Oolong nướng đậm đà, sữa thơm ngậy cùng trân châu dai giòn.', N'/Content/images/tra-sua-oolong-nuong-tran-chau.jpg', N'1', 1, 5, GETDATE(), GETDATE()),
+(11, N'Chocolate Đá', N'chocolate-da', 45000, N'Cacao nguyên chất pha sữa tươi thơm lừng, đậm vị ngọt ngào ấm áp.', N'/Content/images/chocolate-da.jpg', N'1', 1, 5, GETDATE(), GETDATE()),
+(12, N'Đào Việt Quất Đá Xay', N'dao-viet-quat-da-xay', 52000, N'Đá xay chua ngọt từ đào mọng nước và quả việt quất tươi ngon hảo hạng.', N'/Content/images/dao-viet-quat-da-xay.jpg', N'1', 1, 5, GETDATE(), GETDATE()),
 
-(13, N'Bánh Mì Việt Nam Thịt Nguội', N'banh-mi-vietnam-thit-nguoi', 35000, N'Bánh mì giòn rụm kẹp pate gan béo ngậy, thịt nguội, chả lụa và dưa chua.', N'/Content/images/banh-mi-vietnam-thit-nguoi.jpg', N'Show', 1, 6, GETDATE(), GETDATE()),
-(14, N'Bánh Mì Gậy Cá Ngừ Mayo', N'banh-mi-gay-ca-ngu-mayo', 29000, N'Bánh mì que giòn tan nhân cá ngừ sốt mayonnaise béo thơm hấp dẫn.', N'/Content/images/banh-mi-gay-ca-ngu-mayo.jpg', N'Show', 1, 6, GETDATE(), GETDATE()),
-(15, N'Croissant Trứng Muối', N'croissant-trung-muoi', 39000, N'Bánh sừng bò ngàn lớp thơm lừng bơ Pháp, sốt trứng muối tan chảy đậm đà.', N'/Content/images/croissant-trung-muoi.jpg', N'Show', 1, 6, GETDATE(), GETDATE()),
-(16, N'Mochi Kem Matcha', N'mochi-kem-matcha', 22000, N'Bánh mochi dẻo mềm nhân kem trà xanh Nhật Bản mát lạnh thanh tao.', N'/Content/images/mochi-kem-matcha.jpg', N'Show', 1, 6, GETDATE(), GETDATE()),
-(17, N'Mochi Kem Socola', N'mochi-kem-socola', 22000, N'Bánh mochi bọc kem socola ngọt ngào, mát lạnh béo ngậy khó cưỡng.', N'/Content/images/mochi-kem-socola.jpg', N'Show', 1, 6, GETDATE(), GETDATE());
+(13, N'Bánh Mì Việt Nam Thịt Nguội', N'banh-mi-vietnam-thit-nguoi', 35000, N'Bánh mì giòn rụm kẹp pate gan béo ngậy, thịt nguội, chả lụa và dưa chua.', N'/Content/images/banh-mi-vietnam-thit-nguoi.jpg', N'1', 1, 6, GETDATE(), GETDATE()),
+(14, N'Bánh Mì Gậy Cá Ngừ Mayo', N'banh-mi-gay-ca-ngu-mayo', 29000, N'Bánh mì que giòn tan nhân cá ngừ sốt mayonnaise béo thơm hấp dẫn.', N'/Content/images/banh-mi-gay-ca-ngu-mayo.jpg', N'1', 1, 6, GETDATE(), GETDATE()),
+(15, N'Croissant Trứng Muối', N'croissant-trung-muoi', 39000, N'Bánh sừng bò ngàn lớp thơm lừng bơ Pháp, sốt trứng muối tan chảy đậm đà.', N'/Content/images/croissant-trung-muoi.jpg', N'1', 1, 6, GETDATE(), GETDATE()),
+(16, N'Mochi Kem Matcha', N'mochi-kem-matcha', 22000, N'Bánh mochi dẻo mềm nhân kem trà xanh Nhật Bản mát lạnh thanh tao.', N'/Content/images/mochi-kem-matcha.jpg', N'1', 1, 6, GETDATE(), GETDATE()),
+(17, N'Mochi Kem Socola', N'mochi-kem-socola', 22000, N'Bánh mochi bọc kem socola ngọt ngào, mát lạnh béo ngậy khó cưỡng.', N'/Content/images/mochi-kem-socola.jpg', N'1', 1, 6, GETDATE(), GETDATE());
 
 SET IDENTITY_INSERT Products OFF;
 
 -- =============================================
--- 6. Seed PropertyProducts (Thuộc tính: Đá / Đường)
+-- 6. Seed PropertyProducts (Thuộc tính: Size / Phục vụ)
 -- =============================================
 SET IDENTITY_INSERT PropertyProducts ON;
 
 INSERT INTO PropertyProducts (Id, Name, Price, Status, Product_Id, CreatedAt, UpdatedAt)
 VALUES
-(1, N'100% Đá (Bình thường)', 0, N'Show', 1, GETDATE(), GETDATE()),
-(2, N'50% Đá (Ít đá)', 0, N'Show', 1, GETDATE(), GETDATE()),
-(3, N'Không đá', 0, N'Show', 1, GETDATE(), GETDATE()),
-(4, N'100% Đá (Bình thường)', 0, N'Show', 2, GETDATE(), GETDATE()),
-(5, N'50% Đá (Ít đá)', 0, N'Show', 2, GETDATE(), GETDATE()),
-(6, N'Không đá', 0, N'Show', 2, GETDATE(), GETDATE()),
-(7, N'100% Đá (Bình thường)', 0, N'Show', 3, GETDATE(), GETDATE()),
-(8, N'50% Đá (Ít đá)', 0, N'Show', 3, GETDATE(), GETDATE()),
-(9, N'Không đá', 0, N'Show', 3, GETDATE(), GETDATE()),
-(10, N'100% Đá (Bình thường)', 0, N'Show', 7, GETDATE(), GETDATE()),
-(11, N'50% Đá (Ít đá)', 0, N'Show', 7, GETDATE(), GETDATE()),
-(12, N'100% Đá (Bình thường)', 0, N'Show', 10, GETDATE(), GETDATE()),
-(13, N'50% Đá (Ít đá)', 0, N'Show', 10, GETDATE(), GETDATE()),
-(14, N'Bình thường', 0, N'Show', 13, GETDATE(), GETDATE()),
-(15, N'Nướng nóng giòn', 0, N'Show', 13, GETDATE(), GETDATE()),
-(16, N'Nướng nóng giòn', 0, N'Show', 15, GETDATE(), GETDATE());
+-- Đồ uống (1..12): Size Vừa (M) và Size Lớn (L)
+(1, N'Size Vừa (M)', 0, N'1', 1, GETDATE(), GETDATE()),
+(2, N'Size Lớn (L)', 6000, N'1', 1, GETDATE(), GETDATE()),
+(3, N'Size Vừa (M)', 0, N'1', 2, GETDATE(), GETDATE()),
+(4, N'Size Lớn (L)', 6000, N'1', 2, GETDATE(), GETDATE()),
+(5, N'Size Vừa (M)', 0, N'1', 3, GETDATE(), GETDATE()),
+(6, N'Size Lớn (L)', 6000, N'1', 3, GETDATE(), GETDATE()),
+(7, N'Size Vừa (M)', 0, N'1', 4, GETDATE(), GETDATE()),
+(8, N'Size Lớn (L)', 6000, N'1', 4, GETDATE(), GETDATE()),
+(9, N'Size Vừa (M)', 0, N'1', 5, GETDATE(), GETDATE()),
+(10, N'Size Lớn (L)', 6000, N'1', 5, GETDATE(), GETDATE()),
+(11, N'Size Vừa (M)', 0, N'1', 6, GETDATE(), GETDATE()),
+(12, N'Size Lớn (L)', 6000, N'1', 6, GETDATE(), GETDATE()),
+(13, N'Size Vừa (M)', 0, N'1', 7, GETDATE(), GETDATE()),
+(14, N'Size Lớn (L)', 6000, N'1', 7, GETDATE(), GETDATE()),
+(15, N'Size Vừa (M)', 0, N'1', 8, GETDATE(), GETDATE()),
+(16, N'Size Lớn (L)', 6000, N'1', 8, GETDATE(), GETDATE()),
+(17, N'Size Vừa (M)', 0, N'1', 9, GETDATE(), GETDATE()),
+(18, N'Size Lớn (L)', 6000, N'1', 9, GETDATE(), GETDATE()),
+(19, N'Size Vừa (M)', 0, N'1', 10, GETDATE(), GETDATE()),
+(20, N'Size Lớn (L)', 6000, N'1', 10, GETDATE(), GETDATE()),
+(21, N'Size Vừa (M)', 0, N'1', 11, GETDATE(), GETDATE()),
+(22, N'Size Lớn (L)', 6000, N'1', 11, GETDATE(), GETDATE()),
+(23, N'Size Vừa (M)', 0, N'1', 12, GETDATE(), GETDATE()),
+(24, N'Size Lớn (L)', 6000, N'1', 12, GETDATE(), GETDATE()),
+
+-- Bánh mì & Croissant (13..15): Nướng nóng giòn hoặc Tiêu chuẩn
+(25, N'Bình thường', 0, N'1', 13, GETDATE(), GETDATE()),
+(26, N'Nướng nóng giòn', 0, N'1', 13, GETDATE(), GETDATE()),
+(27, N'Bình thường', 0, N'1', 14, GETDATE(), GETDATE()),
+(28, N'Nướng nóng giòn', 0, N'1', 14, GETDATE(), GETDATE()),
+(29, N'Bình thường', 0, N'1', 15, GETDATE(), GETDATE()),
+(30, N'Nướng nóng giòn', 0, N'1', 15, GETDATE(), GETDATE());
 
 SET IDENTITY_INSERT PropertyProducts OFF;
 
 -- =============================================
--- 7. Seed OptionProducts (Tùy chọn: Size / Topping)
+-- 7. Seed OptionProducts (Tùy chọn: Topping)
 -- =============================================
 SET IDENTITY_INSERT OptionProducts ON;
 
 INSERT INTO OptionProducts (Id, Name, Price, Status, Product_Id, CreatedAt, UpdatedAt)
 VALUES
-(1, N'Size Vừa (M)', 0, N'Show', 1, GETDATE(), GETDATE()),
-(2, N'Size Lớn (L)', 6000, N'Show', 1, GETDATE(), GETDATE()),
-(3, N'Size Vừa (M)', 0, N'Show', 2, GETDATE(), GETDATE()),
-(4, N'Size Lớn (L)', 6000, N'Show', 2, GETDATE(), GETDATE()),
-(5, N'Size Vừa (M)', 0, N'Show', 3, GETDATE(), GETDATE()),
-(6, N'Size Lớn (L)', 6000, N'Show', 3, GETDATE(), GETDATE()),
-(7, N'Thêm Kem Cheese Macchiato', 12000, N'Show', 7, GETDATE(), GETDATE()),
-(8, N'Thêm Thạch Đào Giòn', 10000, N'Show', 7, GETDATE(), GETDATE()),
-(9, N'Thêm Trân Châu Trắng', 10000, N'Show', 10, GETDATE(), GETDATE()),
-(10, N'Thêm Pudding Trứng', 10000, N'Show', 10, GETDATE(), GETDATE()),
-(11, N'Thêm Kem Cheese', 12000, N'Show', 10, GETDATE(), GETDATE()),
-(12, N'Thêm Sốt Phô Mai', 8000, N'Show', 13, GETDATE(), GETDATE());
+-- Cà phê (1..6): Thêm Shot Espresso, Thêm Kem Cheese
+(1, N'Thêm Shot Espresso', 10000, N'1', 1, GETDATE(), GETDATE()),
+(2, N'Thêm Kem Cheese', 12000, N'1', 1, GETDATE(), GETDATE()),
+(3, N'Thêm Shot Espresso', 10000, N'1', 2, GETDATE(), GETDATE()),
+(4, N'Thêm Kem Cheese', 12000, N'1', 2, GETDATE(), GETDATE()),
+(5, N'Thêm Shot Espresso', 10000, N'1', 3, GETDATE(), GETDATE()),
+(6, N'Thêm Kem Cheese', 12000, N'1', 3, GETDATE(), GETDATE()),
+(7, N'Thêm Shot Espresso', 10000, N'1', 4, GETDATE(), GETDATE()),
+(8, N'Thêm Kem Cheese', 12000, N'1', 4, GETDATE(), GETDATE()),
+(9, N'Thêm Shot Espresso', 10000, N'1', 5, GETDATE(), GETDATE()),
+(10, N'Thêm Kem Cheese', 12000, N'1', 5, GETDATE(), GETDATE()),
+(11, N'Thêm Shot Espresso', 10000, N'1', 6, GETDATE(), GETDATE()),
+(12, N'Thêm Kem Cheese', 12000, N'1', 6, GETDATE(), GETDATE()),
+
+-- Trà trái cây & Macchiato (7..9): Thêm Kem Cheese Macchiato, Thạch Đào Giòn, Trân Châu Trắng
+(13, N'Thêm Kem Cheese Macchiato', 12000, N'1', 7, GETDATE(), GETDATE()),
+(14, N'Thêm Thạch Đào Giòn', 10000, N'1', 7, GETDATE(), GETDATE()),
+(15, N'Thêm Trân Châu Trắng', 10000, N'1', 7, GETDATE(), GETDATE()),
+(16, N'Thêm Kem Cheese Macchiato', 12000, N'1', 8, GETDATE(), GETDATE()),
+(17, N'Thêm Thạch Đào Giòn', 10000, N'1', 8, GETDATE(), GETDATE()),
+(18, N'Thêm Trân Châu Trắng', 10000, N'1', 8, GETDATE(), GETDATE()),
+(19, N'Thêm Kem Cheese Macchiato', 12000, N'1', 9, GETDATE(), GETDATE()),
+(20, N'Thêm Thạch Đào Giòn', 10000, N'1', 9, GETDATE(), GETDATE()),
+(21, N'Thêm Trân Châu Trắng', 10000, N'1', 9, GETDATE(), GETDATE()),
+
+-- Trà sữa & Đá xay (10..12): Trân Châu Trắng, Pudding Trứng, Kem Cheese
+(22, N'Thêm Trân Châu Trắng', 10000, N'1', 10, GETDATE(), GETDATE()),
+(23, N'Thêm Pudding Trứng', 10000, N'1', 10, GETDATE(), GETDATE()),
+(24, N'Thêm Kem Cheese', 12000, N'1', 10, GETDATE(), GETDATE()),
+(25, N'Thêm Trân Châu Trắng', 10000, N'1', 11, GETDATE(), GETDATE()),
+(26, N'Thêm Pudding Trứng', 10000, N'1', 11, GETDATE(), GETDATE()),
+(27, N'Thêm Kem Cheese', 12000, N'1', 11, GETDATE(), GETDATE()),
+(28, N'Thêm Trân Châu Trắng', 10000, N'1', 12, GETDATE(), GETDATE()),
+(29, N'Thêm Pudding Trứng', 10000, N'1', 12, GETDATE(), GETDATE()),
+(30, N'Thêm Kem Cheese', 12000, N'1', 12, GETDATE(), GETDATE()),
+
+-- Bánh mì & Croissant (13..15): Thêm Sốt Phô Mai, Thêm Chà Bông Cay
+(31, N'Thêm Sốt Phô Mai', 8000, N'1', 13, GETDATE(), GETDATE()),
+(32, N'Thêm Chà Bông Cay', 6000, N'1', 13, GETDATE(), GETDATE()),
+(33, N'Thêm Sốt Phô Mai', 8000, N'1', 14, GETDATE(), GETDATE()),
+(34, N'Thêm Chà Bông Cay', 6000, N'1', 14, GETDATE(), GETDATE()),
+(35, N'Thêm Sốt Phô Mai', 8000, N'1', 15, GETDATE(), GETDATE()),
+(36, N'Thêm Chà Bông Cay', 6000, N'1', 15, GETDATE(), GETDATE());
 
 SET IDENTITY_INSERT OptionProducts OFF;
 

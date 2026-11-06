@@ -1,4 +1,4 @@
-(function ($) {
+﻿(function ($) {
     'use strict'
 
     CheckPositionMobile();
@@ -59,7 +59,7 @@
         hideCaptionAtLimit: 0,
         hideAllCaptionAtLilmit: 0,
         startWithSlide: 0,
-        fullScreenOffsetContainer: ".header-reduce"
+        fullScreenOffsetContainer: ""
     });
 
     /* Steller Parallax */

@@ -7,6 +7,7 @@
 <script>
     $(function () {
                 $('.remove').on('click', function () {
+                    if (cartUpdating) return;
                     var cartItemId = $(this).data('item-cart-id');
                     $.ajax({
                         url: '@Url.Action("RemoveFromCart", "Cart")',
@@ -20,7 +21,9 @@
                     });
                 });
 
-                $('.clear').on('click', function () {
+                $('.clear').on('click', function (event) {
+                    event.preventDefault();
+                    if (cartUpdating) return;
                     $.ajax({
                         url: '@Url.Action("ClearCart", "Cart")',
                         type: 'POST',
@@ -52,7 +55,7 @@
                 <td>@item.ProductName</td>
                 <td>@item.Price.ToString("N0")d</td>
                 <td>@item.Quantity</td>
-                <td>@item.PropertyProduct.Name - @item.PropertyProduct.Price</td>
+                <td>@(item.PropertyProduct != null ? item.PropertyProduct.Name + " - " + item.PropertyProduct.Price.ToString("N0") + "đ" : "-")</td>
                 <td>
                     @{
                         List<int> optionIds = new List<int>();
@@ -63,13 +66,13 @@
                         <span><b>@option.Name</b> : <b>@option.Price</b></span><br />
                     }
                 </td>
-                <td>@(((item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0"))d</td>
+                <td>@(((item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0"))d</td>
                 <td><button class="btn-remove" data-item-cart-id="@item.Id">Remove</button></td>
             </tr>
         }
         <tr>
             <td colspan="5">Total:</td>
-            <td colspan="4">@Model.Sum(item => (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0")d</td>
+            <td colspan="4">@Model.Sum(item => (item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0")d</td>
         </tr>
     </tbody>
 </table>
@@ -93,6 +96,16 @@
                             <li>Hoàn thành</li>
                         </ul>
                     </div>
+                    @if (Model.Count == 0)
+                    {
+                        <div class="text-center">
+                            <p>Giỏ hàng của bạn chưa có sản phẩm.</p>
+                            <a href="/Collections/All" class="btn-primary-gold btn-medium">Tiếp tục mua sắm</a>
+                        </div>
+                    }
+                    else
+                    {
+                    <p id="cart-update-error" role="alert" class="text-danger"></p>
                     <div class="shop-cart-list wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="600ms">
                         <table class="shop-cart-table">
                             <thead>
@@ -116,34 +129,55 @@
                                                 @{
                                                     List<int> optionIds = new List<int>();
                                                 }
-                                                <span style="color:#808080; font-size:12px;">Size: @item.PropertyProduct.Name - @item.PropertyProduct.Price.ToString("N0")d</span><br />
-                                                @if (item.Options.Count > 0)
+                                                @if (item.PropertyProduct != null)
                                                 {
-                                                    <span style="color:#808080; font-size:12px;">Topping: </span>
-                                                    foreach (var option in item.Options)
-                                                    {
-                                                        <span style="color:#808080; font-size:12px;"><li>@option.Name - @option.Price.ToString("N0")d</li></span>
-                                                    }
+                                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">
+                                                        <span>Size: <strong>@item.PropertyProduct.Name</strong>@(item.PropertyProduct.Price > 0 ? $" (+{item.PropertyProduct.Price:N0}đ)" : "")</span>
+                                                    </div>
+                                                }
+                                                @if (item.Options != null && item.Options.Any())
+                                                {
+                                                    <div style="font-size: 12px; color: #777; margin-top: 5px;">
+                                                        <span style="font-weight: 600; color: #555;">Topping:</span>
+                                                        <ul style="list-style: none; padding-left: 0; margin-bottom: 0; margin-top: 2px;">
+                                                            @foreach (var option in item.Options)
+                                                            {
+                                                                <li style="padding-left: 12px; position: relative; margin-bottom: 2px;">
+                                                                    <span style="position: absolute; left: 0; color: #c66d55; font-weight: bold;">+</span>
+                                                                    <span>@option.Name</span>
+                                                                    <span style="color: #c66d55; font-weight: 500;">(@option.Price.ToString("N0")đ)</span>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
                                                 }
 
                                             </div>
                                         </td>
                                         <th>GIÁ</th>
                                         <td>
-                                            <strong>@item.Price.ToString("N0")d</strong>
-                                            @*<del>@item.Price.ToString("N0")d</del>*@
+                                            @{
+                                                var propPrice = item.PropertyProduct != null ? item.PropertyProduct.Price : 0m;
+                                                var optionsPrice = item.Options != null ? item.Options.Sum(option => option.Price) : 0m;
+                                                var unitPrice = item.Price + propPrice + optionsPrice;
+                                            }
+                                            <strong>@unitPrice.ToString("N0")đ</strong>
+                                            @if (unitPrice != item.Price)
+                                            {
+                                                <span style="display: block; font-size: 11px; color: #888; font-weight: normal;">(Gốc: @item.Price.ToString("N0")đ)</span>
+                                            }
                                         </td>
                                         <th>SỐ LƯỢNG</th>
                                         <td>
                                             <div class="price-textbox">
                                                 <span class="minus-text" onclick="minusQuantity('@item.Id')"><i class="fa fa-minus"></i></span>
-                                                <input type="text" id="quantity_@item.Id" value="@item.Quantity" onchange="updateCart('@item.Id')" pattern="[0-9]">
+                                                <input type="text" inputmode="numeric" id="quantity_@item.Id" value="@item.Quantity" data-quantity="@item.Quantity" onchange="updateCart('@item.Id')" pattern="[0-9]+" aria-label="Số lượng @item.ProductName">
                                                 <span class="plus-text" onclick="plusQuantity('@item.Id')"><i class="fa fa-plus"></i></span>
                                             </div>
                                         </td>
                                         <th>TỔNG</th>
-                                        <td>
-                                            @(((item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0"))d
+                                        <td id="subtotal_@item.Id">
+                                            @(((item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0"))đ
                                         </td>
                                         <td class="product-remove">
                                             <button class="remove" data-item-cart-id="@item.Id">×</button>
@@ -175,12 +209,13 @@
                             <span>$15.00</span>
                         </div>*@
                         <div class="grand-total">
-                            <h5>TỔNG CỘNG: <span>@Model.Sum(item => (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0")d</span></h5>
+                            <h5>TỔNG CỘNG: <span id="cart-grand-total">@Model.Sum(item => (item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0")đ</span></h5>
                         </div>
                         <div class="proceed-check">
                             <a href="@Url.Action("CheckOut","Order")" class="btn-primary-gold btn-medium">THANH TOÁN</a>
                         </div>
                     </div>
+                    }
                 </div>
             </section>
 
@@ -188,49 +223,68 @@
         </div>
 </main>
 <script type="text/javascript">
-    // Plus number quantiy product detail
-    var plusQuantity = function (ProductId) {
-        if (jQuery('input[id="quantity_' + ProductId +'"]').val() != undefined) {
-            var currentVal = parseInt(jQuery('input[id="quantity_' + ProductId +'"]').val());
-            if (!isNaN(currentVal)) {
-                jQuery('input[id="quantity_' + ProductId +'"]').val(currentVal + 1);
-            } else {
-                jQuery('input[id="quantity_' + ProductId +'"]').val(1);
-            }
-            updateCart('' + ProductId + '');
-        } else {
-            console.log('error: Not see elemnt ' + jQuery('input[id="quantity_' + ProductId +'"]').val());
-        }
+    var cartUpdating = false;
+
+    function changeQuantity(itemId, change) {
+        if (cartUpdating) return;
+        var input = $("#quantity_" + itemId);
+        var current = Number(input.val());
+        var quantity = Math.max(1, (Number.isInteger(current) ? current : 1) + change);
+        if (quantity === Number(input.attr("data-quantity"))) return;
+        input.val(quantity);
+        updateCart(itemId);
     }
+
+    function plusQuantity(itemId) {
+        changeQuantity(itemId, 1);
+    }
+
+    function minusQuantity(itemId) {
+        changeQuantity(itemId, -1);
+    }
+
     function updateCart(itemId) {
-        var quantity = $("#quantity_" + itemId + "").val();
+        var input = $("#quantity_" + itemId);
+        var previousQuantity = input.attr("data-quantity");
+        if (cartUpdating) {
+            input.val(previousQuantity);
+            return;
+        }
+        var quantity = Number(input.val());
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 2147483647) {
+            input.val(previousQuantity);
+            $("#cart-update-error").text("Vui lòng nhập số lượng nguyên từ 1 đến 2147483647.");
+            return;
+        }
+
+        cartUpdating = true;
+        var controls = $('.price-textbox input, .remove, .clear');
+        controls.prop("disabled", true).attr("aria-disabled", "true");
+        $("#cart-update-error").text("");
         $.ajax({
             type: "POST",
-            url: "/Cart/UpdateCart",
+            url: '@Url.Action("UpdateCart", "Cart")',
             data: { itemId: itemId, quantity: quantity },
             dataType: "json",
             success: function (result) {
-                console.log(result);
-                location.reload();
+                if (!result.success) {
+                    input.val(previousQuantity);
+                    $("#cart-update-error").text(result.message || "Không thể cập nhật giỏ hàng.");
+                    return;
+                }
+                input.val(result.quantity).attr("data-quantity", result.quantity);
+                $("#subtotal_" + itemId).text(result.subtotal);
+                $("#cart-grand-total").text(result.total);
+                $("#totalCart").text(result.totalQuantity);
             },
             error: function () {
-                console.log("Failed to update cart!");
+                input.val(previousQuantity);
+                $("#cart-update-error").text("Không thể cập nhật giỏ hàng. Vui lòng thử lại.");
+            },
+            complete: function () {
+                cartUpdating = false;
+                controls.prop("disabled", false).removeAttr("aria-disabled");
             }
         });
-    }
-    
-    // Minus number quantiy product detail
-    var minusQuantity = function (ProductId) {
-        if (jQuery('input[id="quantity_' + ProductId +'"]').val() != undefined) {
-            var currentVal = parseInt(jQuery('input[id="quantity_' + ProductId + '"]').val());
-            if (!isNaN(currentVal) && currentVal > 1) {
-                jQuery('input[id="quantity_' + ProductId + '"]').val(currentVal - 1);
-            } else {
-                jQuery('input[id="quantity_' + ProductId + '"]').val(1);
-            }
-            updateCart('' + ProductId + '');
-        } else {
-            console.log('error: Not see elemnt ' + jQuery('input[]').val());
-        }
     }
 </script>

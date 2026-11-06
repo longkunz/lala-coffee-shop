@@ -1,165 +1,346 @@
-﻿@{
-    ViewBag.Title = "Login";
+@{
+    ViewBag.Title = "Đăng nhập";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
+    var fieldErrors = ViewBag.FieldErrors as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    var generalErrors = ViewBag.GeneralErrors as List<string> ?? ViewBag.Errors as List<string> ?? TempData["Errors"] as List<string> ?? new List<string>();
+    bool loginFailed = ViewBag.LoginFailed == true;
 }
-<section>
-        <div class="form-box">
-            <div class="form-value">
-                @using (Html.BeginForm())
-                {
-                    @Html.AntiForgeryToken()
-                    <div class="form-horizontal">
-                        <h2>ĐĂNG NHẬP</h2>
-                        @Html.Partial("ErrorsAlert")
-                        <div class="inputbox form-group">
-                            <ion-icon name="person-outline"></ion-icon>
-                            <input type="text" required placeholder="Tên đăng nhập" name="UserName" id="UserName">
+<section class="account-auth-section">
+    <div class="auth-box">
+        <div class="auth-content">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="auth-form-body">
+                    <h2>ĐĂNG NHẬP</h2>
+
+                    @if (generalErrors.Count > 0)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show auth-alert" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div class="auth-alert-inner">
+                                <i class="fa fa-exclamation-circle auth-alert-icon" aria-hidden="true"></i>
+                                <div class="auth-alert-text">
+                                    @foreach (var err in generalErrors)
+                                    {
+                                        <div>@err</div>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        <div class="inputbox form-group">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                            <input type="password" required placeholder="Mật khẩu" name="PassWord" id="PassWord">
+                    }
+
+                    <div class="input-wrap">
+                        <div class="inputbox @(fieldErrors.ContainsKey("UserName") || loginFailed ? "has-error" : "")">
+                            <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+                            <input type="text" placeholder="Tên đăng nhập" name="UserName" id="UserName" value="@(ViewBag.UserName ?? Request["UserName"])">
                         </div>
-                        <div class="forget">
-                            <label for="">
-                                <input type="checkbox" style="color:white">Ghi Nhớ
-                            </label>
-                        </div>
-                        <button class="form-group" style="color:white" type="submit" value="Login">Đăng Nhập</button>
+                        @if (fieldErrors.ContainsKey("UserName"))
+                        {
+                            <span class="error-msg">@fieldErrors["UserName"]</span>
+                        }
                     </div>
-                }
-                <div class="forget">
-                    <label for="">
-                        <a href="#" style="text-align:center"><br />Quên Mật Khẩu ?</a>
-                    </label>
+
+                    <div class="input-wrap">
+                        <div class="inputbox has-toggle @(fieldErrors.ContainsKey("Password") || loginFailed ? "has-error" : "")">
+                            <ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
+                            <input type="password" placeholder="Mật khẩu" name="Password" id="Password">
+                            <button type="button" class="btn-toggle-password" id="togglePasswordBtn" tabindex="-1" title="Hiện mật khẩu" aria-label="Hiện mật khẩu">
+                                <i class="fa fa-eye-slash" id="togglePasswordIcon" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        @if (fieldErrors.ContainsKey("Password"))
+                        {
+                            <span class="error-msg">@fieldErrors["Password"]</span>
+                        }
+                    </div>
+
+                    <div class="forget">
+                        <label for="RememberMe">
+                            <input type="checkbox" name="RememberMe" id="RememberMe" value="true" @(ViewBag.RememberMe == true ? "checked" : "")>
+                            <span>Ghi nhớ đăng nhập</span>
+                        </label>
+                        <a href="javascript:void(0);" onclick="alert('Vui lòng liên hệ quản trị viên hoặc hotline 08 7722 0202 để được hỗ trợ cấp lại mật khẩu.');" class="forgot-link">Quên mật khẩu?</a>
+                    </div>
+
+                    <button class="btn-auth-submit" type="submit" value="Login">
+                        <i class="fa fa-sign-in mr-2" aria-hidden="true"></i>Đăng Nhập
+                    </button>
                 </div>
-                <div class="register">
-                    <p>Bạn chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a></p>
-                </div>
+            }
+            <div class="auth-switch-link">
+                <p>Bạn chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a></p>
             </div>
         </div>
+    </div>
 </section>
+
 <style>
-* {
-    margin: 0;
-    padding: 0;
-}
+    .account-auth-section {
+        min-height: calc(100vh - 140px);
+        padding: 60px 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        background-color: #f7f5f2;
+        box-sizing: border-box;
+    }
 
-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    width: 100%;
-    background-position: center;
-    background-size: cover;
-    opacity: 0.6;
-}
+    .account-auth-section .auth-box {
+        position: relative;
+        width: 440px;
+        max-width: 100%;
+        border: 2px solid #2b1e16;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        backdrop-filter: blur(15px);
+        padding: 40px 35px 35px;
+        box-sizing: border-box;
+        margin: auto;
+    }
 
-.form-box {
-    position: relative;
-    width: 420px;
-    height: 580px;
-    border: 2px solid #000;
-    border-radius: 20px;
-    backdrop-filter: blur(15px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    .account-auth-section h2 {
+        font-size: 1.85em;
+        font-weight: 700;
+        color: #2b1e16;
+        text-align: center;
+        margin: 0 0 25px 0;
+        letter-spacing: 1px;
+    }
 
-h2 {
-    font-size: 2em;
-    color: #000;
-    text-align: center;
-}
+    .account-auth-section .auth-alert {
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 22px;
+        background-color: #fff2f2;
+        border: 1px solid #f5c2c7;
+        color: #842029;
+    }
 
-.inputbox {
-    position: relative;
-    margin: 30px 0;
-    width: 310px;
-    border-bottom: 2px solid #000;
-}
+    .account-auth-section .auth-alert-inner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-right: 20px;
+    }
 
-.inputbox label {
-    position: absolute;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    color: #000;
-    font-size: 1em;
-    pointer-events: none;
-    transition: .5s;
-}
+    .account-auth-section .auth-alert-icon {
+        font-size: 1.25em;
+        color: #dc3545;
+        flex-shrink: 0;
+    }
 
-.inputbox input {
-    width: 100%;
-    height: 50px;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 1em;
-    padding: 0 35px 0 5px;
-    color: #000;
-}
+    .account-auth-section .auth-alert-text {
+        font-size: 0.9em;
+        font-weight: 600;
+        line-height: 1.4;
+    }
 
-.inputbox ion-icon {
-    position: absolute;
-    right: 8px;
-    color: #000;
-    font-size: 1.2em;
-    top: 20px;
-}
+    .account-auth-section .input-wrap {
+        width: 100%;
+        margin-bottom: 20px;
+    }
 
-.forget {
-    margin: -15px 0 15px;
-    font-size: .9em;
-    color: #000;
-    display: flex;
-    justify-content: space-between;
-}
+    .account-auth-section .inputbox {
+        position: relative;
+        width: 100%;
+        border-bottom: 2px solid #2b1e16;
+        transition: border-color 0.25s ease;
+    }
 
-.forget label input {
-    margin-right: 3px;
+    .account-auth-section .inputbox.has-error {
+        border-bottom: 2px solid #dc3545 !important;
+    }
 
-}
+    .account-auth-section .inputbox input {
+        width: 100%;
+        height: 48px;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 0.95em;
+        padding: 0 35px 0 5px;
+        color: #2b1e16;
+        box-shadow: none !important;
+    }
 
-.forget label a {
-    color: #000;
-    text-decoration: none;
-}
+    .account-auth-section .inputbox.has-toggle input {
+        padding-right: 68px;
+    }
 
-.forget label a:hover {
-    text-decoration: underline;
-}
+    .account-auth-section .inputbox ion-icon {
+        position: absolute;
+        right: 8px;
+        color: #2b1e16;
+        font-size: 1.25em;
+        top: 13px;
+        transition: color 0.25s ease;
+        pointer-events: none;
+    }
 
-button {
-    width: 100%;
-    height: 40px;
-    border-radius: 40px;
-    background: #000;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-}
+    .account-auth-section .inputbox.has-toggle ion-icon {
+        right: 36px;
+    }
 
-.register {
-    font-size: .9em;
-    color: #000;
-    text-align: center;
-    margin: 25px 0 10px;
-}
+    .account-auth-section .inputbox.has-error ion-icon {
+        color: #dc3545 !important;
+    }
 
-.register p a {
-    text-decoration: none;
-    color: #000;
-    font-weight: 600;
-}
+    .account-auth-section .btn-toggle-password {
+        position: absolute;
+        right: 6px;
+        top: 11px;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        color: #666;
+        font-size: 1.15em;
+        padding: 4px;
+        transition: color 0.2s ease, transform 0.15s ease;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-.register p a:hover {
-    text-decoration: underline;
-}
+    .account-auth-section .btn-toggle-password:hover {
+        color: #2b1e16;
+        transform: scale(1.1);
+    }
+
+    .account-auth-section .inputbox.has-error .btn-toggle-password {
+        color: #dc3545;
+    }
+
+    .account-auth-section .error-msg {
+        display: block;
+        margin-top: 6px;
+        margin-bottom: 2px;
+        color: #dc3545 !important;
+        font-size: 0.82rem;
+        font-weight: 600;
+        line-height: 1.35;
+        text-align: left;
+    }
+
+    .account-auth-section .forget {
+        margin: -5px 0 22px;
+        font-size: 0.9em;
+        color: #2b1e16;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .account-auth-section .forget label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        margin: 0;
+        user-select: none;
+    }
+
+    .account-auth-section .forget input[type="checkbox"] {
+        accent-color: #2b1e16;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .account-auth-section .forget a {
+        color: #c59d5f;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+
+    .account-auth-section .forget a:hover {
+        text-decoration: underline;
+        color: #a87e3f;
+    }
+
+    .account-auth-section .btn-auth-submit {
+        width: 100%;
+        height: 46px;
+        border-radius: 40px;
+        background: #2b1e16;
+        color: #ffffff !important;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 1.02em;
+        font-weight: 600;
+        margin-top: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .account-auth-section .btn-auth-submit:hover {
+        background: #4a3425;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(43, 30, 22, 0.25);
+    }
+
+    .account-auth-section .auth-switch-link {
+        font-size: 0.9em;
+        color: #2b1e16;
+        text-align: center;
+        margin-top: 22px;
+    }
+
+    .account-auth-section .auth-switch-link p {
+        margin: 0;
+    }
+
+    .account-auth-section .auth-switch-link a {
+        text-decoration: none;
+        color: #c59d5f;
+        font-weight: 700;
+        margin-left: 4px;
+        transition: color 0.2s ease;
+    }
+
+    .account-auth-section .auth-switch-link a:hover {
+        text-decoration: underline;
+        color: #a87e3f;
+    }
 </style>
+
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        var toggleBtn = document.getElementById("togglePasswordBtn");
+        var passwordInput = document.getElementById("Password");
+        var toggleIcon = document.getElementById("togglePasswordIcon");
+        if (toggleBtn && passwordInput && toggleIcon) {
+            toggleBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggleIcon.classList.remove("fa-eye-slash");
+                    toggleIcon.classList.add("fa-eye");
+                    toggleBtn.setAttribute("title", "Ẩn mật khẩu");
+                    toggleBtn.setAttribute("aria-label", "Ẩn mật khẩu");
+                } else {
+                    passwordInput.type = "password";
+                    toggleIcon.classList.remove("fa-eye");
+                    toggleIcon.classList.add("fa-eye-slash");
+                    toggleBtn.setAttribute("title", "Hiện mật khẩu");
+                    toggleBtn.setAttribute("aria-label", "Hiện mật khẩu");
+                }
+            });
+        }
+    });
+</script>

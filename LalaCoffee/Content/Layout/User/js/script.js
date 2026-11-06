@@ -1,4 +1,4 @@
-(function ($) {
+﻿(function ($) {
     'use strict'
 
     /* Mobile Menu */
@@ -217,8 +217,10 @@
     function headerFix() {
 
         // Check header position is top
-        if ($(document).scrollTop() > $('header-part').height()) {
-            if (($(window).height() < $(document).height()) && $('.header-part').hasClass('sticky')) {
+        var scrollTop = $(window).scrollTop();
+        var scrollThreshold = 30;
+        if (scrollTop > scrollThreshold) {
+            if ($('.header-part').hasClass('sticky')) {
                 $('.header-part').addClass('sticky-fixed');
             }
         } else {

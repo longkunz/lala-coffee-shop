@@ -89,8 +89,8 @@ namespace LalaCoffee.Services
                 Payment = payment,
                 Note = note,
                 UserId = userId,
-                Status = "Pending",
-                Paid = 0,
+                Status = OrderStatus.PendingConfirmation,
+                Paid = OrderStatus.Unpaid,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
@@ -113,7 +113,11 @@ namespace LalaCoffee.Services
 
             if (string.IsNullOrEmpty(order.Status))
             {
-                order.Status = "Pending";
+                order.Status = OrderStatus.PendingConfirmation;
+            }
+            else
+            {
+                order.Status = OrderStatus.NormalizeStatus(order.Status);
             }
 
             if (order.CreatedAt == default(DateTime))
@@ -235,7 +239,10 @@ namespace LalaCoffee.Services
             var order = GetOrderByCode(orderCode);
             if (order == null) return false;
 
-            order.Status = status;
+            if (!string.IsNullOrEmpty(status))
+            {
+                order.Status = OrderStatus.NormalizeStatus(status);
+            }
             if (paid.HasValue)
             {
                 order.Paid = paid.Value;

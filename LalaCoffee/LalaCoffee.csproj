@@ -278,7 +278,10 @@
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\OptionProduct.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderStatus.cs" />
+    <Compile Include="Models\DataTableModels.cs" />
     <Compile Include="Models\CheckOutViewModel.cs" />
+    <Compile Include="Models\UserProfileViewModel.cs" />
     <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\Payment.cs" />
     <Compile Include="Models\Product.cs" />
@@ -2298,6 +2301,9 @@
     <Content Include="Content\Layout\User\images\background.jpg" />
     <Content Include="Content\Layout\User\images\banner1.jpg" />
     <Content Include="Content\Layout\User\images\banner2.jpg" />
+    <Content Include="Content\Layout\User\images\hero-banner-1.jpg" />
+    <Content Include="Content\Layout\User\images\hero-banner-2.jpg" />
+    <Content Include="Content\Layout\User\images\hero-banner-3.jpg" />
     <Content Include="Content\Layout\User\images\bewerages.png" />
     <Content Include="Content\Layout\User\images\bg1.jpg" />
     <Content Include="Content\Layout\User\images\blog1.jpg" />
@@ -2316,6 +2322,7 @@
     <Content Include="Content\Layout\User\images\feature2.jpg" />
     <Content Include="Content\Layout\User\images\feature3.jpg" />
     <Content Include="Content\Layout\User\images\footer-bg.jpg" />
+    <Content Include="Content\Layout\User\images\footer-bg-new.jpg" />
     <Content Include="Content\Layout\User\images\gallery\gallery1.png" />
     <Content Include="Content\Layout\User\images\gallery\gallery12.jpg" />
     <Content Include="Content\Layout\User\images\gallery\gallery13.jpg" />
@@ -2402,6 +2409,8 @@
     <Content Include="Areas\Admin\Views\ManageRole\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageRole\SetRole.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\ChangePassword.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\ResetPassword.cshtml" />
     <Content Include="Areas\Admin\Views\ManageCategory\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\ManageOptionProduct\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageOptionProduct\Edit.cshtml" />
@@ -2618,6 +2627,7 @@
     <Content Include="Views\Product\Index.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Profile.cshtml" />
     <Content Include="Views\Shared\ErrorsAlert.cshtml" />
 
     <Content Include="Views\Home\Collection.cshtml" />
@@ -2634,6 +2644,7 @@
     <Content Include="Views\Pay\ErrorPayment.cshtml" />
     <Content Include="Views\Shared\_Layout_User.cshtml" />
     <Content Include="Views\Blog\Index.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\KhuyenMai.cshtml" />
     <Content Include="Views\Blog\Readmore.cshtml" />

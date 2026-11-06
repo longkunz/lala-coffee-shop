@@ -38,10 +38,6 @@ namespace LalaCoffee.Controllers
         public ActionResult Index()
         {
             var cart = _cartService.GetCartItems();
-            if (cart.Count < 1)
-            {
-                return RedirectToAction("Index", "Home");
-            }
             return View(cart);
         }
 
@@ -78,6 +74,11 @@ namespace LalaCoffee.Controllers
         [HttpPost]
         public JsonResult UpdateCart(Guid itemId, int quantity)
         {
+            if (!ModelState.IsValid || quantity < 1)
+            {
+                return Json(new { success = false, message = "Số lượng không hợp lệ" });
+            }
+
             var cart = _cartService.GetCartItems();
             var item = cart.FirstOrDefault(x => x.Id == itemId);
             if (item == null)
@@ -88,7 +89,14 @@ namespace LalaCoffee.Controllers
             item.Quantity = quantity;
             _cartService.UpdateCart(cart);
 
-            return Json(new { success = true, message = "Item updated" });
+            return Json(new
+            {
+                success = true,
+                quantity = item.Quantity,
+                subtotal = _cartService.GetCartTotal(new[] { item }).ToString("N0") + "đ",
+                total = _cartService.GetCartTotal(cart).ToString("N0") + "đ",
+                totalQuantity = cart.Sum(x => x.Quantity)
+            });
         }
 
         [HttpGet]

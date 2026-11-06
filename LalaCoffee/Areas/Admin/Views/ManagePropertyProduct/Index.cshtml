@@ -5,10 +5,25 @@
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
 @functions{
+    public static bool IsActive(string active)
+    {
+        if (string.IsNullOrWhiteSpace(active)) return false;
+        return active == "1" 
+            || string.Equals(active, "Show", StringComparison.OrdinalIgnoreCase) 
+            || string.Equals(active, "Active", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(active, "True", StringComparison.OrdinalIgnoreCase);
+    }
     public string NorActive(string active = "1")
     {
-        return active == "1" ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
+        return IsActive(active) ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
     }
+}
+@{
+    var fieldErrors = (TempData["FieldErrors"] ?? ViewBag.FieldErrors) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    var formValues = (TempData["FormValues"] ?? ViewBag.FormValues) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    string openModal = TempData["OpenModal"] as string;
+    bool isCreateActive = !formValues.ContainsKey("status") || formValues["status"] == "1";
+    string selectedProduct = formValues.ContainsKey("product_id") ? formValues["product_id"] : "0";
 }
 @Html.Partial("ErrorsAlert")
 <div class="modal fade" id="create_modal">
@@ -26,26 +41,38 @@
                 <div class="modal-body">
                     <div class="card-body table-responsive p-0">
                         <div class="form-group">
-                            <label>Tên</label>
-                            <input type="text" class="form-control" name="name" id="name" onchange="getSlug();">
+                            <label>Tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" name="name" id="name" value="@(formValues.ContainsKey("name") ? formValues["name"] : "")" onchange="getSlug();">
+                            @if (fieldErrors.ContainsKey("name"))
+                            {
+                                <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
+                            }
                         </div>
                         <div class="form-group">
-                            <label>Giá</label>
-                            <input type="number" class="form-control" name="price" id="price" value="1000">
+                            <label>Giá <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control @(fieldErrors.ContainsKey("price") ? "is-invalid" : "")" name="price" id="price" value="@(formValues.ContainsKey("price") ? formValues["price"] : "1000")">
+                            @if (fieldErrors.ContainsKey("price"))
+                            {
+                                <span class="invalid-feedback d-block">@fieldErrors["price"]</span>
+                            }
                         </div>
                         <div class="form-group">
-                            <label>Sản phẩm</label>
-                            <select class="form-control" name="product_id" id="product_id">
+                            <label>Sản phẩm <span class="text-danger">*</span></label>
+                            <select class="form-control @(fieldErrors.ContainsKey("product_id") ? "is-invalid" : "")" name="product_id" id="product_id">
                                 @foreach (var product in ViewBag.Product)
                                 {
-                                    <option value="@product.Id">@product.Name</option>
+                                    <option value="@product.Id" @(selectedProduct == product.Id.ToString() ? "selected" : "")>@product.Name</option>
                                 }
                             </select>
+                            @if (fieldErrors.ContainsKey("product_id"))
+                            {
+                                <span class="invalid-feedback d-block">@fieldErrors["product_id"]</span>
+                            }
                         </div>
                         <div class="form-group">
                             <label>Trạng thái</label>
-                            <input type="checkbox" name="status" id="status" value="1" checked>
-                            <label class="form-check-label">ON</label>
+                            <input type="checkbox" name="status" id="status" value="1" @(isCreateActive ? "checked" : "")>
+                            <label class="form-check-label" for="status">ON</label>
                         </div>
                     </div>
                 </div>
@@ -140,5 +167,13 @@
                 }
             });
         }
+    }
+    @if (!string.IsNullOrEmpty(openModal) && fieldErrors.Count > 0)
+    {
+        <text>
+        $(document).ready(function () {
+            $('#@openModal').modal('show');
+        });
+        </text>
     }
 </script>

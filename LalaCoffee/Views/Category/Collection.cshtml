@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LalaCoffee.Models.Product>
+@model IEnumerable<LalaCoffee.Models.Product>
 @{
     Page.Title = "Index";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
@@ -31,10 +31,10 @@
                 <div class="row">
                     <div class="col-md-3 col-sm-4 col-12">
                         <div class="blog-left-section">
-                            <div class="blog-left-search blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
-                                <input type="text" name="txt" placeholder="Search" fdprocessedid="w8rqs">
-                                <input type="submit" name="submit" value="Tìm" fdprocessedid="cze44f">
-                            </div>
+                            <form method="get" action="/Collections/@(string.IsNullOrEmpty(ViewBag.CurrentSlug) ? "All" : ViewBag.CurrentSlug)" class="blog-left-search blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
+                                <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm món...">
+                                <input type="submit" value="Tìm">
+                            </form>
                             <div class="blog-left-categories blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                 <h5>
                                     DANH MỤC
@@ -88,7 +88,7 @@
                                 <div class="row">
                                     @foreach (var item in Model)
                                     {
-                                        if (item.Category.Id == Category.Id)
+                                        if (item.Category != null && item.Category.Id == Category.Id)
                                         {
                                             <div class="col-md-4 col-sm-4 col-12 wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                                 <div class="shop-main-list">

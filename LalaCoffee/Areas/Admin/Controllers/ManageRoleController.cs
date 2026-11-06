@@ -3,7 +3,6 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.PeerToPeer;
 using System.Web;
 using System.Web.Mvc;
 using LalaCoffee.Controllers;
@@ -15,60 +14,104 @@ namespace LalaCoffee.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class ManageRoleController : BaseController<IdentityRole>
     {
+        private static readonly HashSet<string> SystemRoles = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Admin",
+            "User"
+        };
+
         // GET: Admin/ManageRole
         public ActionResult Index()
         {
             var roles = GetAll().ToList();
             return View(roles);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+            var formValues = formCollection.AllKeys.ToDictionary(k => k, k => formCollection[k] ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+
+            var name = formCollection["name"]?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                fieldErrors["name"] = "Vui lòng nhập tên vai trò.";
+            }
+            else if (SystemRoles.Contains(name))
+            {
+                fieldErrors["name"] = $"Vai trò '{name}' là vai trò hệ thống đã tồn tại.";
+            }
+            else
+            {
+                var checkRole = Context.Roles.Any(x => x.Name.ToLower() == name.ToLower());
+                if (checkRole)
+                {
+                    fieldErrors["name"] = "Tên vai trò đã tồn tại, vui lòng chọn tên khác.";
+                }
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                TempData["Errors"] = fieldErrors.Values.ToList();
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageRole");
+            }
+
             try
             {
-                var name = formCollection["name"];
-                var checkRole = Context.Roles.Count(x => x.Name == name);
-                if (string.IsNullOrEmpty(name))
-                {
-                    errors.Add("Vui lòng nhập tên role.");
-                }
-                if (checkRole > 0)
-                {
-                    errors.Add("Tên role đã tồn tại.");
-                }
-                if (errors.Count == 0)
-                {
-                    IdentityRole role = new IdentityRole();
-                    role.Name = name;
-                    Context.Roles.Add(role);
-                    Context.SaveChanges();
-                }
+                IdentityRole role = new IdentityRole(name);
+                Context.Roles.Add(role);
+                Context.SaveChanges();
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                TempData["Errors"] = generalErrors;
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageRole");
             }
-            TempData["Errors"] = errors;
+
             return RedirectToAction("Index", "ManageRole");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(Guid? Id)
+        public ActionResult Delete(string id)
         {
-            if (Id == null)
+            if (string.IsNullOrWhiteSpace(id))
             {
-                return Json(new { success = false, message = "ID không hợp lệ" });
+                return Json(new { success = false, message = "ID không hợp lệ." });
             }
-            var role = Context.Roles.FirstOrDefault(x => x.Id.Equals(Id.ToString()));
+            var role = Context.Roles.FirstOrDefault(x => x.Id == id);
             if (role == null)
             {
-                return Json(new { success = false, message = "Role không tồn tại" });
+                return Json(new { success = false, message = "Role không tồn tại." });
             }
-            Remove((IdentityRole)role);
-            return Json(new { success = true, message = "Xóa role thành công" });
+
+            // Bảo vệ role hệ thống (Admin, User)
+            if (SystemRoles.Contains(role.Name))
+            {
+                return Json(new { success = false, message = $"Role '{role.Name}' là role hệ thống, không thể xóa!" });
+            }
+
+            // Kiểm tra role có đang được gán cho người dùng nào không
+            var hasUsers = Context.Set<IdentityUserRole>().Any(ur => ur.RoleId == role.Id);
+            if (hasUsers)
+            {
+                return Json(new { success = false, message = $"Không thể xóa role '{role.Name}' vì đang có người dùng được gán role này." });
+            }
+
+            Remove(role);
+            return Json(new { success = true, message = "Xóa role thành công." });
         }
+
         public ActionResult SetRole()
         {
             var roles = Context.Roles.ToList();
@@ -88,53 +131,81 @@ namespace LalaCoffee.Areas.Admin.Controllers
             ViewBag.Users = users;
             return View(roleUserList);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult SetRole(FormCollection formCollection)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+            var formValues = formCollection.AllKeys.ToDictionary(k => k, k => formCollection[k] ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+
+            var RoleId = formCollection["RoleId"];
+            var UserId = formCollection["UserId"];
+
+            var getRole = Context.Roles.FirstOrDefault(x => x.Id == RoleId);
+            var getUser = Context.Users.FirstOrDefault(x => x.Id == UserId);
+
+            if (string.IsNullOrWhiteSpace(RoleId) || getRole == null)
+            {
+                fieldErrors["RoleId"] = "Vui lòng chọn vai trò hợp lệ.";
+            }
+            if (string.IsNullOrWhiteSpace(UserId) || getUser == null)
+            {
+                fieldErrors["UserId"] = "Vui lòng chọn người dùng hợp lệ.";
+            }
+
+            if (fieldErrors.Count == 0)
+            {
+                var alreadyAssigned = Context.Set<IdentityUserRole>().Any(ur => ur.UserId == getUser.Id && ur.RoleId == getRole.Id);
+                if (alreadyAssigned)
+                {
+                    fieldErrors["RoleId"] = $"Người dùng '{getUser.UserName}' đã được gán vai trò '{getRole.Name}' rồi.";
+                }
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                TempData["Errors"] = fieldErrors.Values.ToList();
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("SetRole", "ManageRole");
+            }
+
             try
             {
-                var RoleId = formCollection["RoleId"];
-                var UserId = formCollection["UserId"];
-                var getRole = Context.Roles.FirstOrDefault(x => x.Id == RoleId);
-                var getUser = Context.Users.FirstOrDefault(x => x.Id == UserId);
-                if (getRole == null)
-                {
-                    errors.Add("Không tìm thấy Role này.");
-                }
-                if (getUser == null)
-                {
-                    errors.Add("Không tìm thấy User này.");
-                }
-                if (errors.Count == 0)
-                {
-                    IdentityUserRole userRole = new IdentityUserRole();
-                    userRole.UserId = getUser.Id;
-                    userRole.RoleId = getRole.Id;
-                    getUser.Roles.Add(userRole);
-                    Context.SaveChanges();
-                }
+                IdentityUserRole userRole = new IdentityUserRole();
+                userRole.UserId = getUser.Id;
+                userRole.RoleId = getRole.Id;
+                getUser.Roles.Add(userRole);
+                Context.SaveChanges();
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                TempData["Errors"] = generalErrors;
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("SetRole", "ManageRole");
             }
-            TempData["Errors"] = errors;
+
             return RedirectToAction("SetRole", "ManageRole");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteSetRole(Guid? UserId, Guid? RoleId)
+        public ActionResult DeleteSetRole(string UserId, string RoleId, bool confirmSelfRevoke = false)
         {
             try
             {
-                if (RoleId == null || UserId == null)
+                if (string.IsNullOrWhiteSpace(UserId) || string.IsNullOrWhiteSpace(RoleId))
                 {
                     return Json(new { success = false, message = "Vui lòng nhập đầy đủ thông tin." });
                 }
-                var getRole = Context.Roles.FirstOrDefault(x => x.Id.Equals(RoleId.ToString()));
-                var getUser = Context.Users.FirstOrDefault(x => x.Id.Equals(UserId.ToString()));
+                var getRole = Context.Roles.FirstOrDefault(x => x.Id == RoleId);
+                var getUser = Context.Users.FirstOrDefault(x => x.Id == UserId);
 
                 if (getRole == null)
                 {
@@ -144,22 +215,62 @@ namespace LalaCoffee.Areas.Admin.Controllers
                 {
                     return Json(new { success = false, message = "Không tìm thấy User này." });
                 }
+
                 var userRole = Context.Set<IdentityUserRole>().FirstOrDefault(ur => ur.UserId == getUser.Id && ur.RoleId == getRole.Id);
-
-                if (userRole != null)
+                if (userRole == null)
                 {
-                    // Remove the record from the AspNetUserRoles table
-                    Context.Set<IdentityUserRole>().Remove(userRole);
-
-                    // Save the changes to the database
-                    Context.SaveChanges();
+                    return Json(new { success = false, message = "Người dùng không được gán quyền này." });
                 }
+
+                bool isRoleAdmin = string.Equals(getRole.Name, "Admin", StringComparison.OrdinalIgnoreCase);
+
+                // 1. Chặn gỡ quyền Admin của quản trị viên cuối cùng trong hệ thống
+                if (isRoleAdmin)
+                {
+                    var adminCount = Context.Set<IdentityUserRole>().Count(ur => ur.RoleId == getRole.Id);
+                    if (adminCount <= 1)
+                    {
+                        return Json(new { 
+                            success = false, 
+                            message = "Không thể gỡ quyền Admin của quản trị viên cuối cùng trong hệ thống!" 
+                        });
+                    }
+                }
+
+                // 2. Cảnh báo khi tự gỡ quyền
+                var currentUserId = User?.Identity?.GetUserId();
+                bool isSelf = !string.IsNullOrEmpty(currentUserId) && string.Equals(getUser.Id, currentUserId, StringComparison.OrdinalIgnoreCase);
+
+                if (isSelf && !confirmSelfRevoke)
+                {
+                    string warningMessage = isRoleAdmin
+                        ? "CẢNH BÁO NGUY HIỂM: Bạn đang tự gỡ quyền Admin của chính tài khoản mình! Bạn sẽ mất quyền truy cập trang quản trị ngay lập tức. Bạn có chắc chắn muốn tiếp tục?"
+                        : $"Bạn đang tự gỡ quyền '{getRole.Name}' của chính tài khoản mình. Bạn có chắc chắn muốn tiếp tục?";
+
+                    return Json(new { 
+                        success = false, 
+                        requireSelfRevokeConfirm = true, 
+                        isSelfRevoke = isSelf,
+                        message = warningMessage 
+                    });
+                }
+
+                // Tiến hành gỡ quyền
+                Context.Set<IdentityUserRole>().Remove(userRole);
+                Context.SaveChanges();
+
+                return Json(new { 
+                    success = true, 
+                    isSelfRevoke = isSelf && isRoleAdmin,
+                    message = isSelf && isRoleAdmin 
+                        ? "Bạn đã tự gỡ quyền Admin thành công. Bạn sẽ được chuyển hướng về trang chủ." 
+                        : "Xóa set role thành công." 
+                });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
             }
-            return Json(new { success = true, message = "Xóa set role thành công" });
         }
     }
 }

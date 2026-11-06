@@ -15,41 +15,135 @@ namespace LalaCoffee.Areas.Admin.Controllers
         //[Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
-            var blogs = GetAll().ToList();
-            return View(blogs);
+            return View(new List<Blog>());
+        }
+
+        [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
+        public ActionResult GetData()
+        {
+            var dtRequest = DataTableRequest.Parse(Request);
+
+            var query = Context.Blogs.AsNoTracking().AsQueryable();
+            int totalRecords = query.Count();
+
+            // 1. Tìm kiếm trên Server
+            if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
+            {
+                var s = dtRequest.SearchValue.Trim();
+                query = query.Where(b =>
+                    (b.Title != null && b.Title.Contains(s)) ||
+                    (b.Author != null && b.Author.Contains(s))
+                );
+            }
+
+            int filteredRecords = query.Count();
+
+            // 2. Sắp xếp trên Server
+            bool isAsc = dtRequest.SortDirection == "asc";
+            switch (dtRequest.SortColumnIndex)
+            {
+                case 1: // Id
+                    query = isAsc ? query.OrderBy(b => b.Id) : query.OrderByDescending(b => b.Id);
+                    break;
+                case 2: // Title
+                    query = isAsc ? query.OrderBy(b => b.Title) : query.OrderByDescending(b => b.Title);
+                    break;
+                case 3: // CreatedDate
+                    query = isAsc ? query.OrderBy(b => b.CreatedDate) : query.OrderByDescending(b => b.CreatedDate);
+                    break;
+                case 4: // Published
+                    query = isAsc ? query.OrderBy(b => b.Published) : query.OrderByDescending(b => b.Published);
+                    break;
+                case 5: // Author
+                    query = isAsc ? query.OrderBy(b => b.Author) : query.OrderByDescending(b => b.Author);
+                    break;
+                default:
+                    query = isAsc ? query.OrderBy(b => b.Id) : query.OrderByDescending(b => b.Id);
+                    break;
+            }
+
+            // 3. Phân trang trên Server
+            var pagedBlogs = query.Skip(dtRequest.Start).Take(dtRequest.Length).ToList();
+
+            var data = pagedBlogs.Select(item => new
+            {
+                id = item.Id,
+                title = item.Title ?? string.Empty,
+                createdDate = item.CreatedDate.ToString("dd/MM/yyyy HH:mm"),
+                publishedBadge = item.Published 
+                    ? "<span class='btn btn-success btn-xs'>ON</span>" 
+                    : "<span class='btn btn-danger btn-xs'>OFF</span>",
+                author = item.Author ?? string.Empty,
+                image = item.Image ?? string.Empty,
+                editUrl = Url.Action("Edit", "ManageBlog", new { id = item.Id })
+            });
+
+            return Json(new
+            {
+                draw = dtRequest.Draw,
+                recordsTotal = totalRecords,
+                recordsFiltered = filteredRecords,
+                data = data
+            }, JsonRequestBehavior.AllowGet);
         }
         [ValidateInput(false)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, Blog blog)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+            var formValues = formCollection.AllKeys.ToDictionary(k => k, k => formCollection[k] ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+
+            var Title = formCollection["Title"]?.Trim();
+            var Content = formCollection["Content"]?.Trim();
+            var Published = formCollection["Published"] != null && (formCollection["Published"] == "true" || formCollection["Published"] == "1" || formCollection["Published"].Contains("true"));
+            var Image = formCollection["Image"] ?? formCollection["image"];
+
+            // Tự động lấy tên người đăng từ tài khoản đang đăng nhập
+            var Author = User?.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(Author))
+            {
+                Author = "Admin";
+            }
+
+            if (string.IsNullOrWhiteSpace(Title))
+            {
+                fieldErrors["Title"] = "Vui lòng nhập tiêu đề bài viết.";
+            }
+            if (string.IsNullOrWhiteSpace(Content))
+            {
+                fieldErrors["Content"] = "Vui lòng nhập nội dung bài viết.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                TempData["Errors"] = fieldErrors.Values.ToList();
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageBlog");
+            }
+
             try
             {
-                var Title = formCollection["Title"];
-                var Content = formCollection["Content"];
-                var CreatedDate = DateTime.Now;
-                var Published = formCollection["Published"];
-                var Author = formCollection["Author"];
-                var Image = formCollection["Image"];
-                if (string.IsNullOrEmpty(Title))
-                {
-                    errors.Add("Chưa nhập tiêu đề của Blog");
-                }
-                if (string.IsNullOrEmpty(Author))
-                {
-                    errors.Add("Tác giả không được để trống");
-                }
-                if (errors.Count == 0)
-                {
-                    Add(blog);
-                }
+                blog.Title = Title;
+                blog.Content = Content;
+                blog.Author = Author;
+                blog.Image = Image;
+                blog.Published = Published;
+                blog.CreatedDate = DateTime.Now;
+                Add(blog);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                TempData["Errors"] = generalErrors;
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageBlog");
             }
-            TempData["Errors"] = errors;
 
             return RedirectToAction("Index", "ManageBlog");
         }
@@ -72,43 +166,68 @@ namespace LalaCoffee.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+
+            var idStr = formCollection["Id"] ?? formCollection["id"];
+            var Title = formCollection["Title"]?.Trim();
+            var Content = formCollection["Content"]?.Trim();
+            var Published = formCollection["Published"] != null && (formCollection["Published"] == "true" || formCollection["Published"] == "1" || formCollection["Published"].Contains("true"));
+            var Author = formCollection["Author"]?.Trim();
+            var Image = formCollection["Image"] ?? formCollection["image"];
+
+            int blogId = 0;
+            if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out blogId))
+            {
+                TempData["Errors"] = new List<string> { "ID bài viết không hợp lệ." };
+                return RedirectToAction("Index", "ManageBlog");
+            }
+
+            var blog = GetById(blogId);
+            if (blog == null)
+            {
+                TempData["Errors"] = new List<string> { "Không tìm thấy bài viết cần chỉnh sửa." };
+                return RedirectToAction("Index", "ManageBlog");
+            }
+
+            blog.Title = Title;
+            blog.Content = Content;
+            blog.Published = Published;
+            blog.Author = Author;
+            blog.Image = Image;
+
+            if (string.IsNullOrWhiteSpace(Title))
+            {
+                fieldErrors["Title"] = "Vui lòng nhập tiêu đề bài viết.";
+            }
+            if (string.IsNullOrWhiteSpace(Author))
+            {
+                fieldErrors["Author"] = "Vui lòng nhập tên tác giả.";
+            }
+            if (string.IsNullOrWhiteSpace(Content))
+            {
+                fieldErrors["Content"] = "Vui lòng nhập nội dung bài viết.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                ViewBag.Errors = fieldErrors.Values.ToList();
+                ViewBag.FieldErrors = fieldErrors;
+                return View(blog);
+            }
+
             try
             {
-                var  Title = formCollection["Title"];
-                var Content = formCollection["Content"];
-                var Published = true;
-                if (formCollection["Published"] == null)
-                {
-
-                     Published = false;
-                }
-                var Author = formCollection["Author"];
-                var Image = formCollection["Image"];
-                if (string.IsNullOrEmpty(Title))
-                {
-                    errors.Add("Chưa nhập tiêu đề");
-                }
-                if (string.IsNullOrEmpty(Content))
-                {
-                    errors.Add("Chưa nhập nội dung sản phẩm");
-                }
-                if (errors.Count == 0)
-                {
-                    var blog = GetById(Int32.Parse(formCollection["Id"]));
-                    blog.Title = Title;
-                    blog.Content = Content;
-                    blog.Published = Published;
-                    blog.Author = Author;
-                    blog.Image = Image;
-                    Update(blog);
-                }
+                Update(blog);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                ViewBag.Errors = generalErrors;
+                ViewBag.FieldErrors = fieldErrors;
+                return View(blog);
             }
-            TempData["Errors"] = errors;
+
             return RedirectToAction("Index", "ManageBlog");
         }
         [HttpPost]
@@ -122,10 +241,10 @@ namespace LalaCoffee.Areas.Admin.Controllers
             Blog blog = GetById(Id.Value);
             if (blog == null)
             {
-                return Json(new { success = false, message = "Blog không tồn tại" });
+                return Json(new { success = false, message = "Bài viết không tồn tại" });
             }
             Remove(blog);
-            return Json(new { success = true, message = "Xóa thành công" });
+            return Json(new { success = true, message = "Xóa bài viết thành công" });
         }
     }
 }

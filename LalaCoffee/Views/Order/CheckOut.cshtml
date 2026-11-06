@@ -34,12 +34,6 @@
                                             <hr />
                                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                         </div>
-                                        @if (!User.Identity.IsAuthenticated)
-                                        {
-                                            <div class="col-12 mb-3">
-                                                <span>Bạn đã có tài khoản? Đăng nhập </span><a href="@Url.Action("Login","Account")">tại đây</a>
-                                            </div>
-                                        }
                                         @Html.HiddenFor(m => m.UserId)
                                         <div class="col-12 mb-3">
                                             @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Họ Tên", id = "Name" })
@@ -85,7 +79,7 @@
                                                 <div class="col-8">Size: @(item.PropertyProduct != null ? item.PropertyProduct.Name : "")</div>
                                                 <div class="col-4 text-end">@(item.PropertyProduct != null ? item.PropertyProduct.Price.ToString("N0") : "0")<span>đ</span></div>
                                             </div>
-                                            @if (item.Options != null && item.Options.Count > 0)
+                                            if (item.Options != null && item.Options.Count > 0)
                                             {
                                                 <div class="row mb-1">
                                                     <div class="col-12 text-muted small">Topping:</div>
@@ -109,22 +103,15 @@
                                         <h5 class="card-title">PHƯƠNG THỨC THANH TOÁN</h5>
                                         <div class="mb-3">
                                             <div class="form-check mb-2">
-                                                @Html.RadioButtonFor(m => m.Payment, "cash", new { id = "cash", @class = "form-check-input" })
-                                                <label class="form-check-label" for="cash">Tiền mặt (COD)</label>
+                                                @Html.RadioButtonFor(m => m.Payment, "cash", new { id = "cash", @class = "form-check-input", @checked = "checked" })
+                                                <label class="form-check-label fw-bold" for="cash">Thanh toán khi nhận hàng (COD)</label>
                                             </div>
-                                            <div class="form-check mb-2">
-                                                @Html.RadioButtonFor(m => m.Payment, "momo", new { id = "momo", @class = "form-check-input" })
-                                                <label class="form-check-label" for="momo">Ví điện tử MoMo</label>
-                                            </div>
-                                            <div class="form-check mb-2">
-                                                @Html.RadioButtonFor(m => m.Payment, "vnpay", new { id = "vnpay", @class = "form-check-input" })
-                                                <label class="form-check-label" for="vnpay">Cổng VNPay</label>
-                                            </div>
+                                            <p class="text-muted small ps-4 mb-0">Quý khách thanh toán bằng tiền mặt khi nhận hàng.</p>
                                             @Html.ValidationMessageFor(m => m.Payment, "", new { @class = "text-danger" })
                                         </div>
                                         <div class="mb-3">
                                             <div class="checkout-button mt-2">
-                                                <button class="button-default btn-large btn-primary-gold w-100" type="submit">Đặt hàng</button>
+                                                <button class="button-default btn-large btn-primary-gold w-100" type="submit">Đặt hàng (COD)</button>
                                             </div>
                                         </div>
                                     </div>

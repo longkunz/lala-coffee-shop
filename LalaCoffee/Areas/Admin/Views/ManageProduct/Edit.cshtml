@@ -1,21 +1,32 @@
-﻿@model LalaCoffee.Models.Product
+@model LalaCoffee.Models.Product
 
 @{
     ViewBag.Title = "Edit Product";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    bool isActive = Model.Status == "1" 
+        || string.Equals(Model.Status, "Show", StringComparison.OrdinalIgnoreCase) 
+        || string.Equals(Model.Status, "Active", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(Model.Status, "True", StringComparison.OrdinalIgnoreCase);
 }
 @functions{
     public string ParentCategory(int parentId)
     {
-        foreach(var item in ViewBag.Categories)
+        if (ViewBag.Categories != null)
         {
-            if(item.Id == parentId)
+            foreach(var item in ViewBag.Categories)
             {
-                return item.Name;
+                if(item.Id == parentId)
+                {
+                    return item.Name;
+                }
             }
         }
         return "Danh mục cha";
     }
+}
+@{
+    var fieldErrors = (ViewBag.FieldErrors ?? TempData["FieldErrors"]) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    string priceVal = ViewBag.PriceInput != null ? (string)ViewBag.PriceInput : Model.Price.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
 }
 @Html.Partial("ErrorsAlert")
 <div class="row">
@@ -32,24 +43,40 @@
                 @Html.HiddenFor(model => model.Id)
                 <div class="card-body">
                     <div class="form-group">
-                        <label>Tên</label>
-                        <input class="form-control" id="name" name="name" type="text" value="@Html.DisplayFor(item => item.Name)" onchange="getSlug()">
+                        <label>Tên <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" id="name" name="name" type="text" value="@Model.Name" onchange="getSlug()">
+                        @if (fieldErrors.ContainsKey("name"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
+                        }
                     </div>
                     <div class="form-group">
-                        <label>Slug</label>
-                        <input class="form-control" id="slug" name="slug" type="text" value="@Html.DisplayFor(item => item.Slug)">
+                        <label>Slug <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("slug") ? "is-invalid" : "")" id="slug" name="slug" type="text" value="@Model.Slug">
+                        @if (fieldErrors.ContainsKey("slug"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["slug"]</span>
+                        }
                     </div>
                     <div class="form-group">
-                        <label>Mô tả</label>
-                        <textarea class="form-control" id="description" name="description" rows="3">@Html.DisplayFor(item => item.Description)</textarea>
+                        <label>Mô tả <span class="text-danger">*</span></label>
+                        <textarea class="form-control @(fieldErrors.ContainsKey("description") ? "is-invalid" : "")" id="description" name="description" rows="3">@Model.Description</textarea>
+                        @if (fieldErrors.ContainsKey("description"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["description"]</span>
+                        }
                     </div>
                     <div class="form-group">
-                        <label>Giá</label>
-                        <input class="form-control" id="price" name="price" type="text" value="@Model.Price.ToString("N0")">
+                        <label>Giá <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("price") ? "is-invalid" : "")" id="price" name="price" type="number" step="any" min="1000" value="@priceVal">
+                        @if (fieldErrors.ContainsKey("price"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["price"]</span>
+                        }
                     </div>
                     <div class="form-group">
                         <label>Hình ảnh</label>
-                        <input class="form-control" id="image" name="image" type="text" value="@Html.DisplayFor(item => item.Image)">
+                        <input class="form-control" id="image" name="image" type="text" value="@Model.Image">
                         <div class="input-group form-group">
                             <input type="file" name="fileUpload" id="fileUpload" accept="image/*"
                                    style="display:none;" />
@@ -57,33 +84,34 @@
                                 <input type="button" id="btnUpload" value="Chọn" class="btn btn-success" />
                             </span>
                         </div>
-                        <img src="@Html.DisplayFor(item => item.Image)" id="pictureUpload" class="img-fluid" />
+                        <img src="@Model.Image" id="pictureUpload" class="img-fluid" />
                     </div>
                     <div class="form-group">
-                        <label>Danh mục</label>
-                        <select class="form-control" name="category_id">
-                            <option value="@Html.DisplayFor(model => model.Category.Id)">Giữ nguyên: @Html.DisplayFor(model => model.Category.Name)</option>
-                            @foreach (var category in ViewBag.Categories)
+                        <label>Danh mục <span class="text-danger">*</span></label>
+                        <select class="form-control @(fieldErrors.ContainsKey("category_id") ? "is-invalid" : "")" name="category_id">
+                            @if (ViewBag.Categories != null)
                             {
-                                <option value="@category.Id">@category.Name</option>
+                                foreach (var category in ViewBag.Categories)
+                                {
+                                    bool isSelected = Model.Category != null && Model.Category.Id == category.Id;
+                                    <option value="@category.Id" @(isSelected ? "selected" : "")>@category.Name</option>
+                                }
                             }
                         </select>
+                        @if (fieldErrors.ContainsKey("category_id"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["category_id"]</span>
+                        }
                     </div>
                     <div class="form-group">
                         <label>Trạng thái</label>
-                        @if (Convert.ToInt32(Model.Status) == 1)
-                        {
-                            <input type="checkbox" name="status" id="status" value="1" checked>
-                        }
-                        else
-                        {
-                            <input type="checkbox" name="status" id="status" value="1">
-                        }
-                        <label class="form-check-label">ON</label>
+                        <input type="checkbox" name="status" id="status" value="1" @(isActive ? "checked" : "")>
+                        <label class="form-check-label" for="status">ON</label>
                     </div>
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    <a href="@Url.Action("Index", "ManageProduct")" class="btn btn-secondary ml-2">Quay lại</a>
                 </div>
             }
         </div>

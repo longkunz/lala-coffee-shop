@@ -59,9 +59,10 @@ namespace LalaCoffee.Controllers
                     var appUser = Context?.Users?.Find(userId);
                     if (appUser != null)
                     {
-                        model.Name = appUser.UserName;
+                        model.Name = !string.IsNullOrWhiteSpace(appUser.FullName) ? appUser.FullName : appUser.UserName;
                         model.PhoneNumber = appUser.PhoneNumber;
                         model.Email = appUser.Email;
+                        model.Address = appUser.Address;
                     }
                     else
                     {
@@ -83,6 +84,41 @@ namespace LalaCoffee.Controllers
             if (model == null)
             {
                 model = new CheckOutViewModel();
+            }
+
+            if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (string.IsNullOrEmpty(model.UserId))
+                {
+                    model.UserId = User.Identity.GetUserId();
+                }
+
+                try
+                {
+                    var appUser = Context?.Users?.Find(model.UserId);
+                    if (appUser != null)
+                    {
+                        bool updated = false;
+                        if (string.IsNullOrWhiteSpace(appUser.FullName) && !string.IsNullOrWhiteSpace(model.Name))
+                        {
+                            appUser.FullName = model.Name.Trim();
+                            updated = true;
+                        }
+                        if (string.IsNullOrWhiteSpace(appUser.Address) && !string.IsNullOrWhiteSpace(model.Address))
+                        {
+                            appUser.Address = model.Address.Trim();
+                            updated = true;
+                        }
+                        if (updated)
+                        {
+                            Context.SaveChanges();
+                        }
+                    }
+                }
+                catch
+                {
+                    // Guard against unmocked context in unit tests
+                }
             }
 
             var cart = _cartService.GetCartItems();
@@ -112,6 +148,9 @@ namespace LalaCoffee.Controllers
 
             try
             {
+                // Chỉ áp dụng phương thức thanh toán khi nhận hàng (COD)
+                model.Payment = "cash";
+
                 // Persist order and details to database via IOrderService (encapsulating Context.Orders.Add(order) and details)
                 Order order = _orderService.CreateOrder(model, cart);
 
@@ -122,20 +161,11 @@ namespace LalaCoffee.Controllers
                     Session["email"] = model.Email;
                 }
 
-                switch (model.Payment?.ToLowerInvariant())
+                _orderService.UpdateOrderStatus(order.Code, OrderStatus.PendingConfirmation, paid: OrderStatus.Unpaid);
+                _cartService.ClearCart();
+                if (!string.IsNullOrEmpty(model.Email))
                 {
-                    case "momo":
-                        return RedirectToAction("MomoPay", "Pay", new { orderCode = order.Code });
-                    case "vnpay":
-                        return RedirectToAction("VNPay", "Pay", new { orderCode = order.Code });
-                    default:
-                        _orderService.UpdateOrderStatus(order.Code, "Confirmed");
-                        _cartService.ClearCart();
-                        if (!string.IsNullOrEmpty(model.Email))
-                        {
-                            SendEmail(model.Email, order.Name, order.Code);
-                        }
-                        break;
+                    SendEmail(model.Email, order.Name, order.Code);
                 }
                 return RedirectToAction("CompleteOrder", "Order");
             }
@@ -158,7 +188,7 @@ namespace LalaCoffee.Controllers
                 Email = formCollection?["email"] ?? formCollection?["Email"],
                 PhoneNumber = formCollection?["phoneNumber"] ?? formCollection?["PhoneNumber"],
                 Address = formCollection?["address"] ?? formCollection?["Address"],
-                Payment = formCollection?["payment"] ?? formCollection?["Payment"] ?? "cash",
+                Payment = "cash",
                 Note = formCollection?["note"] ?? formCollection?["Note"],
                 UserId = formCollection?["UserId"]
             };

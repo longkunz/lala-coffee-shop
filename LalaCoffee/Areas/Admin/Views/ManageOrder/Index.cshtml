@@ -1,27 +1,11 @@
 @model IEnumerable<LalaCoffee.Models.Order>
+@using LalaCoffee.Models
 
 @{
     ViewBag.Title = "Order Manager";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
-@functions{
-    public string NorActive(string active = "1")
-    {
-        if (active == "1" || string.Equals(active, "Paid", StringComparison.OrdinalIgnoreCase) || string.Equals(active, "Confirmed", StringComparison.OrdinalIgnoreCase))
-        {
-            return "<span class='btn btn-success btn-xs'>" + (active == "1" ? "ON" : active.ToUpperInvariant()) + "</span>";
-        }
-        if (string.Equals(active, "Pending", StringComparison.OrdinalIgnoreCase))
-        {
-            return "<span class='btn btn-warning btn-xs'>PENDING</span>";
-        }
-        return active == "0" ? "<span class='btn btn-danger btn-xs'>OFF</span>" : "<span class='btn btn-danger btn-xs'>" + (active ?? "OFF") + "</span>";
-    }
-    public string NorPaid(int paid = 0)
-    {
-        return paid == 0 ? "<span class='btn btn-danger btn-xs'>CHƯA THANH TOÁN</span>" : "<span class='btn btn-success btn-xs'>ĐÃ THANH TOÁN</span>";
-    }
-}
+
 @Html.Partial("ErrorsAlert")
 @Html.AntiForgeryToken()
 <div class="row">
@@ -34,51 +18,24 @@
             </div>
             <div class="card-body">
                 <div class="card-body table-responsive p-0" style="text-align: center">
-                    <table class="table table-head-fixed text-nowrap" id="nTable">
+                    <table class="table table-head-fixed text-nowrap" id="orderTable" data-server-side="true" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Hành động</th>
                                 <th>Mã đơn</th>
-                                <th>Tên</th>
+                                <th>Khách hàng</th>
                                 <th>Số điện thoại</th>
                                 <th>Địa chỉ</th>
-                                <th>Phương thức</th>
+                                <th>PTTT</th>
                                 <th>Thanh toán</th>
                                 <th>Ghi chú</th>
                                 <th>Tổng tiền</th>
-                                <th>Trạng thái</th>
-                                <th>CreatedAt</th>
-                                <th>UpdatedAt</th>
+                                <th>Trạng thái đơn</th>
+                                <th>Ngày tạo</th>
+                                <th>Cập nhật</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="@Url.Action("Detail", "ManageOrder", new { id = item.Id })" class="btn btn-info btn-sm">
-                                            <i class="fa fa-eye"></i>
-                                        </a>
-                                        <a href="@Url.Action("Edit", "ManageOrder", new { id = item.Id })" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-danger btn-sm" onclick="del('@item.Id')">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                    <td>@Html.DisplayFor(modelItem => item.Code)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Address)</td>
-                                    <td><img style="width:22px" src="/Content/images/payment/@(item.Payment).png"></td>
-                                    <td>@Html.Raw(NorPaid(item.Paid))</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Note)</td>
-                                    <td>@item.Total.ToString("N0")đ</td>
-                                    <td>@Html.Raw(NorActive(item.Status))</td>
-                                    <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
-                                </tr>
-                            }
                         </tbody>
                     </table>
                 </div>
@@ -88,16 +45,101 @@
 </div>
 
 <script type="text/javascript">
+    var orderTable;
+    $(document).ready(function () {
+        orderTable = $('#orderTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "@Url.Action("GetData", "ManageOrder")",
+                "type": "POST",
+                "data": function (d) {
+                    d.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                }
+            },
+            "columns": [
+                {
+                    "data": "id",
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row) {
+                        return '<a href="' + row.detailUrl + '" class="btn btn-info btn-sm mr-1" title="Chi tiết"><i class="fa fa-eye"></i></a> ' +
+                               '<a href="' + row.editUrl + '" class="btn btn-primary btn-sm mr-1" title="Chỉnh sửa"><i class="fa fa-edit"></i></a> ' +
+                               '<a href="#" class="btn btn-danger btn-sm" onclick="del(\'' + data + '\')" title="Xóa"><i class="fa fa-trash"></i></a>';
+                    }
+                },
+                {
+                    "data": "code",
+                    "render": function (data) {
+                        return '<strong>' + (data ? data : '') + '</strong>';
+                    }
+                },
+                { "data": "name" },
+                { "data": "phoneNumber" },
+                { "data": "address" },
+                {
+                    "data": "payment",
+                    "render": function (data) {
+                        var pType = (data || 'cash').toLowerCase();
+                        return '<img style="width:24px; height:24px; object-fit:contain;" src="/Content/images/payment/' + pType + '.png" alt="' + (data || '') + '" title="' + (data || '') + '">';
+                    }
+                },
+                {
+                    "data": "paidBadge",
+                    "render": function (data) { return data; }
+                },
+                { "data": "note" },
+                {
+                    "data": "totalFormatted",
+                    "render": function (data) {
+                        return '<strong class="text-success">' + data + '</strong>';
+                    }
+                },
+                {
+                    "data": "statusBadge",
+                    "render": function (data) { return data; }
+                },
+                { "data": "createdAt" },
+                { "data": "updatedAt" }
+            ],
+            "order": [[10, "desc"]],
+            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+            "language": {
+                "processing": "Đang tải dữ liệu...",
+                "lengthMenu": "Hiển thị _MENU_ mục",
+                "zeroRecords": "Không tìm thấy dữ liệu",
+                "info": "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                "infoEmpty": "Hiển thị từ 0 đến 0 của 0 mục",
+                "infoFiltered": "(được lọc từ _MAX_ mục)",
+                "search": "Tìm kiếm:",
+                "paginate": {
+                    "first": "Đầu",
+                    "previous": "Trước",
+                    "next": "Tiếp",
+                    "last": "Cuối"
+                }
+            }
+        });
+    });
+
     function del(id) {
-        if (confirm("Bạn chắc chắn muốn xóa?")) {
+        if (confirm("Bạn chắc chắn muốn xóa đơn hàng này?")) {
+            var token = $('input[name="__RequestVerificationToken"]').val();
             $.ajax({
                 url: "@Url.Action("Delete", "ManageOrder")",
                 type: "POST",
-                data: { id: id },
+                data: {
+                    id: id,
+                    __RequestVerificationToken: token
+                },
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);
-                        location.reload();
+                        if (orderTable) {
+                            orderTable.ajax.reload(null, false);
+                        } else {
+                            location.reload();
+                        }
                     } else {
                         alert(response.message);
                     }

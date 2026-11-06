@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,7 +23,7 @@ namespace LalaCoffee.Models
         public string Note { get; set; }
         public int Paid { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = OrderStatus.PendingConfirmation;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 

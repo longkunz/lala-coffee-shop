@@ -15,9 +15,9 @@ namespace LalaCoffee.Models
         //1 sản phẩm -> 1 danh mục
         [Key]
         public int Id { get; set; }
-        public Category Category { get; set; }
-        public ICollection<OptionProduct> OptionProducts { get; set; }
-        public ICollection<PropertyProduct> PropertyProducts { get; set; }
+        public virtual Category Category { get; set; }
+        public virtual ICollection<OptionProduct> OptionProducts { get; set; }
+        public virtual ICollection<PropertyProduct> PropertyProducts { get; set; }
         public string Name { get; set; }
         public string Slug { get; set; }
         public decimal Price { get; set; }
