@@ -1,4 +1,4 @@
-@model List<LalaCoffee.Models.CartItem>
+﻿@model List<LalaCoffee.Models.CartItem>
 @{
     ViewBag.Title = "Cart";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
@@ -55,7 +55,7 @@
                 <td>@item.ProductName</td>
                 <td>@item.Price.ToString("N0")d</td>
                 <td>@item.Quantity</td>
-                <td>@item.PropertyProduct.Name - @item.PropertyProduct.Price</td>
+                <td>@(item.PropertyProduct != null ? item.PropertyProduct.Name + " - " + item.PropertyProduct.Price.ToString("N0") + "đ" : "-")</td>
                 <td>
                     @{
                         List<int> optionIds = new List<int>();
@@ -66,13 +66,13 @@
                         <span><b>@option.Name</b> : <b>@option.Price</b></span><br />
                     }
                 </td>
-                <td>@(((item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0"))d</td>
+                <td>@(((item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0"))d</td>
                 <td><button class="btn-remove" data-item-cart-id="@item.Id">Remove</button></td>
             </tr>
         }
         <tr>
             <td colspan="5">Total:</td>
-            <td colspan="4">@Model.Sum(item => (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0")d</td>
+            <td colspan="4">@Model.Sum(item => (item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0")d</td>
         </tr>
     </tbody>
 </table>
@@ -129,22 +129,43 @@
                                                 @{
                                                     List<int> optionIds = new List<int>();
                                                 }
-                                                <span style="color:#808080; font-size:12px;">Size: @item.PropertyProduct.Name - @item.PropertyProduct.Price.ToString("N0")d</span><br />
-                                                @if (item.Options.Count > 0)
+                                                @if (item.PropertyProduct != null)
                                                 {
-                                                    <span style="color:#808080; font-size:12px;">Topping: </span>
-                                                    foreach (var option in item.Options)
-                                                    {
-                                                        <span style="color:#808080; font-size:12px;"><li>@option.Name - @option.Price.ToString("N0")d</li></span>
-                                                    }
+                                                    <div style="font-size: 13px; color: #666; margin-top: 3px;">
+                                                        <span>Size: <strong>@item.PropertyProduct.Name</strong>@(item.PropertyProduct.Price > 0 ? $" (+{item.PropertyProduct.Price:N0}đ)" : "")</span>
+                                                    </div>
+                                                }
+                                                @if (item.Options != null && item.Options.Any())
+                                                {
+                                                    <div style="font-size: 12px; color: #777; margin-top: 5px;">
+                                                        <span style="font-weight: 600; color: #555;">Topping:</span>
+                                                        <ul style="list-style: none; padding-left: 0; margin-bottom: 0; margin-top: 2px;">
+                                                            @foreach (var option in item.Options)
+                                                            {
+                                                                <li style="padding-left: 12px; position: relative; margin-bottom: 2px;">
+                                                                    <span style="position: absolute; left: 0; color: #c66d55; font-weight: bold;">+</span>
+                                                                    <span>@option.Name</span>
+                                                                    <span style="color: #c66d55; font-weight: 500;">(@option.Price.ToString("N0")đ)</span>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
                                                 }
 
                                             </div>
                                         </td>
                                         <th>GIÁ</th>
                                         <td>
-                                            <strong>@item.Price.ToString("N0")d</strong>
-                                            @*<del>@item.Price.ToString("N0")d</del>*@
+                                            @{
+                                                var propPrice = item.PropertyProduct != null ? item.PropertyProduct.Price : 0m;
+                                                var optionsPrice = item.Options != null ? item.Options.Sum(option => option.Price) : 0m;
+                                                var unitPrice = item.Price + propPrice + optionsPrice;
+                                            }
+                                            <strong>@unitPrice.ToString("N0")đ</strong>
+                                            @if (unitPrice != item.Price)
+                                            {
+                                                <span style="display: block; font-size: 11px; color: #888; font-weight: normal;">(Gốc: @item.Price.ToString("N0")đ)</span>
+                                            }
                                         </td>
                                         <th>SỐ LƯỢNG</th>
                                         <td>
@@ -156,7 +177,7 @@
                                         </td>
                                         <th>TỔNG</th>
                                         <td id="subtotal_@item.Id">
-                                            @(((item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0"))d
+                                            @(((item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0"))đ
                                         </td>
                                         <td class="product-remove">
                                             <button class="remove" data-item-cart-id="@item.Id">×</button>
@@ -188,7 +209,7 @@
                             <span>$15.00</span>
                         </div>*@
                         <div class="grand-total">
-                            <h5>TỔNG CỘNG: <span id="cart-grand-total">@Model.Sum(item => (item.Price + item.PropertyProduct.Price + item.Options.Sum(option => option.Price)) * item.Quantity).ToString("N0")d</span></h5>
+                            <h5>TỔNG CỘNG: <span id="cart-grand-total">@Model.Sum(item => (item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0")đ</span></h5>
                         </div>
                         <div class="proceed-check">
                             <a href="@Url.Action("CheckOut","Order")" class="btn-primary-gold btn-medium">THANH TOÁN</a>

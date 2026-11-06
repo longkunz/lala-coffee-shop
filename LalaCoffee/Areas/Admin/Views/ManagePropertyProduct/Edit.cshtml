@@ -1,12 +1,14 @@
 @model LalaCoffee.Models.PropertyProduct
 
 @{
-    ViewBag.Title = "Edit Property Product";
+    ViewBag.Title = "Chỉnh sửa thuộc tính sản phẩm";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
     bool isActive = Model.Status == "1" 
         || string.Equals(Model.Status, "Show", StringComparison.OrdinalIgnoreCase) 
         || string.Equals(Model.Status, "Active", StringComparison.OrdinalIgnoreCase)
         || string.Equals(Model.Status, "True", StringComparison.OrdinalIgnoreCase);
+    var fieldErrors = (ViewBag.FieldErrors ?? TempData["FieldErrors"]) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    string priceVal = ViewBag.PriceInput != null ? (string)ViewBag.PriceInput : Model.Price.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
 }
 @Html.Partial("ErrorsAlert")
 <div class="row">
@@ -23,25 +25,37 @@
                 @Html.HiddenFor(model => model.Id)
                 <div class="card-body">
                     <div class="form-group">
-                        <label>Tên</label>
-                        <input class="form-control" id="name" name="name" type="text" value="@Html.DisplayFor(item => item.Name)" onchange="getSlug()">
+                        <label>Tên <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" id="name" name="name" type="text" value="@Model.Name" onchange="getSlug()">
+                        @if (fieldErrors.ContainsKey("name"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
+                        }
                     </div>
                     <div class="form-group">
-                        <label>Giá</label>
-                        <input class="form-control" id="price" name="price" type="number" step="any" min="0" value="@Model.Price.ToString("0", System.Globalization.CultureInfo.InvariantCulture)">
+                        <label>Giá <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("price") ? "is-invalid" : "")" id="price" name="price" type="number" step="any" min="0" value="@priceVal">
+                        @if (fieldErrors.ContainsKey("price"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["price"]</span>
+                        }
                     </div>
                     <div class="form-group">
-                        <label>Sản phẩm</label>
-                        <select class="form-control" name="product_id">
-                            @if (Model.Product != null)
+                        <label>Sản phẩm <span class="text-danger">*</span></label>
+                        <select class="form-control @(fieldErrors.ContainsKey("product_id") ? "is-invalid" : "")" name="product_id">
+                            @if (ViewBag.Product != null)
                             {
-                                <option value="@Model.Product.Id">Giữ nguyên: @Model.Product.Name</option>
-                            }
-                            @foreach (var product in ViewBag.Product)
-                            {
-                                <option value="@product.Id">@product.Name</option>
+                                foreach (var product in ViewBag.Product)
+                                {
+                                    bool isSelected = Model.Product != null && Model.Product.Id == product.Id;
+                                    <option value="@product.Id" @(isSelected ? "selected" : "")>@product.Name</option>
+                                }
                             }
                         </select>
+                        @if (fieldErrors.ContainsKey("product_id"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["product_id"]</span>
+                        }
                     </div>
                     <div class="form-group">
                         <label>Trạng thái</label>
@@ -51,6 +65,7 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    <a href="@Url.Action("Index", "ManagePropertyProduct")" class="btn btn-secondary ml-2">Quay lại</a>
                 </div>
             }
         </div>

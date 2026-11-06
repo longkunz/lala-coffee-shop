@@ -1,4 +1,4 @@
-﻿-- =============================================
+-- =============================================
 -- LalaCoffee Database Seed Script (Completely Fresh)
 -- Target Database: UniCafe (.NET 4.8 LalaCoffee)
 -- Encoding: UTF-8 with N'...' for perfect Vietnamese
@@ -122,50 +122,98 @@ VALUES
 SET IDENTITY_INSERT Products OFF;
 
 -- =============================================
--- 6. Seed PropertyProducts (Thuộc tính: Đá / Đường)
+-- 6. Seed PropertyProducts (Thuộc tính: Size / Phục vụ)
 -- =============================================
 SET IDENTITY_INSERT PropertyProducts ON;
 
 INSERT INTO PropertyProducts (Id, Name, Price, Status, Product_Id, CreatedAt, UpdatedAt)
 VALUES
-(1, N'100% Đá (Bình thường)', 0, N'1', 1, GETDATE(), GETDATE()),
-(2, N'50% Đá (Ít đá)', 0, N'1', 1, GETDATE(), GETDATE()),
-(3, N'Không đá', 0, N'1', 1, GETDATE(), GETDATE()),
-(4, N'100% Đá (Bình thường)', 0, N'1', 2, GETDATE(), GETDATE()),
-(5, N'50% Đá (Ít đá)', 0, N'1', 2, GETDATE(), GETDATE()),
-(6, N'Không đá', 0, N'1', 2, GETDATE(), GETDATE()),
-(7, N'100% Đá (Bình thường)', 0, N'1', 3, GETDATE(), GETDATE()),
-(8, N'50% Đá (Ít đá)', 0, N'1', 3, GETDATE(), GETDATE()),
-(9, N'Không đá', 0, N'1', 3, GETDATE(), GETDATE()),
-(10, N'100% Đá (Bình thường)', 0, N'1', 7, GETDATE(), GETDATE()),
-(11, N'50% Đá (Ít đá)', 0, N'1', 7, GETDATE(), GETDATE()),
-(12, N'100% Đá (Bình thường)', 0, N'1', 10, GETDATE(), GETDATE()),
-(13, N'50% Đá (Ít đá)', 0, N'1', 10, GETDATE(), GETDATE()),
-(14, N'Bình thường', 0, N'1', 13, GETDATE(), GETDATE()),
-(15, N'Nướng nóng giòn', 0, N'1', 13, GETDATE(), GETDATE()),
-(16, N'Nướng nóng giòn', 0, N'1', 15, GETDATE(), GETDATE());
-
-SET IDENTITY_INSERT PropertyProducts OFF;
-
--- =============================================
--- 7. Seed OptionProducts (Tùy chọn: Size / Topping)
--- =============================================
-SET IDENTITY_INSERT OptionProducts ON;
-
-INSERT INTO OptionProducts (Id, Name, Price, Status, Product_Id, CreatedAt, UpdatedAt)
-VALUES
+-- Đồ uống (1..12): Size Vừa (M) và Size Lớn (L)
 (1, N'Size Vừa (M)', 0, N'1', 1, GETDATE(), GETDATE()),
 (2, N'Size Lớn (L)', 6000, N'1', 1, GETDATE(), GETDATE()),
 (3, N'Size Vừa (M)', 0, N'1', 2, GETDATE(), GETDATE()),
 (4, N'Size Lớn (L)', 6000, N'1', 2, GETDATE(), GETDATE()),
 (5, N'Size Vừa (M)', 0, N'1', 3, GETDATE(), GETDATE()),
 (6, N'Size Lớn (L)', 6000, N'1', 3, GETDATE(), GETDATE()),
-(7, N'Thêm Kem Cheese Macchiato', 12000, N'1', 7, GETDATE(), GETDATE()),
-(8, N'Thêm Thạch Đào Giòn', 10000, N'1', 7, GETDATE(), GETDATE()),
-(9, N'Thêm Trân Châu Trắng', 10000, N'1', 10, GETDATE(), GETDATE()),
-(10, N'Thêm Pudding Trứng', 10000, N'1', 10, GETDATE(), GETDATE()),
-(11, N'Thêm Kem Cheese', 12000, N'1', 10, GETDATE(), GETDATE()),
-(12, N'Thêm Sốt Phô Mai', 8000, N'1', 13, GETDATE(), GETDATE());
+(7, N'Size Vừa (M)', 0, N'1', 4, GETDATE(), GETDATE()),
+(8, N'Size Lớn (L)', 6000, N'1', 4, GETDATE(), GETDATE()),
+(9, N'Size Vừa (M)', 0, N'1', 5, GETDATE(), GETDATE()),
+(10, N'Size Lớn (L)', 6000, N'1', 5, GETDATE(), GETDATE()),
+(11, N'Size Vừa (M)', 0, N'1', 6, GETDATE(), GETDATE()),
+(12, N'Size Lớn (L)', 6000, N'1', 6, GETDATE(), GETDATE()),
+(13, N'Size Vừa (M)', 0, N'1', 7, GETDATE(), GETDATE()),
+(14, N'Size Lớn (L)', 6000, N'1', 7, GETDATE(), GETDATE()),
+(15, N'Size Vừa (M)', 0, N'1', 8, GETDATE(), GETDATE()),
+(16, N'Size Lớn (L)', 6000, N'1', 8, GETDATE(), GETDATE()),
+(17, N'Size Vừa (M)', 0, N'1', 9, GETDATE(), GETDATE()),
+(18, N'Size Lớn (L)', 6000, N'1', 9, GETDATE(), GETDATE()),
+(19, N'Size Vừa (M)', 0, N'1', 10, GETDATE(), GETDATE()),
+(20, N'Size Lớn (L)', 6000, N'1', 10, GETDATE(), GETDATE()),
+(21, N'Size Vừa (M)', 0, N'1', 11, GETDATE(), GETDATE()),
+(22, N'Size Lớn (L)', 6000, N'1', 11, GETDATE(), GETDATE()),
+(23, N'Size Vừa (M)', 0, N'1', 12, GETDATE(), GETDATE()),
+(24, N'Size Lớn (L)', 6000, N'1', 12, GETDATE(), GETDATE()),
+
+-- Bánh mì & Croissant (13..15): Nướng nóng giòn hoặc Tiêu chuẩn
+(25, N'Bình thường', 0, N'1', 13, GETDATE(), GETDATE()),
+(26, N'Nướng nóng giòn', 0, N'1', 13, GETDATE(), GETDATE()),
+(27, N'Bình thường', 0, N'1', 14, GETDATE(), GETDATE()),
+(28, N'Nướng nóng giòn', 0, N'1', 14, GETDATE(), GETDATE()),
+(29, N'Bình thường', 0, N'1', 15, GETDATE(), GETDATE()),
+(30, N'Nướng nóng giòn', 0, N'1', 15, GETDATE(), GETDATE());
+
+SET IDENTITY_INSERT PropertyProducts OFF;
+
+-- =============================================
+-- 7. Seed OptionProducts (Tùy chọn: Topping)
+-- =============================================
+SET IDENTITY_INSERT OptionProducts ON;
+
+INSERT INTO OptionProducts (Id, Name, Price, Status, Product_Id, CreatedAt, UpdatedAt)
+VALUES
+-- Cà phê (1..6): Thêm Shot Espresso, Thêm Kem Cheese
+(1, N'Thêm Shot Espresso', 10000, N'1', 1, GETDATE(), GETDATE()),
+(2, N'Thêm Kem Cheese', 12000, N'1', 1, GETDATE(), GETDATE()),
+(3, N'Thêm Shot Espresso', 10000, N'1', 2, GETDATE(), GETDATE()),
+(4, N'Thêm Kem Cheese', 12000, N'1', 2, GETDATE(), GETDATE()),
+(5, N'Thêm Shot Espresso', 10000, N'1', 3, GETDATE(), GETDATE()),
+(6, N'Thêm Kem Cheese', 12000, N'1', 3, GETDATE(), GETDATE()),
+(7, N'Thêm Shot Espresso', 10000, N'1', 4, GETDATE(), GETDATE()),
+(8, N'Thêm Kem Cheese', 12000, N'1', 4, GETDATE(), GETDATE()),
+(9, N'Thêm Shot Espresso', 10000, N'1', 5, GETDATE(), GETDATE()),
+(10, N'Thêm Kem Cheese', 12000, N'1', 5, GETDATE(), GETDATE()),
+(11, N'Thêm Shot Espresso', 10000, N'1', 6, GETDATE(), GETDATE()),
+(12, N'Thêm Kem Cheese', 12000, N'1', 6, GETDATE(), GETDATE()),
+
+-- Trà trái cây & Macchiato (7..9): Thêm Kem Cheese Macchiato, Thạch Đào Giòn, Trân Châu Trắng
+(13, N'Thêm Kem Cheese Macchiato', 12000, N'1', 7, GETDATE(), GETDATE()),
+(14, N'Thêm Thạch Đào Giòn', 10000, N'1', 7, GETDATE(), GETDATE()),
+(15, N'Thêm Trân Châu Trắng', 10000, N'1', 7, GETDATE(), GETDATE()),
+(16, N'Thêm Kem Cheese Macchiato', 12000, N'1', 8, GETDATE(), GETDATE()),
+(17, N'Thêm Thạch Đào Giòn', 10000, N'1', 8, GETDATE(), GETDATE()),
+(18, N'Thêm Trân Châu Trắng', 10000, N'1', 8, GETDATE(), GETDATE()),
+(19, N'Thêm Kem Cheese Macchiato', 12000, N'1', 9, GETDATE(), GETDATE()),
+(20, N'Thêm Thạch Đào Giòn', 10000, N'1', 9, GETDATE(), GETDATE()),
+(21, N'Thêm Trân Châu Trắng', 10000, N'1', 9, GETDATE(), GETDATE()),
+
+-- Trà sữa & Đá xay (10..12): Trân Châu Trắng, Pudding Trứng, Kem Cheese
+(22, N'Thêm Trân Châu Trắng', 10000, N'1', 10, GETDATE(), GETDATE()),
+(23, N'Thêm Pudding Trứng', 10000, N'1', 10, GETDATE(), GETDATE()),
+(24, N'Thêm Kem Cheese', 12000, N'1', 10, GETDATE(), GETDATE()),
+(25, N'Thêm Trân Châu Trắng', 10000, N'1', 11, GETDATE(), GETDATE()),
+(26, N'Thêm Pudding Trứng', 10000, N'1', 11, GETDATE(), GETDATE()),
+(27, N'Thêm Kem Cheese', 12000, N'1', 11, GETDATE(), GETDATE()),
+(28, N'Thêm Trân Châu Trắng', 10000, N'1', 12, GETDATE(), GETDATE()),
+(29, N'Thêm Pudding Trứng', 10000, N'1', 12, GETDATE(), GETDATE()),
+(30, N'Thêm Kem Cheese', 12000, N'1', 12, GETDATE(), GETDATE()),
+
+-- Bánh mì & Croissant (13..15): Thêm Sốt Phô Mai, Thêm Chà Bông Cay
+(31, N'Thêm Sốt Phô Mai', 8000, N'1', 13, GETDATE(), GETDATE()),
+(32, N'Thêm Chà Bông Cay', 6000, N'1', 13, GETDATE(), GETDATE()),
+(33, N'Thêm Sốt Phô Mai', 8000, N'1', 14, GETDATE(), GETDATE()),
+(34, N'Thêm Chà Bông Cay', 6000, N'1', 14, GETDATE(), GETDATE()),
+(35, N'Thêm Sốt Phô Mai', 8000, N'1', 15, GETDATE(), GETDATE()),
+(36, N'Thêm Chà Bông Cay', 6000, N'1', 15, GETDATE(), GETDATE());
 
 SET IDENTITY_INSERT OptionProducts OFF;
 

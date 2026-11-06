@@ -54,25 +54,10 @@ namespace LalaCoffee.Controllers
             ViewBag.Message = "Email sent successfully.";
         }
 
-        // GET: Pay/MomoPay
+        // GET: Pay/MomoPay (Đã loại bỏ cổng thanh toán trực tuyến, chỉ giữ COD)
         public ActionResult MomoPay(string orderCode = null)
         {
-            if (string.IsNullOrEmpty(orderCode) && Session != null && Session["orderCode"] != null)
-            {
-                orderCode = Session["orderCode"].ToString();
-            }
-
-            var order = !string.IsNullOrEmpty(orderCode)
-                ? _orderService.GetOrderByCode(orderCode) // Context.Orders.FirstOrDefault
-                : (Session != null ? Session["order"] as Order : null);
-
-            if (order == null)
-            {
-                return RedirectToAction("CheckOut", "Order");
-            }
-
-            string payUrl = _paymentService.CreateMomoPaymentUrl(order);
-            return Redirect(payUrl);
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult MomoProcessing(MomoResult result)
@@ -100,7 +85,10 @@ namespace LalaCoffee.Controllers
                     return RedirectToAction("ErrorPayment", "Pay");
                 }
 
-                _orderService.UpdateOrderStatus(order.Code, "Paid", paid: 1);
+                string orderStatus = string.IsNullOrEmpty(order.Status) || order.Status == "Pending" || order.Status == "Paid"
+                    ? OrderStatus.PendingConfirmation
+                    : OrderStatus.NormalizeStatus(order.Status);
+                _orderService.UpdateOrderStatus(order.Code, orderStatus, paid: OrderStatus.Paid);
                 _cartService.ClearCart();
 
                 string email = Session != null ? Session["email"]?.ToString() : null;
@@ -145,25 +133,10 @@ namespace LalaCoffee.Controllers
             return ipAddress;
         }
 
-        // GET: Pay/VNPay
+        // GET: Pay/VNPay (Đã loại bỏ cổng thanh toán trực tuyến, chỉ giữ COD)
         public ActionResult VNPay(string orderCode = null)
         {
-            if (string.IsNullOrEmpty(orderCode) && Session != null && Session["orderCode"] != null)
-            {
-                orderCode = Session["orderCode"].ToString();
-            }
-
-            var order = !string.IsNullOrEmpty(orderCode)
-                ? _orderService.GetOrderByCode(orderCode) // Context.Orders.FirstOrDefault
-                : (Session != null ? Session["order"] as Order : null);
-
-            if (order == null)
-            {
-                return RedirectToAction("CheckOut", "Order");
-            }
-
-            string paymentUrl = _paymentService.CreateVnPayPaymentUrl(order, GetIpAddress());
-            return Redirect(paymentUrl);
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult VNPayProcessing(int vnp_ResponseCode, NameValueCollection queryString = null)
@@ -196,7 +169,10 @@ namespace LalaCoffee.Controllers
                     return RedirectToAction("ErrorPayment", "Pay");
                 }
 
-                _orderService.UpdateOrderStatus(order.Code, "Paid", paid: 1);
+                string orderStatus = string.IsNullOrEmpty(order.Status) || order.Status == "Pending" || order.Status == "Paid"
+                    ? OrderStatus.PendingConfirmation
+                    : OrderStatus.NormalizeStatus(order.Status);
+                _orderService.UpdateOrderStatus(order.Code, orderStatus, paid: OrderStatus.Paid);
                 _cartService.ClearCart();
 
                 string email = Session != null ? Session["email"]?.ToString() : null;

@@ -93,8 +93,8 @@ namespace LalaCoffee.Controllers
             {
                 success = true,
                 quantity = item.Quantity,
-                subtotal = _cartService.GetCartTotal(new[] { item }).ToString("N0") + "d",
-                total = _cartService.GetCartTotal(cart).ToString("N0") + "d",
+                subtotal = _cartService.GetCartTotal(new[] { item }).ToString("N0") + "đ",
+                total = _cartService.GetCartTotal(cart).ToString("N0") + "đ",
                 totalQuantity = cart.Sum(x => x.Quantity)
             });
         }

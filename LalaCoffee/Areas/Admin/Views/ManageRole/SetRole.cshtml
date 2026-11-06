@@ -1,13 +1,24 @@
 @model IEnumerable<LalaCoffee.Models.AspNetUserRoles>
+@using Microsoft.AspNet.Identity
 @{
     ViewBag.Title = "Set Role Manage";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
-}
-@{
-    List<LalaCoffee.Data.ApplicationUser> users = ViewBag.Users;
-    List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole> roles = ViewBag.Roles;
+    List<LalaCoffee.Data.ApplicationUser> users = ViewBag.Users as List<LalaCoffee.Data.ApplicationUser> ?? new List<LalaCoffee.Data.ApplicationUser>();
+    List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole> roles = ViewBag.Roles as List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole> ?? new List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>();
+
+    var currentUserId = User?.Identity?.GetUserId();
+    var adminRole = roles.FirstOrDefault(r => string.Equals(r.Name, "Admin", StringComparison.OrdinalIgnoreCase));
+    var adminRoleId = adminRole?.Id;
+    var totalAdmins = adminRoleId != null && Model != null ? Model.Count(x => x.RoleId == adminRoleId) : 0;
+
+    var fieldErrors = (TempData["FieldErrors"] ?? ViewBag.FieldErrors) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    var formValues = (TempData["FormValues"] ?? ViewBag.FormValues) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    string openModal = TempData["OpenModal"] as string;
+    string selectedUser = formValues.ContainsKey("UserId") ? formValues["UserId"] : "";
+    string selectedRole = formValues.ContainsKey("RoleId") ? formValues["RoleId"] : "";
 }
 @Html.Partial("ErrorsAlert")
+
 <div class="modal fade" id="create_modal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -15,7 +26,7 @@
             {
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
-                    <h4 class="modal-title">Set role cho user</h4>
+                    <h4 class="modal-title">Gán vai trò cho người dùng</h4>
                     <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -23,22 +34,32 @@
                 <div class="modal-body">
                     <div class="card-body table-responsive p-0">
                         <div class="form-group">
-                            <label>User</label>
-                            <select class="form-control" name="UserId" id="UserId">
-                                @foreach (var user in ViewBag.Users)
+                            <label>Người dùng (User) <span class="text-danger">*</span></label>
+                            <select class="form-control @(fieldErrors.ContainsKey("UserId") ? "is-invalid" : "")" name="UserId" id="UserId">
+                                <option value="">-- Chọn người dùng --</option>
+                                @foreach (var user in users)
                                 {
-                                    <option value="@user.Id">@user.UserName</option>
+                                    <option value="@user.Id" @(selectedUser == user.Id ? "selected" : "")>@user.UserName (@user.Email)</option>
                                 }
                             </select>
+                            @if (fieldErrors.ContainsKey("UserId"))
+                            {
+                                <span class="invalid-feedback d-block">@fieldErrors["UserId"]</span>
+                            }
                         </div>
                         <div class="form-group">
-                            <label>Role</label>
-                            <select class="form-control" name="RoleId" id="RoleId">
-                                @foreach (var role in ViewBag.Roles)
+                            <label>Vai trò (Role) <span class="text-danger">*</span></label>
+                            <select class="form-control @(fieldErrors.ContainsKey("RoleId") ? "is-invalid" : "")" name="RoleId" id="RoleId">
+                                <option value="">-- Chọn vai trò --</option>
+                                @foreach (var role in roles)
                                 {
-                                    <option value="@role.Id">@role.Name</option>
+                                    <option value="@role.Id" @(selectedRole == role.Id ? "selected" : "")>@role.Name</option>
                                 }
                             </select>
+                            @if (fieldErrors.ContainsKey("RoleId"))
+                            {
+                                <span class="invalid-feedback d-block">@fieldErrors["RoleId"]</span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -50,12 +71,13 @@
         </div>
     </div>
 </div>
+
 <div class="row">
     <div class="col-12">
         <div class="card card-info">
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="fa fa-list"></i> DANH SÁCH SET ROLE <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
+                    <i class="fa fa-list"></i> DANH SÁCH GÁN ROLE <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal" style="cursor: pointer;"><i class="fa fa-plus-circle"></i></a>
                 </h3>
             </div>
             <div class="card-body">
@@ -63,25 +85,68 @@
                     <table class="table table-head-fixed text-nowrap" id="nTable">
                         <thead>
                             <tr>
-                                <th>Hành động</th>
-                                <th>User</th>
-                                <th>Role</th>
+                                <th style="width: 100px;">Hành động</th>
+                                <th>Người dùng</th>
+                                <th>Vai trò (Role)</th>
+                                <th>Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                <tr>
+                                var user = users.FirstOrDefault(x => x.Id == item.UserId);
+                                var role = roles.FirstOrDefault(x => x.Id == item.RoleId);
+                                var userName = user != null ? user.UserName : item.UserId;
+                                var roleName = role != null ? role.Name : item.RoleId;
+
+                                var isRoleAdmin = string.Equals(roleName, "Admin", StringComparison.OrdinalIgnoreCase);
+                                var isSelf = !string.IsNullOrEmpty(currentUserId) && string.Equals(item.UserId, currentUserId, StringComparison.OrdinalIgnoreCase);
+                                var isLastAdmin = isRoleAdmin && totalAdmins <= 1;
+
+                                <tr class="@(isSelf ? "table-warning" : "")">
                                     <td>
-                                        <a href="#" class="btn btn-danger btn-sm" onclick="del('@item.UserId', '@item.RoleId')">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
+                                        @if (isLastAdmin)
+                                        {
+                                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Quản trị viên cuối cùng trong hệ thống (không thể gỡ)">
+                                                <i class="fas fa-lock"></i>
+                                            </button>
+                                        }
+                                        else if (isSelf && isRoleAdmin)
+                                        {
+                                            <button type="button" class="btn btn-warning btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', true, true, '@userName', '@roleName')" title="Cảnh báo: Tự gỡ quyền Admin">
+                                                <i class="fas fa-user-slash"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', @(isSelf ? "true" : "false"), @(isRoleAdmin ? "true" : "false"), '@userName', '@roleName')" title="Gỡ quyền">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        }
                                     </td>
                                     <td>
-                                        @users.Find(x => x.Id == item.UserId).UserName
+                                        <strong>@userName</strong>
+                                        @if (isSelf)
+                                        {
+                                            <span class="badge badge-primary ml-1"><i class="fas fa-user-circle"></i> Bạn</span>
+                                        }
                                     </td>
                                     <td>
-                                        @roles.Find(x => x.Id == item.RoleId).Name
+                                        <strong>@roleName</strong>
+                                    </td>
+                                    <td>
+                                        @if (isLastAdmin)
+                                        {
+                                            <span class="badge badge-danger" title="Admin duy nhất (Khóa)"><i class="fas fa-shield-alt"></i></span>
+                                        }
+                                        else if (isRoleAdmin)
+                                        {
+                                            <span class="badge badge-success"><i class="fas fa-user-shield"></i> Quản trị viên</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Thành viên</span>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -92,25 +157,65 @@
         </div>
     </div>
 </div>
+
 <script type="text/javascript">
-    function del(UserId, RoleId) {
-        if (confirm("Bạn chắc chắn muốn xóa?")) {
-            $.ajax({
-                url: "@Url.Action("DeleteSetRole", "ManageRole")",
-                type: "POST",
-                data: { UserId: UserId, RoleId: RoleId, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                success: function (response) {
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    alert(error);
-                }
-            });
+    function delRole(userId, roleId, isSelf, isRoleAdmin, userName, roleName) {
+        var confirmMsg = "Bạn chắc chắn muốn gỡ role '" + roleName + "' của người dùng '" + userName + "'?";
+        var confirmSelfRevoke = false;
+
+        if (isSelf && isRoleAdmin) {
+            confirmMsg = "⚠️ CẢNH BÁO NGUY HIỂM ⚠️\n\nBạn đang thực hiện gỡ quyền Admin của CHÍNH TÀI KHOẢN BẠN (" + userName + ")!\nSau khi gỡ quyền này, bạn sẽ MẤT TOÀN BỘ QUYỀN TRUY CẬP vào khu vực quản trị ngay lập tức.\n\nBạn có thực sự chắc chắn muốn tiếp tục không?";
+            confirmSelfRevoke = true;
+        } else if (isSelf) {
+            confirmMsg = "CẢNH BÁO: Bạn đang tự gỡ role '" + roleName + "' của chính tài khoản mình. Bạn có chắc chắn muốn tiếp tục?";
+            confirmSelfRevoke = true;
         }
+
+        if (!confirm(confirmMsg)) {
+            return;
+        }
+
+        executeDeleteSetRole(userId, roleId, confirmSelfRevoke);
+    }
+
+    function executeDeleteSetRole(userId, roleId, confirmSelfRevoke) {
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        $.ajax({
+            url: "@Url.Action("DeleteSetRole", "ManageRole")",
+            type: "POST",
+            data: { 
+                UserId: userId, 
+                RoleId: roleId, 
+                confirmSelfRevoke: confirmSelfRevoke,
+                __RequestVerificationToken: token 
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    if (response.isSelfRevoke) {
+                        window.location.href = "/";
+                    } else {
+                        location.reload();
+                    }
+                } else if (response.requireSelfRevokeConfirm) {
+                    if (confirm(response.message)) {
+                        executeDeleteSetRole(userId, roleId, true);
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("Đã xảy ra lỗi: " + error);
+            }
+        });
+    }
+    @if (!string.IsNullOrEmpty(openModal) && fieldErrors.Count > 0)
+    {
+        <text>
+        $(document).ready(function () {
+            $('#@openModal').modal('show');
+        });
+        </text>
     }
 </script>

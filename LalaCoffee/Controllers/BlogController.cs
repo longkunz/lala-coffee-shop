@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -15,9 +15,12 @@ namespace LalaCoffee.Controllers
             var b = GetAll().ToList();
             return View(b);
         }
-        public ActionResult Readmore(int id) {
-            var blog = GetById(id);
-            if(blog == null || id==null) {
+        public ActionResult Readmore(int? id) {
+            if (id == null) {
+                return RedirectToAction("Index", "Blog");
+            }
+            var blog = GetById(id.Value);
+            if (blog == null) {
                 return RedirectToAction("Index", "Blog");
             }
             return View(blog);

@@ -1220,12 +1220,11 @@
 }
 /*MENU*/
 @media (min-width: 992px) {
-    .menu_child > li:hover > a
-    {
-        color: #EA8025;
+    .menu_child > li:hover > a {
+        color: #e4b95b;
     }
-    li:hover .menu_child {
-        top: 100%;
+    .menu-nav-main > ul > li:hover > .menu_child,
+    .menu-nav-main > ul > li:focus-within > .menu_child {
         visibility: visible;
         opacity: 1;
         pointer-events: auto;
@@ -1238,97 +1237,250 @@
         width: 100%;
         pointer-events: none;
         position: absolute;
-        top: 200%;
+        top: 100%;
         left: 0;
-        z-index: 99;
-        background: rgba(193, 153, 66, 0.95);
-        color: #fff;
+        z-index: 1050;
+        background: rgba(24, 16, 12, 0.98) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(228, 185, 91, 0.25);
+        border-bottom: 3px solid #e4b95b;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        color: #f8f6f0;
         visibility: hidden;
         opacity: 0;
-        -webkit-transition: all .5s ease;
-        -moz-transition: all .5s ease;
-        -o-transition: all .5s ease;
-        transition: all .5s ease;
+        transition: opacity .15s ease;
+    }
+    /* Vùng đệm hover bridge chống hụt chuột giữa navbar và dropdown */
+    .menu_child::before {
+        content: "";
+        position: absolute;
+        top: -14px;
+        left: 0;
+        width: 100%;
+        height: 14px;
+        background: transparent;
+        pointer-events: auto;
     }
     .menu_child_lv3 {
         padding: 0;
         margin-top: 16px;
-    }
-     .menu_child_lv3 > li {
-        margin-bottom: 4px;
-    }
-    .menu_child > li.lv2_title {
-        flex: 0 0 calc(100% / 5);
-        padding: 12px 0;
-        margin: 0 56px
-    }
-    .menu_child_lv3 {
         padding-left: 16px;
     }
     .menu_child_lv3 > li {
-        display:contents;
+        display: contents;
+        margin-bottom: 4px;
         padding-top: 16px;
     }
     .menu_child_lv3 > li:last-child {
         padding-bottom: 0;
     }
-    .menu_child {
-        display: block;
-        padding: 0;
-        padding-left: 10px;
-    }
-    .menu_child > li {
-        padding: 0;
-    }
-    .menu_child > li > a {
-        font-size: 18px;
-    }
     .menu_child > li.lv2_title {
-
+        flex: 0 0 calc(100% / 5);
         padding: 16px 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        margin: 0 56px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
-       
+    .menu_child > li.lv2_title > a {
+        color: #e4b95b !important;
+        border-bottom: 2px solid rgba(228, 185, 91, 0.4) !important;
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .menu_child > li.lv2_title > a:hover {
+        color: #ffffff !important;
+        border-bottom-color: #ffffff !important;
+    }
+    .menu_child_lv3 > li > a {
+        color: #f8f6f0 !important;
+        font-size: 15px;
+        font-weight: 400;
+        transition: color .2s ease;
+    }
+    .menu_child_lv3 > li > a:hover {
+        color: #e4b95b !important;
+    }
 }
 
-/* Storefront navbar: full-width branding and icon actions. */
+/* ==========================================================================
+   Storefront Navbar: Transparent Over Hero (Home) & Sticky Espresso Header
+   ========================================================================== */
+
+/* Trắng ngà: #f8f6f0, Vàng champagne: #e4b95b, Nâu espresso: #1a120c / rgba(26, 18, 12, 0.94) */
+
+.storefront-header {
+    width: 100%;
+    margin: 0;
+    padding: 0 !important;
+    transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.storefront-header .header-nav {
+    width: 100%;
+    padding: 0 !important;
+    border-bottom: none !important;
+    background: transparent !important;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .storefront-header .header-nav > .container-fluid {
-    padding-right: 16px;
-    padding-left: 16px;
+    padding-right: 24px;
+    padding-left: 24px;
+    height: 100%;
 }
 
 .storefront-header .header-nav-inside {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
     gap: 32px;
 }
 
+/* 1. Trang HOME: Trạng thái chưa scroll - Nổi trên hero, gradient nâu đen nhẹ */
+.header-part.header-overlay-hero {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background: linear-gradient(180deg, rgba(16, 11, 8, 0.78) 0%, rgba(16, 11, 8, 0.38) 55%, rgba(16, 11, 8, 0) 100%) !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+.header-part.header-overlay-hero .header-nav {
+    height: 96px;
+    min-height: 96px;
+}
+
+/* 2. Sau scroll: Nâu espresso gần đặc, blur nhẹ, thu gọn còn 72px (dùng cho cả Home và các trang nội dung) */
+.header-part.sticky-fixed {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1001;
+    background: rgba(26, 18, 12, 0.94) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(228, 185, 91, 0.18) !important;
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.45) !important;
+}
+
+.header-part.sticky-fixed .header-nav {
+    height: 72px !important;
+    min-height: 72px !important;
+    position: static !important;
+    border-bottom: none !important;
+    background: transparent !important;
+}
+
+/* 3. Các trang nội dung: Dùng nền đặc espresso (không phủ hero) */
+.header-part.header-solid {
+    position: relative;
+    background: #1c130e !important;
+    border-bottom: 1px solid rgba(228, 185, 91, 0.18) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.header-part.header-solid .header-nav {
+    height: 80px;
+    min-height: 80px;
+}
+
+/* 4. Logo, Menu, Icon màu trắng ngà #f8f6f0, hover/active vàng champagne #e4b95b */
 .storefront-header .logo {
+    float: none;
+    margin-top: 0;
+    line-height: 1;
     flex-shrink: 0;
+    font-size: 32px;
+}
+
+.storefront-header .logo span::after {
+    transform: scale(0.7);
+    transform-origin: center bottom;
+    right: 24px;
+    top: -14px;
+}
+
+.storefront-header .logo a {
+    color: #f8f6f0 !important;
+    transition: color 0.25s ease;
+}
+
+.storefront-header .logo a:hover {
+    color: #e4b95b !important;
+}
+
+.footer-part .logo {
+    font-size: 32px !important;
+}
+
+@media (min-width: 992px) {
+    /* Menu trigger chạm dropdown */
+    .storefront-header .menu-top-part,
+    .storefront-header .menu-nav-main {
+        align-self: stretch;
+    }
+
+    .storefront-header .menu-nav-main,
+    .storefront-header .menu-nav-main > ul {
+        display: flex;
+        height: 100%;
+        margin-bottom: 0;
+    }
+
+    .storefront-header .menu-nav-main > ul > li {
+        display: flex;
+        align-items: center;
+    }
 }
 
 .storefront-header .menu-top-part {
+    float: none;
     display: flex;
     align-items: center;
     flex: 1;
     gap: 8px;
-    width: auto;
     margin-top: 0;
+    height: 100%;
 }
 
 .storefront-header .menu-nav-main {
+    float: none;
     margin-left: auto;
     margin-right: auto;
 }
 
 .storefront-header .menu-nav-main > ul > li > a {
-    padding-bottom: 15px;
-    padding-top: 15px;
+    color: #f8f6f0 !important;
+    padding: 10px 16px;
+    font-weight: 700;
+    transition: color 0.25s ease;
+}
+
+.storefront-header .menu-nav-main > ul > li:hover > a,
+.storefront-header .menu-nav-main > ul > li.active > a {
+    color: #e4b95b !important;
 }
 
 .storefront-header .cell-part {
     margin: 0 16px 0 0;
     white-space: nowrap;
+}
+
+.storefront-header .cell-part a {
+    color: #f8f6f0 !important;
+    font-weight: 600;
+    transition: color 0.25s ease;
+}
+
+.storefront-header .cell-part a:hover {
+    color: #e4b95b !important;
 }
 
 .storefront-header .header-account {
@@ -1339,7 +1491,7 @@
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: #fff;
+    color: #f8f6f0;
 }
 
 .storefront-header .header-icon {
@@ -1352,13 +1504,19 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: #fff;
+    color: #f8f6f0 !important;
     font-size: 26px;
     cursor: pointer;
+    transition: color 0.25s ease, transform 0.2s ease;
 }
 
 .storefront-header .header-icon:hover {
-    color: #f4e4c3;
+    color: #e4b95b !important;
+}
+
+.storefront-header .header-icon:focus-visible {
+    outline: 2px solid #e4b95b;
+    outline-offset: 2px;
 }
 
 .storefront-header .header-cart {
@@ -1372,33 +1530,148 @@
     min-width: 18px;
     padding: 0 4px;
     border-radius: 10px;
-    background: #fff;
-    color: #372727;
+    background: #e4b95b !important;
+    color: #1a120c !important;
     font-size: 11px;
     font-weight: 700;
     line-height: 18px;
     text-align: center;
 }
 
-.storefront-header .header-icon:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-}
-
+/* Dropdown Tài khoản Compact & Vertical */
 .storefront-header .header-account:focus-within .cart-wrap {
     display: block;
 }
 
 .storefront-header .header-account .cart-wrap {
-    right: -52px;
-    padding-top: 12px;
+    right: -10px;
+    padding-top: 10px;
 }
 
-.storefront-header .header-account .cart-blog {
-    min-width: 0;
-    width: min(380px, calc(100vw - 32px));
+.storefront-header .header-account .cart-wrap::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    right: 0;
+    width: 100%;
+    height: 10px;
+    background: transparent;
 }
 
+.storefront-header .header-account .cart-wrap .cart-blog {
+    min-width: 200px !important;
+    width: max-content !important;
+    max-width: min(280px, calc(100vw - 32px)) !important;
+    padding: 8px 0 !important;
+    background: rgba(24, 16, 12, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(228, 185, 91, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+    color: #f8f6f0;
+}
+
+.storefront-header .header-account .cart-blog:before {
+    right: 18px !important;
+    border-bottom-color: rgba(24, 16, 12, 0.98) !important;
+}
+
+.storefront-header .account-dropdown-header {
+    padding: 6px 16px 8px 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+.storefront-header .account-greeting {
+    font-size: 13px;
+    color: rgba(248, 246, 240, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.storefront-header .account-username {
+    font-size: 13.5px;
+    color: #e4b95b;
+    font-weight: 700;
+}
+
+.storefront-header .account-dropdown-divider {
+    height: 1px;
+    background: rgba(228, 185, 91, 0.2);
+    margin: 4px 0 6px 0;
+}
+
+.storefront-header .account-dropdown-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.storefront-header .account-dropdown-menu li {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+.storefront-header .account-dropdown-menu .account-menu-link {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #f8f6f0 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    border-radius: 0;
+    background: transparent;
+    line-height: 1.4;
+    text-transform: none !important;
+    border: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.storefront-header .account-dropdown-menu .account-menu-link i {
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+    color: #e4b95b;
+    transition: transform 0.2s ease;
+}
+
+.storefront-header .account-dropdown-menu .account-menu-link:hover {
+    background: rgba(228, 185, 91, 0.15) !important;
+    color: #e4b95b !important;
+}
+
+.storefront-header .account-dropdown-menu .account-menu-link:hover i {
+    transform: scale(1.15);
+}
+
+.storefront-header .account-dropdown-menu .account-menu-link.text-danger {
+    color: #f8f6f0 !important;
+}
+
+.storefront-header .account-dropdown-menu .account-menu-link.text-danger i {
+    color: #ff6b6b;
+}
+
+.storefront-header .account-dropdown-menu .account-menu-link.text-danger:hover {
+    background: rgba(255, 107, 107, 0.15) !important;
+    color: #ff6b6b !important;
+}
+
+/* Responsive Tablet & Mobile */
 @media (max-width: 991px) {
     .storefront-header .header-nav-inside {
         gap: 16px;
@@ -1426,7 +1699,13 @@
 
 @media (max-width: 767px) {
     .storefront-header .logo {
-        font-size: 32px;
+        font-size: 24px;
+    }
+
+    .storefront-header .logo span::after {
+        transform: scale(0.55);
+        right: 16px;
+        top: -12px;
     }
 
     .storefront-header .header-nav-inside {
@@ -1438,6 +1717,15 @@
     }
 
     .storefront-header .header-account .cart-wrap {
-        right: -48px;
+        right: -10px;
     }
+}
+
+
+/* Expand page content beyond Bootstrap's fixed container widths. */
+.storefront .main-part .container {
+    width: 100%;
+    max-width: none;
+    padding-right: 16px;
+    padding-left: 16px;
 }

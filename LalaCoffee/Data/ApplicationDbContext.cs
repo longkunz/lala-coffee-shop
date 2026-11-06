@@ -1,4 +1,4 @@
-﻿using LalaCoffee.Models;
+using LalaCoffee.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,12 @@ namespace LalaCoffee.Models
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Blog> Blogs { get; set; }
+
+        static ApplicationDbContext()
+        {
+            Database.SetInitializer<ApplicationDbContext>(null);
+        }
+
         public ApplicationDbContext() : base("DefaultConnection"){
 
         }

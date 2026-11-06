@@ -1,4 +1,4 @@
-﻿@*@model List<LalaCoffee.Models.Order>*@
+@*@model List<LalaCoffee.Models.Order>*@
 
 @model LalaCoffee.Models.Order
 
@@ -110,6 +110,8 @@
                                     </div>
                                     <div class="col-md-4 col-sm-4 col-xs-12">
                                         <p>Phương thức thanh toán: @Model.Payment</p>
+                                        <p>Trạng thái thanh toán: <b class="@(Model.Paid == 1 ? "text-success" : "text-danger")">@(Model.Paid == 1 ? "Đã thanh toán" : "Chưa thanh toán")</b></p>
+                                        <p>Trạng thái đơn hàng: <b class="text-primary">@LalaCoffee.Models.OrderStatus.NormalizeStatus(Model.Status)</b></p>
                                         <p>Tổng tiền: <b>@Model.Total.ToString("N0")đ</b></p>
                                         <p>Ghi chú: <b>@Model.Note</b></p>
                                         <p>Thời gian tạo: <b>@Model.CreatedAt</b></p>

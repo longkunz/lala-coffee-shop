@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
@@ -45,6 +45,10 @@ namespace LalaCoffee.Data
         public IEnumerable<T> GetAll()
         {
             return _dbSet.ToList();
+        }
+        public IQueryable<T> GetQueryable()
+        {
+            return _dbSet.AsQueryable();
         }
     }
 

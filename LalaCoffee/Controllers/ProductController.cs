@@ -63,7 +63,14 @@ namespace LalaCoffee.Controllers
                 {
                     return Redirect("/Collections/All");
                 }
-                //ViewBag.ProductRelative = Context.Products.Where(x => x.Category.Id == product.Category.Id).ToList();
+                if (product.Category != null)
+                {
+                    ViewBag.ProductRelative = Context.Products.Where(x => x.Category.Id == product.Category.Id && x.Id != product.Id).Take(8).ToList();
+                }
+                else
+                {
+                    ViewBag.ProductRelative = Context.Products.Where(x => x.Id != product.Id).Take(8).ToList();
+                }
                 return View(product);
             }
             catch (Exception)

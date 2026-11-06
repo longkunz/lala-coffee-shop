@@ -1,26 +1,45 @@
-﻿@model IEnumerable<LalaCoffee.Data.ApplicationUser>
+@model IEnumerable<LalaCoffee.Data.ApplicationUser>
 
 @{
-    ViewBag.Title = "User Manage";
+    ViewBag.Title = "Quản lý người dùng";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+    string successMessage = TempData["SuccessMessage"] as string;
 }
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle mr-2"></i> @successMessage
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
 <div class="row">
     <div class="col-12">
         <div class="card card-info">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">
-                    <i class="fa fa-list"></i> QUẢN LÝ NGƯỜI DÙNG
+                    <i class="fa fa-users mr-1"></i> QUẢN LÝ NGƯỜI DÙNG
                 </h3>
+                <div class="card-tools ml-auto">
+                    <a href="/Admin/ManageUser/ChangePassword" class="btn btn-warning btn-sm text-dark font-weight-bold">
+                        <i class="fas fa-key mr-1"></i> Đổi mật khẩu Admin của tôi
+                    </a>
+                </div>
             </div>
             <div class="card-body">
                 <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap">
+                    <table class="table table-head-fixed text-nowrap table-hover" id="nTable">
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th>Tên đăng nhập</th>
+                                <th>Họ tên</th>
                                 <th>Email</th>
                                 <th>Số điện thoại</th>
-                                <th>UserName</th>
+                                <th>Địa chỉ nhận hàng</th>
+                                <th class="text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -28,7 +47,10 @@
                             {
                                 <tr>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Id)
+                                        <strong>@Html.DisplayFor(modelItem => item.UserName)</strong>
+                                    </td>
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(item.FullName) ? "-" : item.FullName)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Email)
@@ -36,8 +58,13 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.PhoneNumber)
                                     </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.UserName)
+                                    <td style="max-width: 250px; white-space: normal;">
+                                        @(string.IsNullOrWhiteSpace(item.Address) ? "-" : item.Address)
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/Admin/ManageUser/ResetPassword/@item.Id" class="btn btn-sm btn-outline-warning" title="Đổi mật khẩu cho người dùng này">
+                                            <i class="fas fa-key"></i> Đổi mật khẩu
+                                        </a>
                                     </td>
                                 </tr>
                             }

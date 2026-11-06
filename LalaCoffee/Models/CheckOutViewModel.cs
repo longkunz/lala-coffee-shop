@@ -26,7 +26,7 @@ namespace LalaCoffee.Models
         public string Address { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn phương thức thanh toán.")]
-        [RegularExpression("^(cash|momo|vnpay)$", ErrorMessage = "Phương thức thanh toán không hợp lệ.")]
+        [RegularExpression("^(cash|cod)$", ErrorMessage = "Phương thức thanh toán không hợp lệ.")]
         [Display(Name = "Phương thức thanh toán")]
         public string Payment { get; set; } = "cash";
 

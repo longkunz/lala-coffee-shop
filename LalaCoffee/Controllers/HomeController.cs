@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -23,11 +23,25 @@ namespace LalaCoffee.Controllers
         public ActionResult Index()
         {
             var showProducts = _context.Products.Where(c => c.Show == 1).ToList();
-            //if (!User.Identity.IsAuthenticated)
-            //{
-            //    return RedirectToAction("Login", "Account");
-            //}
             ViewBag.showProducts = showProducts;
+
+            // Categories cho "Chọn theo gu"
+            ViewBag.Categories = _categoryRepository.GetAll().ToList();
+
+            // "Hôm nay uống gì?" — 6 món Lala gợi ý, đa dạng nhóm
+            ViewBag.FeaturedProducts = _context.Products
+                .Where(c => c.Show == 1)
+                .OrderBy(c => c.Id)
+                .Take(6)
+                .ToList();
+
+            // Blog — chỉ lấy bài đã xuất bản
+            ViewBag.Blogs = _context.Blogs
+                .Where(b => b.Published)
+                .OrderByDescending(b => b.CreatedDate)
+                .Take(3)
+                .ToList();
+
             var products = _productRepository.GetAll().ToList().Take(10);
             return View(products);
         }
@@ -47,6 +61,10 @@ namespace LalaCoffee.Controllers
             return View(category);
         }
         public ActionResult Contact()
+        {
+            return View();
+        }
+        public ActionResult About()
         {
             return View();
         }

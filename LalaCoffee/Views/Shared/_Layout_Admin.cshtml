@@ -20,9 +20,12 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#nTable').DataTable({
-                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            });
+            var $table = $('#nTable');
+            if ($table.length && !$table.data('server-side') && !$.fn.DataTable.isDataTable('#nTable')) {
+                $table.DataTable({
+                    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                });
+            }
         });
     </script>
 
@@ -52,7 +55,7 @@
                     elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">
+                        <a href="/Admin/ManageUser/ChangePassword" class="d-block" title="Đổi mật khẩu">
                             @User.Identity.GetUserName()
                         </a>
                         <span class="badge bg-danger">
@@ -62,12 +65,6 @@
                 </div>
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="/Admin/Stats" class="nav-link">
-                                <i class="nav-icon fas fa-chart-line"></i>
-                                <p>Thống kê</p>
-                            </a>
-                        </li>
                         <li class="nav-item">
                             <a href="/Admin/ManageUser" class="nav-link">
                                 <i class="nav-icon fas fa-users"></i>
@@ -145,6 +142,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="/Admin/ManageUser/ChangePassword" class="nav-link">
+                                <i class="nav-icon fas fa-key"></i>
+                                <p>Đổi mật khẩu</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="/Account/Logout" class="nav-link">
                                 <i class="nav-icon fas fa-sign-out-alt"></i>
                                 <p>Đăng xuất</p>
@@ -173,6 +176,7 @@
         <script src="/Content/Layout/Admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="/Content/Layout/Admin/dist/js/adminlte.min.js"></script>
         <script src="/Content/Layout/Admin/js/ajax.js"></script>
+        @RenderSection("scripts", required: false)
 
     </div>
 </body>

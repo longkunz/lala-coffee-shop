@@ -1,311 +1,521 @@
-﻿
+
 @{
     Page.Title = "Home Page";
+    ViewBag.IsHomePage = true;
     Layout = "~/Views/Shared/_Layout_User.cshtml";
 }
 
-
-@*<div class="row">
-        <div class="col-md-12">
-            <h2>
-                @if (User.Identity.IsAuthenticated)
-                {
-
-                    if (User.IsInRole("Admin"))
-                    {
-                        <b>Xin chào @User.Identity.Name có level Admin</b>
-                    }
-                    else
-                    {
-                        <b>Xin chào @User.Identity.Name có level Guest</b>
-                    }
-                }
-            </h2>
-        </div>
-    </div>*@
 @model IEnumerable<LalaCoffee.Models.Product>
 <main>
     <div class="main-part">
 
-        <!-- Slider Part -->
+        @* ═══════════════════════════════════════════
+           1. BANNER CHÍNH — tĩnh, không carousel
+           Ref: NN/g khuyến nghị không dùng auto-forwarding
+           ═══════════════════════════════════════════ *@
 
-        <section class="home-slider">
-            <div class="tp-banner-container">
-                <div class="tp-banner">
-                    <ul>
-                        <li data-transition="fade" data-slotamount="2" data-masterspeed="500" data-thumb=""
-                            data-saveperformance="on" data-title="Slide">
-                            <img src="~/Content/Layout/User/images/dummy.png" alt="slidebg1" data-lazyload="/Content/Layout/User/images/bg1.jpg"
-                                 data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
+        <style>
+            /* ── Hero Banner ── */
+            .lala-hero {
+                position: relative;
+                width: 100%;
+                height: 600px;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .lala-hero__bg {
+                position: absolute;
+                inset: 0;
+                background: url('@Url.Content("~/Content/Layout/User/images/hero-banner-1.jpg")') center/cover no-repeat;
+            }
+            .lala-hero__overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(180deg, rgba(32,32,47,0.45) 0%, rgba(32,32,47,0.7) 100%);
+            }
+            .lala-hero__content {
+                position: relative;
+                z-index: 2;
+                text-align: center;
+                color: #fff;
+                padding: 0 20px;
+            }
+            .lala-hero__tagline {
+                font-size: 18px;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: #e4b95b;
+                margin-bottom: 16px;
+                font-weight: 600;
+            }
+            .lala-hero__title {
+                font-size: 42px;
+                font-weight: 800;
+                line-height: 1.3;
+                margin-bottom: 12px;
+                text-shadow: 0 4px 18px rgba(0,0,0,0.5);
+            }
+            .lala-hero__subtitle {
+                font-size: 18px;
+                font-weight: 400;
+                opacity: 0.9;
+                margin-bottom: 32px;
+            }
+            .lala-hero__cta {
+                display: inline-block;
+                padding: 14px 40px;
+                background: #e4b95b;
+                color: #20202f !important;
+                font-weight: 700;
+                font-size: 16px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                border: none;
+                border-radius: 4px;
+                transition: all 0.3s ease;
+                text-decoration: none;
+            }
+            .lala-hero__cta:hover {
+                background: #d4a94b;
+                box-shadow: 0 6px 24px rgba(228,185,91,0.5);
+                transform: translateY(-2px);
+                color: #20202f !important;
+                text-decoration: none;
+            }
 
-                            <!-- LAYER NR. 1 -->
-                            <div class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
-                                 data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                 data-x="0" data-hoffset="0" data-y="bottom" data-speed="500" data-start="500"
-                                 data-easing="Power3.easeInOut" data-endspeed="300"
-                                 data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                <img src="~/Content/Layout/User/images/dummy.png" alt="" data-lazyload="/Content/Layout/User/images/img1.png">
-                            </div>
+            /* ── Chọn theo gu ── */
+            .lala-categories {
+                padding: 60px 0;
+                background: #fff;
+            }
+            .lala-section-title {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+            .lala-section-title h2 {
+                font-size: 28px;
+                font-weight: 700;
+                color: #3a3a3a;
+                margin-bottom: 8px;
+            }
+            .lala-section-title p {
+                font-size: 15px;
+                color: #888;
+            }
+            .lala-cat-grid {
+                display: flex;
+                justify-content: center;
+                gap: 24px;
+                flex-wrap: wrap;
+            }
+            .lala-cat-card {
+                width: 200px;
+                text-align: center;
+                padding: 28px 16px;
+                border-radius: 12px;
+                background: #faf7f2;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                color: #3a3a3a;
+            }
+            .lala-cat-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 8px 30px rgba(228,185,91,0.18);
+                background: #fff;
+                text-decoration: none;
+                color: #3a3a3a;
+            }
+            .lala-cat-card img {
+                width: 64px;
+                height: 64px;
+                object-fit: contain;
+                margin-bottom: 14px;
+            }
+            .lala-cat-card h5 {
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 6px;
+                color: #3a3a3a;
+            }
+            .lala-cat-card p {
+                font-size: 13px;
+                color: #999;
+                margin: 0;
+            }
 
-                            <!-- LAYER NR. 2 -->
-                            <div class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
-                                 data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                 data-x="right" data-hoffset="0" data-y="bottom" data-speed="500"
-                                 data-start="500" data-easing="Power3.easeInOut" data-endspeed="300"
-                                 data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                <img src="~/Content/Layout/User/images/dummy.png" alt="" data-lazyload="/Content/Layout/User/images/img2.png">
-                            </div>
+            /* ── Hôm nay uống gì? ── */
+            .lala-featured {
+                padding: 60px 0;
+                background: #faf7f2;
+            }
+            .lala-featured-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+            .lala-featured-card {
+                background: #fff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+                transition: all 0.3s ease;
+                text-decoration: none;
+                color: inherit;
+            }
+            .lala-featured-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+                text-decoration: none;
+                color: inherit;
+            }
+            .lala-featured-card__img {
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+            }
+            .lala-featured-card__img img {
+                width: 100%;
+                height: auto;
+                display: block;
+                transition: transform 0.4s ease;
+            }
+            .lala-featured-card:hover .lala-featured-card__img img {
+                transform: scale(1.05);
+            }
+            .lala-featured-card__badge {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                background: #e4b95b;
+                color: #20202f;
+                font-size: 11px;
+                font-weight: 700;
+                padding: 4px 10px;
+                border-radius: 4px;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+            .lala-featured-card__body {
+                padding: 16px 20px 20px;
+            }
+            .lala-featured-card__name {
+                font-size: 17px;
+                font-weight: 700;
+                margin-bottom: 6px;
+                color: #3a3a3a;
+            }
+            .lala-featured-card__desc {
+                font-size: 13px;
+                color: #999;
+                margin-bottom: 10px;
+                line-height: 1.5;
+            }
+            .lala-featured-card__price {
+                font-size: 17px;
+                font-weight: 700;
+                color: #e4b95b;
+            }
 
-                            <!-- LAYER NR. 3 -->
-                            <div class="tp-caption lft very_large_text text-center" data-x="center" data-y="320"
-                                 data-speed="900" data-start="1000" data-easing="Power4.easeOut"
-                                 data-endspeed="350" data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                SPECIAL COFFEE <br> <span class="v-light">BEANS</span>
-                            </div>
+            /* ── Ghé Lala ── */
+            .lala-visit {
+                padding: 60px 0;
+                background: #fff;
+            }
+            .lala-visit-inner {
+                display: flex;
+                gap: 40px;
+                align-items: stretch;
+                border-radius: 16px;
+                overflow: hidden;
+                background: #faf7f2;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            }
+            .lala-visit__map {
+                flex: 1;
+                min-height: 360px;
+            }
+            .lala-visit__map iframe {
+                width: 100%;
+                height: 100%;
+                border: 0;
+            }
+            .lala-visit__info {
+                flex: 1;
+                padding: 40px 36px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .lala-visit__info h3 {
+                font-size: 24px;
+                font-weight: 700;
+                color: #3a3a3a;
+                margin-bottom: 20px;
+            }
+            .lala-visit__detail {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 15px;
+                color: #555;
+            }
+            .lala-visit__detail i {
+                color: #e4b95b;
+                font-size: 18px;
+                margin-top: 2px;
+                width: 20px;
+                text-align: center;
+            }
+            .lala-visit__cta {
+                display: inline-block;
+                margin-top: 24px;
+                padding: 12px 32px;
+                background: #e4b95b;
+                color: #20202f !important;
+                font-weight: 700;
+                font-size: 14px;
+                border-radius: 4px;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                align-self: flex-start;
+            }
+            .lala-visit__cta:hover {
+                background: #d4a94b;
+                box-shadow: 0 4px 16px rgba(228,185,91,0.4);
+                text-decoration: none;
+                color: #20202f !important;
+            }
 
-                            <!-- LAYER NR. 4 -->
-                            <div class="tp-caption lft text-uppercase large_text text-center best-after"
-                                 data-x="center" data-y="220" data-speed="800" data-start="900"
-                                 data-easing="Power4.easeOut" data-endspeed="300" data-endeasing="Power1.easeIn"
-                                 data-captionhidden="off">
-                                best quaITY
-                            </div>
+            /* ── Blog cuối trang ── */
+            .lala-blog {
+                padding: 60px 0;
+                background: #f5f3ee;
+            }
+            .lala-blog .feature-blog .owl-carousel .item {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+            .lala-blog .feature-blog .owl-carousel .item .feature-img {
+                height: 220px;
+                overflow: hidden;
+            }
+            .lala-blog .feature-blog .owl-carousel .item .feature-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .lala-blog .feature-blog .owl-carousel .item .feature-info {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding: 16px;
+            }
+            .lala-blog .feature-blog .owl-carousel .item .feature-info p {
+                flex: 1;
+            }
+            .lala-blog .feature-blog .owl-stage {
+                display: flex;
+            }
+            .lala-blog .feature-blog .owl-item {
+                display: flex;
+            }
 
-                            <!-- LAYER NR. 5 -->
-                            <div class="tp-caption lft text-uppercase medium_text text-center" data-x="center"
-                                 data-y="270" data-speed="800" data-start="900" data-easing="Power4.easeOut"
-                                 data-endspeed="300" data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                Established in 1991
-                            </div>
+            /* ── Responsive ── */
+            @@media (max-width: 991px) {
+                .lala-hero { height: 480px; }
+                .lala-hero__title { font-size: 32px; }
+                .lala-featured-grid { grid-template-columns: repeat(2, 1fr); }
+                .lala-visit-inner { flex-direction: column; }
+                .lala-visit__map { min-height: 280px; }
+            }
+            @@media (max-width: 575px) {
+                .lala-hero { height: 400px; }
+                .lala-hero__title { font-size: 26px; }
+                .lala-hero__tagline { font-size: 14px; }
+                .lala-hero__subtitle { font-size: 15px; }
+                .lala-cat-card { width: 140px; padding: 20px 12px; }
+                .lala-featured-grid { grid-template-columns: 1fr; }
+            }
+        </style>
 
-                        </li>
+        @* ── 1. BANNER CHÍNH ── *@
+        <section class="lala-hero">
+            <div class="lala-hero__bg"></div>
+            <div class="lala-hero__overlay"></div>
+            <div class="lala-hero__content">
+                <div class="lala-hero__tagline">LalaCoffee</div>
+                <h1 class="lala-hero__title">
+                    Một ly hợp gu,<br>một ngày thêm vui.
+                </h1>
+                <p class="lala-hero__subtitle">
+                    Khám phá cà phê, trà và bánh tại LalaCoffee.
+                </p>
+                <a href="/Collections/All" class="lala-hero__cta">Xem menu</a>
+            </div>
+        </section>
 
-                        <li data-transition="fade" data-slotamount="2" data-masterspeed="500" data-thumb=""
-                            data-saveperformance="on" data-title="Slide">
-                            <img src="~/Content/Layout/User/images/dummy.png" alt="slidebg1" data-lazyload="/Content/Layout/User/images/bg1.jpg"
-                                 data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
-
-                            <!-- LAYER NR. 1 -->
-                            <div class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
-                                 data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                 data-x="0" data-hoffset="0" data-y="bottom" data-speed="500" data-start="500"
-                                 data-easing="Power3.easeInOut" data-endspeed="300"
-                                 data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                <img src="~/Content/Layout/User/images/dummy.png" alt="" data-lazyload="/Content/Layout/User/images/img1.png">
-                            </div>
-
-                            <!-- LAYER NR. 2 -->
-                            <div class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
-                                 data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                 data-x="right" data-hoffset="0" data-y="bottom" data-speed="500"
-                                 data-start="500" data-easing="Power3.easeInOut" data-endspeed="300"
-                                 data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                <img src="~/Content/Layout/User/images/dummy.png" alt="" data-lazyload="/Content/Layout/User/images/img2.png">
-                            </div>
-
-                            <!-- LAYER NR. 3 -->
-                            <div class="tp-caption lft very_large_text text-center" data-x="center" data-y="320"
-                                 data-speed="900" data-start="1000" data-easing="Power4.easeOut"
-                                 data-endspeed="350" data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                SPECIAL COFFEE <br> <span class="v-light">BEANS</span>
-                            </div>
-
-                            <!-- LAYER NR. 4 -->
-                            <div class="tp-caption lft text-uppercase large_text text-center best-after"
-                                 data-x="center" data-y="220" data-speed="800" data-start="900"
-                                 data-easing="Power4.easeOut" data-endspeed="300" data-endeasing="Power1.easeIn"
-                                 data-captionhidden="off">
-                                best quaITY
-                            </div>
-
-                            <!-- LAYER NR. 5 -->
-                            <div class="tp-caption lft text-uppercase medium_text text-center" data-x="center"
-                                 data-y="270" data-speed="800" data-start="900" data-easing="Power4.easeOut"
-                                 data-endspeed="300" data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                Established in 1991
-                            </div>
-
-                        </li>
-
-                        <li data-transition="fade" data-slotamount="2" data-masterspeed="500" data-thumb=""
-                            data-saveperformance="on" data-title="Slide">
-                            <img src="~/Content/Layout/User/images/dummy.png" alt="slidebg1" data-lazyload="/Content/Layout/User/images/bg1.jpg"
-                                 data-bgposition="center top" data-bgfit="cover" data-bgrepeat="no-repeat">
-
-                            <!-- LAYER NR. 1 -->
-                            <div class="tp-caption lft customout rs-parallaxlevel-0 left-slot"
-                                 data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                 data-x="0" data-hoffset="0" data-y="bottom" data-speed="500" data-start="500"
-                                 data-easing="Power3.easeInOut" data-endspeed="300"
-                                 data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                <img src="~/Content/Layout/User/images/dummy.png" alt="" data-lazyload="/Content/Layout/User/images/img1.png">
-                            </div>
-
-                            <!-- LAYER NR. 2 -->
-                            <div class="tp-caption lft customout rs-parallaxlevel-0 right-slot"
-                                 data-customout="x:0;y:0;z:0;rotationX:0;rotationY:0;rotationZ:0;scaleX:0.75;scaleY:0.75;skewX:0;skewY:0;opacity:0;transformPerspective:600;transformOrigin:50% 50%;"
-                                 data-x="right" data-hoffset="0" data-y="bottom" data-speed="500"
-                                 data-start="500" data-easing="Power3.easeInOut" data-endspeed="300"
-                                 data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                <img src="~/Content/Layout/User/images/dummy.png" alt="" data-lazyload="/Content/Layout/User/images/img2.png">
-                            </div>
-
-                            <!-- LAYER NR. 3 -->
-                            <div class="tp-caption lft very_large_text text-center" data-x="center" data-y="320"
-                                 data-speed="900" data-start="1000" data-easing="Power4.easeOut"
-                                 data-endspeed="350" data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                SPECIAL COFFEE <br> <span class="v-light">BEANS</span>
-                            </div>
-
-                            <!-- LAYER NR. 4 -->
-                            <div class="tp-caption lft text-uppercase large_text text-center best-after"
-                                 data-x="center" data-y="220" data-speed="800" data-start="900"
-                                 data-easing="Power4.easeOut" data-endspeed="300" data-endeasing="Power1.easeIn"
-                                 data-captionhidden="off">
-                                best quaITY
-                            </div>
-
-                            <!-- LAYER NR. 5 -->
-                            <div class="tp-caption lft text-uppercase medium_text text-center" data-x="center"
-                                 data-y="270" data-speed="800" data-start="900" data-easing="Power4.easeOut"
-                                 data-endspeed="300" data-endeasing="Power1.easeIn" data-captionhidden="off">
-                                Established in 1991
-                            </div>
-
-                        </li>
-                    </ul>
-                    <div class="tp-bannertimer"></div>
+        @* ── 2. CHỌN THEO GU ── *@
+        <section class="lala-categories">
+            <div class="container">
+                <div class="lala-section-title">
+                    <h2>Chọn theo gu</h2>
+                    <p>Bạn thích gì hôm nay?</p>
+                </div>
+                <div class="lala-cat-grid">
+                    <a href="/Collections/ca-phe-truyen-thong" class="lala-cat-card">
+                        <img src="@Url.Content("~/Content/Layout/User/images/coffee.png")" alt="Cà phê">
+                        <h5>Cà phê</h5>
+                        <p>Đậm đà bản sắc</p>
+                    </a>
+                    <a href="/Collections/tra-trai-cay" class="lala-cat-card">
+                        <img src="@Url.Content("~/Content/Layout/User/images/bewerages.png")" alt="Trà trái cây">
+                        <h5>Trà trái cây</h5>
+                        <p>Tươi mát mỗi ngày</p>
+                    </a>
+                    <a href="/Collections/tra-sua-da-xay" class="lala-cat-card">
+                        <img src="@Url.Content("~/Content/Layout/User/images/cocktail.png")" alt="Trà sữa & đá xay">
+                        <h5>Trà sữa & đá xay</h5>
+                        <p>Thơm ngậy mát lạnh</p>
+                    </a>
+                    <a href="/Collections/banh-mi-trang-mieng" class="lala-cat-card">
+                        <img src="@Url.Content("~/Content/Layout/User/images/cake.png")" alt="Bánh">
+                        <h5>Bánh</h5>
+                        <p>Giòn ngon hấp dẫn</p>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- End Slider Part -->
-        <!-- Start Item list Part -->
-
-        <section class="default-section">
+        @* ── 3. HÔM NAY UỐNG GÌ? ── *@
+        @{
+            var featured = ViewBag.FeaturedProducts as List<LalaCoffee.Models.Product>;
+            // Mô tả vị ngắn gọn cho từng món gợi ý
+            var flavorMap = new Dictionary<string, string>
+            {
+                { "Cà Phê Đen Đá", "Đắng mạnh, hậu ngọt thanh." },
+                { "Cà Phê Sữa Đá", "Ngọt béo hài hòa, quen mà mê." },
+                { "Bạc Xỉu Lala", "Béo vị sữa, nhẹ vị cà phê." },
+                { "Latte Đá", "Sữa tươi mịn màng, cà phê thơm nhẹ." },
+                { "Caramel Macchiato", "Ngọt caramel, thơm vani quyến rũ." },
+                { "Cold Brew Sữa Tươi", "Ủ lạnh 16h, thanh mát cả ngày." },
+                { "Trà Đào Cam Sả", "Chua thanh, ngọt đào, thơm sả." },
+                { "Trà Sữa Oolong Nướng Trân Châu", "Trà nướng đậm, sữa ngậy, trân châu dai." },
+                { "Croissant Trứng Muối", "Ngàn lớp giòn xốp, sốt trứng muối tan chảy." },
+                { "Chocolate Đá", "Cacao đậm, sữa béo, ngọt ngào." }
+            };
+        }
+        <section class="lala-featured">
             <div class="container">
-                <div class="title text-center">
-                    <h2 class="text-primary">Coffee Build Your Base</h2>
+                <div class="lala-section-title">
+                    <h2>Hôm nay uống gì?</h2>
+                    <p>Lala gợi ý cho bạn</p>
                 </div>
-                <div class="product-wrapper">
-                    <div class="owl-carousel owl-theme" data-items="4" data-tablet="3" data-mobile="2"
-                         data-nav="false" data-dots="true" data-autoplay="true" data-speed="1800"
-                         data-autotime="5000">
-                        @foreach (var item in Model)
+                @if (featured != null && featured.Any())
+                {
+                    <div class="lala-featured-grid">
+                        @foreach (var item in featured)
                         {
-                            <div class="item">
-                                <div class="product-img">
-                                    <a href="shop_single.html">
-                                        <img src="@item.Image" alt="image_Product">
-                                        <span class="icon-basket fontello"></span>
-                                    </a>
+                            var flavor = flavorMap.ContainsKey(item.Name) ? flavorMap[item.Name] : item.Description;
+                            // Cắt ngắn nếu description quá dài
+                            if (flavor != null && flavor.Length > 60)
+                            {
+                                flavor = flavor.Substring(0, 57) + "...";
+                            }
+                            <a href="/Product/@item.Slug" class="lala-featured-card">
+                                <div class="lala-featured-card__img">
+                                    <img src="@item.Image" alt="@item.Name">
+                                    <span class="lala-featured-card__badge">Lala gợi ý</span>
                                 </div>
-                                <h5><a href="shop_single.html">@item.Name</a></h5>
-                                <span>@item.Price.ToString("N0")d</span>
-                                @*<del>18,000d</del>*@
-                            </div>
+                                <div class="lala-featured-card__body">
+                                    <div class="lala-featured-card__name">@item.Name</div>
+                                    <div class="lala-featured-card__desc">@flavor</div>
+                                    <div class="lala-featured-card__price">@item.Price.ToString("N0")đ</div>
+                                </div>
+                            </a>
                         }
                     </div>
-                </div>
-                <div class="product-single">
-                    <div class="row">
-                        <div class="col-md-6 col-sm-6 col-12">
-                            <div class="product-single-left bg-skin text-white">
-                                <div class="product-single-detail">
-                                    <h2>LalaCoffee Quận 9</h2>
-                                    <p>Nơi cuộc hẹn tròn đầy với Cà phê đặc sản, Món ăn đa bản sắc và Không gian cảm hứng.</p>
-                                    <div class="item-product">
-                                        <img src="~/Content/Layout/User/images/img10.png" alt="" class="animated">
-                                    </div>
-                                    <a href="menu.html"
-                                       class="button-default button-default-white margin-top-30">Tìm hiểu thêm</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-sm-6 col-12">
-                            <div class="owl-carousel owl-theme" data-items="1" data-tablet="1" data-mobile="1"
-                                 data-nav="false" data-dots="true" data-autoplay="true" data-speed="1300"
-                                 data-autotime="6000">
-                                <div class="item dp-animation">
-                                    <div class="product-single-right">
-                                        <img src="~/Content/Layout/User/images/img9.png" alt="" class="animated">
-                                    </div>
-                                </div>
-                                <div class="item dp-animation">
-                                    <div class="product-single-right">
-                                        <img src="~/Content/Layout/User/images/img9.png" alt="" class="animated">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </section>
 
-        <!-- End Item list Part -->
-        <!-- Start Feature Part -->
-
-        <section class="default-section bg-grey">
+        @* ── 4. GHÉ LALA, NGỒI LẠI MỘT CHÚT ── *@
+        <section class="lala-visit">
             <div class="container">
-                <div class="title text-center">
-                    <h2 class="text-coffee">Blog</h2>
+                <div class="lala-section-title">
+                    <h2>Ghé Lala, ngồi lại một chút</h2>
                 </div>
-                <div class="feature-blog">
-                    <div class="owl-carousel owl-theme" data-items="3" data-tablet="2" data-mobile="1"
-                         data-nav="true" data-dots="false" data-autoplay="true" data-speed="2500"
-                         data-autotime="6000">
-                        <div class="item dp-animation">
-                            <div class="feature-img">
-                                <img src="~/Content/Layout/User/images/feature1.jpg" alt="" class="animated">
-                                <div class="date-feature">01 <br> <small>thg 02</small></div>
-                            </div>
-                            <div class="feature-info">
-                                <span><i class="fa fa-clock-o"></i> 01/02/2023</span>
-                                <h5>LỄ TÌNH NHÂN, CÙNG CRUSH ĐI ĐÂU?</h5>
-                                <p>
-                                    Tadaaaa, hết Tết thì Valentine đầy yêu thương lại đang đến rồi nè. Lễ tình nhân, dẫn crush đi quán nào? Nhất định phải
-                                    cùng người ấy đến LalaCoffee...
-                                </p>
-                                <a href="#">Xem Thêm <i class="icon-right-4"></i></a>
-                            </div>
+                <div class="lala-visit-inner">
+                    <div class="lala-visit__map">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d692.666522859533!2d106.80542313721728!3d10.863738203048896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTDCsDUxJzQ4LjkiTiAxMDbCsDQ4JzIwLjQiRQ!5e0!3m2!1svi!2s!4v1680446972833!5m2!1svi!2s"
+                                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                                title="Bản đồ LalaCoffee"></iframe>
+                    </div>
+                    <div class="lala-visit__info">
+                        <h3>☕ LalaCoffee — Chi nhánh chính</h3>
+                        <div class="lala-visit__detail">
+                            <i class="fa fa-map-marker"></i>
+                            <span>783 Võ Văn Kiệt, Phường Chợ Quán, TPHCM</span>
                         </div>
-                        <div class="item dp-animation">
-                            <div class="feature-img">
-                                <img src="~/Content/Layout/User/images/feature2.jpg" alt="" class="animated">
-                                <div class="date-feature">15 <br> <small>thg 01</small></div>
-                            </div>
-                            <div class="feature-info">
-                                <span><i class="fa fa-clock-o"></i> 15/01/2023</span>
-                                <h5>LALACOFFEE - QUÁN CAFE LÝ TƯỞNG</h5>
-                                <p>
-                                    Những ngày cuối năm, đầu năm mới, bạn lên kế hoạch để gặp gỡ những người yêu, thương, quý, mến... Vậy bạn đã tìm được
-                                    điểm hẹn lý tưởng...
-                                </p>
-                                <a href="#">Xem Thêm <i class="icon-right-4"></i></a>
-                            </div>
+                        <div class="lala-visit__detail">
+                            <i class="fa fa-clock-o"></i>
+                            <span>07:00 – 22:30 · Mở cửa mỗi ngày</span>
                         </div>
-                        <div class="item dp-animation">
-                            <div class="feature-img">
-                                <img src="~/Content/Layout/User/images/feature3.jpg" alt="" class="animated">
-                                <div class="date-feature">01 <br> <small>thg 01</small></div>
-                            </div>
-                            <div class="feature-info">
-                                <span><i class="fa fa-clock-o"></i> 01/01/2023</span>
-                                <h5>PHONG CÁCH "ĐI CÀ PHÊ" CỦA NGƯỜI TRẺ</h5>
-                                <p>
-                                    Người trẻ thường thích trải nghiệm, thích sự mới mẻ và không ngừng sáng tạo. Vậy cách người trẻ thưởng thức cà phê sẽ
-                                    như thế nào, có gì đặc biệt...
-                                </p>
-                                <a href="#">Xem Thêm <i class="icon-right-4"></i></a>
-                            </div>
+                        <div class="lala-visit__detail">
+                            <i class="fa fa-phone"></i>
+                            <span><a href="tel:0888888888" style="color:inherit">08 8888 8888</a></span>
                         </div>
+                        <a href="https://maps.google.com/?q=10.863738,106.805423"
+                           target="_blank" rel="noopener" class="lala-visit__cta">
+                            <i class="fa fa-location-arrow"></i> Chỉ đường
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- End Feature Part -->
+        @* ── 5. BLOG — chỉ bài đã xuất bản, có đường dẫn thật ── *@
+        @{
+            var blogs = ViewBag.Blogs as List<LalaCoffee.Models.Blog>;
+        }
+        @if (blogs != null && blogs.Any())
+        {
+            <section class="lala-blog default-section bg-grey">
+                <div class="container">
+                    <div class="lala-section-title">
+                        <h2 class="text-coffee">Blog</h2>
+                    </div>
+                    <div class="feature-blog">
+                        <div class="owl-carousel owl-theme" data-items="3" data-tablet="2" data-mobile="1"
+                             data-nav="true" data-dots="false" data-autoplay="true" data-speed="2500"
+                             data-autotime="6000">
+                            @foreach (var blog in blogs)
+                            {
+                                <div class="item dp-animation">
+                                    <div class="feature-img">
+                                        <a href="/Blog/ReadMore/@blog.Id">
+                                            <img src="@blog.Image" alt="@blog.Title" class="animated">
+                                        </a>
+                                        <div class="date-feature">
+                                            @blog.CreatedDate.ToString("dd") <br> <small>thg @blog.CreatedDate.ToString("MM")</small>
+                                        </div>
+                                    </div>
+                                    <div class="feature-info">
+                                        <span><i class="fa fa-clock-o"></i> @blog.CreatedDate.ToString("dd/MM/yyyy")</span>
+                                        <h5>@blog.Title</h5>
+                                        <p>@Html.Raw(blog.Content.Substring(0, Math.Min(blog.Content.Length, 120)))...</p>
+                                        <a href="/Blog/ReadMore/@blog.Id">Xem Thêm <i class="icon-right-4"></i></a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
 
     </div>
 </main>

@@ -11,15 +11,21 @@
 @functions{
     public string ParentCategory(int parentId)
     {
-        foreach(var item in ViewBag.Categories)
+        if (ViewBag.Categories != null)
         {
-            if(item.Id == parentId)
+            foreach (var item in ViewBag.Categories)
             {
-                return item.Name;
+                if (item.Id == parentId)
+                {
+                    return item.Name;
+                }
             }
         }
         return "Danh mục cha";
     }
+}
+@{
+    var fieldErrors = (ViewBag.FieldErrors ?? TempData["FieldErrors"]) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }
 @Html.Partial("ErrorsAlert")
 <div class="row">
@@ -36,21 +42,43 @@
                 @Html.HiddenFor(model => model.Id)
                 <div class="card-body">
                     <div class="form-group">
-                        <label>Tên</label>
-                        <input class="form-control" id="name" name="name" type="text" value="@Html.DisplayFor(item => item.Name)" onchange="getSlug()">
+                        <label>Tên <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" id="name" name="name" type="text" value="@Model.Name" onchange="getSlug()">
+                        @if (fieldErrors.ContainsKey("name"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
+                        }
                     </div>
                     <div class="form-group">
-                        <label>Slug</label>
-                        <input class="form-control" id="slug" name="slug" type="text" value="@Html.DisplayFor(item => item.Slug)">
+                        <label>Slug <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("slug") ? "is-invalid" : "")" id="slug" name="slug" type="text" value="@Model.Slug">
+                        @if (fieldErrors.ContainsKey("slug"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["slug"]</span>
+                        }
                     </div>
                     <div class="form-group">
-                        <label>Mô tả</label>
-                        <textarea class="form-control" id="description" name="description" rows="3">@Html.DisplayFor(item => item.Description)</textarea>
+                        <label>Mô tả <span class="text-danger">*</span></label>
+                        <textarea class="form-control @(fieldErrors.ContainsKey("description") ? "is-invalid" : "")" id="description" name="description" rows="3">@Model.Description</textarea>
+                        @if (fieldErrors.ContainsKey("description"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["description"]</span>
+                        }
                     </div>
                     <div class="form-group">
                         <label>Danh mục cha</label>
                         <select class="form-control" id="parent_id" name="parent_id">
-                            <option value="@Html.DisplayFor(item => item.ParentId)">@ParentCategory(Model.ParentId)</option>
+                            <option value="0" @(Model.ParentId == 0 ? "selected" : "")>Danh mục cha</option>
+                            @if (ViewBag.Categories != null)
+                            {
+                                foreach (var cat in ViewBag.Categories)
+                                {
+                                    if (cat.Id != Model.Id)
+                                    {
+                                        <option value="@cat.Id" @(Model.ParentId == cat.Id ? "selected" : "")>@cat.Name</option>
+                                    }
+                                }
+                            }
                         </select>
                     </div>
                     <div class="form-group">
@@ -61,6 +89,7 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    <a href="@Url.Action("Index", "ManageCategory")" class="btn btn-secondary ml-2">Quay lại</a>
                 </div>
             }
         </div>

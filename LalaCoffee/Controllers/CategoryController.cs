@@ -25,32 +25,67 @@ namespace LalaCoffee.Controllers
             var listCategory = GetAll().ToList();
             return View(listCategory);
         }
-
-        public ActionResult Details(int Id)
+        [Route("Category/Details/{id?}")]
+        public ActionResult Details(string id)
         {
-            Category category = GetById(Id);
-            return View(category);
+            if (string.IsNullOrEmpty(id))
+            {
+                return RedirectToAction("Collection", new { Slug = "All" });
+            }
+
+            string slug = id;
+            if (int.TryParse(id, out int numericId))
+            {
+                var category = Context.Categories.FirstOrDefault(c => c.Id == numericId);
+                if (category != null && !string.IsNullOrEmpty(category.Slug))
+                {
+                    slug = category.Slug;
+                }
+            }
+
+            return Collection(slug);
         }
 
-        [Route("Collections/{Slug}")]
-        public ActionResult Collection(string Slug)
+        [Route("Collections/{Slug?}")]
+        public ActionResult Collection(string Slug, string search = null)
         {
-            var categories = GetAll();
+            var categories = GetAll().ToList();
             ViewBag.ListCate = categories;
-            if (Slug == "All" || Slug == "")
+            ViewBag.CurrentSlug = Slug;
+            ViewBag.Search = search;
+
+            var productQuery = Context.Products.Include(p => p.Category).AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrEmpty(Slug) && !string.Equals(Slug, "All", StringComparison.OrdinalIgnoreCase))
             {
-                var products = Context.Products.ToList();
+                productQuery = productQuery.Where(x => x.Category.Slug == Slug);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var s = search.Trim();
+                productQuery = productQuery.Where(x => (x.Name != null && x.Name.Contains(s)) || (x.Description != null && x.Description.Contains(s)));
+            }
+
+            var products = productQuery.ToList();
+
+            if (string.IsNullOrEmpty(Slug) || string.Equals(Slug, "All", StringComparison.OrdinalIgnoreCase))
+            {
                 ViewBag.Categories = categories;
-                return View(products);
+                return View("Collection", products);
             }
             else
             {
-                var products = Context.Products.Where(x => x.Category.Slug == Slug).ToList();
                 var categoriesBySlug = Context.Categories.Where(n => n.Slug == Slug).ToList();
+                if (!categoriesBySlug.Any())
+                {
+                    categoriesBySlug = categories;
+                }
                 ViewBag.Categories = categoriesBySlug;
-                return View(products);
+                return View("Collection", products);
             }
         }
+
 
         public ActionResult DetailProduct(int Id)
         {

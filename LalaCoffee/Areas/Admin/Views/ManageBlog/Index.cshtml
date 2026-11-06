@@ -10,9 +10,26 @@
         return active == true ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
     }
 }
+@{
+    var fieldErrors = (TempData["FieldErrors"] ?? ViewBag.FieldErrors) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    var formValues = (TempData["FormValues"] ?? ViewBag.FormValues) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    string openModal = TempData["OpenModal"] as string;
+    bool isCreatePublished = !formValues.ContainsKey("Published") || formValues["Published"] == "true" || formValues["Published"] == "1";
+}
 @Html.Partial("ErrorsAlert")
-<script src="https://cdn.ckeditor.com/4.9.2/full/ckeditor.js"></script>
-<div class="modal fade" id="create_modal">
+<script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+<script type="text/javascript">
+    CKEDITOR.config.versionCheck = false;
+</script>
+<style>
+    .cke_notification_warning, .cke_display_version_check, .cke_display_version_check-absolute {
+        display: none !important;
+    }
+    .cke_dialog, .cke_combopanel, .cke_panel {
+        z-index: 10005 !important;
+    }
+</style>
+<div class="modal fade" id="create_modal" tabindex="-1" data-bs-focus="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             @using (Html.BeginForm("Create", "ManageBlog", FormMethod.Post))
@@ -24,42 +41,40 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="card-body table-responsive p-0" style="overflow-y: scroll;max-height: 700px;">
-                        <div class="form-group">
-                            <label>Tiêu đề</label>
-                            <input type="text" class="form-control" name="Title">
-                        </div>
-                        <div class="form-group">
-                            <label>Nội dung</label>
-                            <textarea rows="5" class="form-control" name="Content" id="Content"></textarea>
-                            <script type="text/javascript">
-                                CKEDITOR.replace('Content');
-                                CKEDITOR.add
-                            </script>
-                        </div>
+                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="form-group">
+                        <label>Tiêu đề <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @(fieldErrors.ContainsKey("Title") ? "is-invalid" : "")" name="Title" id="Title" value="@(formValues.ContainsKey("Title") ? formValues["Title"] : "")">
+                        @if (fieldErrors.ContainsKey("Title"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["Title"]</span>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label>Nội dung <span class="text-danger">*</span></label>
+                        <textarea rows="5" class="form-control @(fieldErrors.ContainsKey("Content") ? "is-invalid" : "")" name="Content" id="Content">@(formValues.ContainsKey("Content") ? formValues["Content"] : "")</textarea>
+                        @if (fieldErrors.ContainsKey("Content"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["Content"]</span>
+                        }
+                    </div>
 
-                        <div class="form-group">
-                            <label>Hiện hành</label>
-                            <input type="checkbox" name="Published" id="Published" value="true" checked>
-                            <label class="form-check-label">ON</label>
+                    <div class="form-group">
+                        <label>Hiện hành</label>
+                        <input type="checkbox" name="Published" id="Published" value="true" @(isCreatePublished ? "checked" : "")>
+                        <label class="form-check-label" for="Published">ON</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Hình ảnh</label>
+                        <input type="text" class="form-control" name="image" id="image" value="@(formValues.ContainsKey("image") ? formValues["image"] : "")">
+                        <div class="input-group form-group">
+                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*"
+                                   style="display:none;" />
+                            <span class="input-group-btn">
+                                <input type="button" id="btnUpload" value="Chọn" class="btn btn-success" />
+                            </span>
                         </div>
-                        <div class="form-group">
-                            <label>Người đăng</label>
-                            <input type="text" class="form-control" name="Author" id="Author">
-                        </div>
-                        <div class="form-group">
-                            <label>Hình ảnh</label>
-                            <input type="text" class="form-control" name="image" id="image">
-                            <div class="input-group form-group">
-                                <input type="file" name="fileUpload" id="fileUpload" accept="image/*"
-                                       style="display:none;" />
-                                <span class="input-group-btn">
-                                    <input type="button" id="btnUpload" value="Chọn" class="btn btn-success" />
-                                </span>
-                            </div>
-                            <img src="" id="pictureUpload" class="img-fluid" />
-                        </div>
+                        <img src="@(formValues.ContainsKey("image") ? formValues["image"] : "")" id="pictureUpload" class="img-fluid" />
                     </div>
                 </div>
                 <div class="modal-footer justify-content-between">
@@ -80,13 +95,12 @@
             </div>
             <div class="card-body">
                 <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap" id="nTable">
+                    <table class="table table-head-fixed text-nowrap" id="blogTable" data-server-side="true" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Hành động</th>
                                 <th>Id</th>
                                 <th>Tiêu đề</th>
-                                <th>Nội dung</th>
                                 <th>Thời gian tạo</th>
                                 <th>Hiện hành</th>
                                 <th>Người đăng</th>
@@ -94,26 +108,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="@Url.Action("Edit", "ManageBlog", new { id = item.Id })" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-danger btn-sm" onclick="del('@item.Id')">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                                    <td><textarea rows="3">@Html.DisplayFor(modelItem => item.Content)</textarea></td>
-                                    <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
-                                    <td>@Html.Raw(NorActive(item.Published))</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Author)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Image)</td>
-                                </tr>
-                            }
                         </tbody>
                     </table>
                 </div>
@@ -122,8 +116,70 @@
     </div>
 </div>
 
-<script>
-  function del(id) {
+<script type="text/javascript">
+    var blogTable;
+    $(document).ready(function () {
+        blogTable = $('#blogTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "@Url.Action("GetData", "ManageBlog")",
+                "type": "POST",
+                "data": function (d) {
+                    d.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                }
+            },
+            "columns": [
+                {
+                    "data": "id",
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row) {
+                        return '<a href="' + row.editUrl + '" class="btn btn-primary btn-sm mr-1"><i class="fa fa-edit"></i></a> ' +
+                               '<a href="#" class="btn btn-danger btn-sm" onclick="del(\'' + data + '\')"><i class="fa fa-trash"></i></a>';
+                    }
+                },
+                { "data": "id" },
+                { "data": "title" },
+                { "data": "createdDate" },
+                {
+                    "data": "publishedBadge",
+                    "render": function (data) { return data; }
+                },
+                { "data": "author" },
+                {
+                    "data": "image",
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row) {
+                        if (data && data.length > 0) {
+                            return '<img src="' + data + '" alt="' + (row.title || '') + '" style="width:70px; height:50px; object-fit:cover; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,0.12);" />';
+                        }
+                        return '<span class="text-muted small">Không có ảnh</span>';
+                    }
+                }
+            ],
+            "order": [[1, "desc"]],
+            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+            "language": {
+                "processing": "Đang tải dữ liệu...",
+                "lengthMenu": "Hiển thị _MENU_ mục",
+                "zeroRecords": "Không tìm thấy dữ liệu",
+                "info": "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                "infoEmpty": "Hiển thị từ 0 đến 0 của 0 mục",
+                "infoFiltered": "(được lọc từ _MAX_ mục)",
+                "search": "Tìm kiếm:",
+                "paginate": {
+                    "first": "Đầu",
+                    "previous": "Trước",
+                    "next": "Tiếp",
+                    "last": "Cuối"
+                }
+            }
+        });
+    });
+
+    function del(id) {
         if (confirm("Bạn chắc chắn muốn xóa?")) {
             $.ajax({
                 url: "@Url.Action("Delete", "ManageBlog")",
@@ -132,7 +188,11 @@
                 success: function (response) {
                     if (response.success) {
                         alert(response.message);
-                        location.reload();
+                        if (blogTable) {
+                            blogTable.ajax.reload(null, false);
+                        } else {
+                            location.reload();
+                        }
                     } else {
                         alert(response.message);
                     }
@@ -175,5 +235,55 @@
                 });
         }
     });
+    @if (!string.IsNullOrEmpty(openModal) && fieldErrors.Count > 0)
+    {
+        <text>
+        $(document).ready(function () {
+            $('#@openModal').modal('show');
+        });
+        </text>
+    }
+
+    // Quản lý vòng đời CKEditor trong Modal để đảm bảo hiển thị đủ thanh công cụ (toolbar)
+    var blogEditor = null;
+    function initBlogEditor() {
+        if (!CKEDITOR.instances['Content']) {
+            blogEditor = CKEDITOR.replace('Content', {
+                versionCheck: false,
+                height: 280,
+                width: '100%',
+                toolbarCanCollapse: false
+            });
+        }
+    }
+
+    $('#create_modal').on('shown.bs.modal', function () {
+        initBlogEditor();
+    });
+
+    $('#create_modal').on('hidden.bs.modal', function () {
+        if (CKEDITOR.instances['Content']) {
+            CKEDITOR.instances['Content'].destroy(true);
+            blogEditor = null;
+        }
+    });
+
+    $('#create_modal form').on('submit', function () {
+        if (CKEDITOR.instances['Content']) {
+            CKEDITOR.instances['Content'].updateElement();
+        }
+    });
+
+    // Tránh việc Bootstrap Modal chặn focus các dialog/dropdown của CKEditor
+    if ($.fn.modal && $.fn.modal.Constructor && $.fn.modal.Constructor.prototype.enforceFocus) {
+        $.fn.modal.Constructor.prototype.enforceFocus = function () {
+            var $modal = this;
+            $(document).off('focusin.bs.modal').on('focusin.bs.modal', function (e) {
+                if ($modal.$element[0] !== e.target && !$modal.$element.has(e.target).length && !$(e.target).closest('.cke_dialog, .cke').length) {
+                    $modal.$element.trigger('focus');
+                }
+            });
+        };
+    }
 </script>
 

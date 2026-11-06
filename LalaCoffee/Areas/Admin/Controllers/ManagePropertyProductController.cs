@@ -54,38 +54,58 @@ namespace LalaCoffee.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, PropertyProduct propertyProduct)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+            var formValues = formCollection.AllKeys.ToDictionary(k => k, k => formCollection[k] ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+
+            var name = formCollection["name"]?.Trim();
+            var priceStr = formCollection["price"]?.Trim();
+            var status = formCollection["status"] == "1" ? "1" : "0";
+            var productIdStr = formCollection["product_id"];
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                fieldErrors["name"] = "Vui lòng nhập tên thuộc tính.";
+            }
+            decimal parsedPrice = 0;
+            if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
+            {
+                fieldErrors["price"] = "Giá thuộc tính phải từ 0đ trở lên.";
+            }
+            int productId = 0;
+            if (!int.TryParse(productIdStr, out productId) || _productRepository.GetById(productId) == null)
+            {
+                fieldErrors["product_id"] = "Vui lòng chọn sản phẩm hợp lệ.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                TempData["Errors"] = fieldErrors.Values.ToList();
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManagePropertyProduct");
+            }
+
             try
             {
-                var name = formCollection["name"];
-                var priceStr = formCollection["price"];
-                var status = formCollection["status"] == "1" ? "1" : "0";
-                if (string.IsNullOrEmpty(name))
-                {
-                    errors.Add("Chưa nhập tên thuộc tính");
-                }
-                decimal parsedPrice = 0;
-                if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
-                {
-                    errors.Add("Nhập giá ít nhất là 0đ");
-                }
-                if (errors.Count == 0)
-                {
-                    int productId = 0;
-                    if (int.TryParse(formCollection["product_id"], out productId))
-                    {
-                        propertyProduct.Product = _productRepository.GetById(productId);
-                    }
-                    propertyProduct.Price = parsedPrice;
-                    propertyProduct.Status = status;
-                    Add(propertyProduct);
-                }
+                propertyProduct.Product = _productRepository.GetById(productId);
+                propertyProduct.Name = name;
+                propertyProduct.Price = parsedPrice;
+                propertyProduct.Status = status;
+                propertyProduct.CreatedAt = DateTime.Now;
+                propertyProduct.UpdatedAt = DateTime.Now;
+                Add(propertyProduct);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                TempData["Errors"] = generalErrors;
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManagePropertyProduct");
             }
-            TempData["Errors"] = errors;
 
             return RedirectToAction("Index", "ManagePropertyProduct");
         }
@@ -111,56 +131,80 @@ namespace LalaCoffee.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+
+            var idStr = formCollection["id"] ?? formCollection["Id"];
+            var name = formCollection["name"]?.Trim();
+            var priceStr = formCollection["price"]?.Trim();
+            var status = formCollection["status"] == "1" ? "1" : "0";
+            var productIdStr = formCollection["product_id"];
+
+            int propertyProductId = 0;
+            if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out propertyProductId))
+            {
+                TempData["Errors"] = new List<string> { "ID thuộc tính không hợp lệ." };
+                return RedirectToAction("Index", "ManagePropertyProduct");
+            }
+
+            var propertyProduct = GetById(propertyProductId);
+            if (propertyProduct == null)
+            {
+                TempData["Errors"] = new List<string> { "Không tìm thấy thuộc tính sản phẩm cần chỉnh sửa." };
+                return RedirectToAction("Index", "ManagePropertyProduct");
+            }
+
+            propertyProduct.Name = name;
+            propertyProduct.Status = status;
+
+            int productId = 0;
+            if (int.TryParse(productIdStr, out productId))
+            {
+                propertyProduct.Product = _productRepository.GetById(productId);
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                fieldErrors["name"] = "Vui lòng nhập tên thuộc tính.";
+            }
+            decimal parsedPrice = 0;
+            if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
+            {
+                fieldErrors["price"] = "Giá thuộc tính phải từ 0đ trở lên.";
+            }
+            else
+            {
+                propertyProduct.Price = parsedPrice;
+            }
+            if (propertyProduct.Product == null)
+            {
+                fieldErrors["product_id"] = "Vui lòng chọn sản phẩm hợp lệ.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                ViewBag.PriceInput = priceStr;
+                ViewBag.Errors = fieldErrors.Values.ToList();
+                ViewBag.FieldErrors = fieldErrors;
+                ViewBag.Product = _productRepository.GetAll().ToList();
+                return View(propertyProduct);
+            }
+
             try
             {
-                var idStr = formCollection["id"] ?? formCollection["Id"];
-                var name = formCollection["name"];
-                var priceStr = formCollection["price"];
-                var status = formCollection["status"] == "1" ? "1" : "0";
-
-                int propertyProductId = 0;
-                if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out propertyProductId))
-                {
-                    errors.Add("ID thuộc tính không hợp lệ");
-                }
-
-                if (string.IsNullOrEmpty(name))
-                {
-                    errors.Add("Chưa nhập tên thuộc tính");
-                }
-                decimal parsedPrice = 0;
-                if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
-                {
-                    errors.Add("Nhập giá ít nhất là 0đ");
-                }
-                if (errors.Count == 0)
-                {
-                    var propertyProduct = GetById(propertyProductId);
-                    if (propertyProduct == null)
-                    {
-                        errors.Add("Không tìm thấy thuộc tính sản phẩm");
-                    }
-                    else
-                    {
-                        int productId = 0;
-                        if (int.TryParse(formCollection["product_id"], out productId))
-                        {
-                            propertyProduct.Product = _productRepository.GetById(productId);
-                        }
-                        propertyProduct.Name = name;
-                        propertyProduct.Price = parsedPrice;
-                        propertyProduct.Status = status;
-                        propertyProduct.UpdatedAt = DateTime.Now;
-                        Update(propertyProduct);
-                    }
-                }
+                propertyProduct.UpdatedAt = DateTime.Now;
+                Update(propertyProduct);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                ViewBag.PriceInput = priceStr;
+                ViewBag.Errors = generalErrors;
+                ViewBag.FieldErrors = fieldErrors;
+                ViewBag.Product = _productRepository.GetAll().ToList();
+                return View(propertyProduct);
             }
-            TempData["Errors"] = errors;
+
             return RedirectToAction("Index", "ManagePropertyProduct");
         }
 

@@ -1,23 +1,17 @@
-﻿@{
+@{
     List<string> ErrorsTemp = TempData["Errors"] as List<string>;
+    List<string> ViewBagErrors = ViewBag.Errors as List<string>;
+    var errors = (ViewBagErrors != null && ViewBagErrors.Count > 0) ? ViewBagErrors : ErrorsTemp;
 }
-@if (ViewBag.Errors != null && ViewBag.Errors.Count > 0)
+@if (errors != null && errors.Count > 0)
 {
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (string error in ViewBag.Errors)
-            {
-                <li>@error</li>
-            }
-        </ul>
-    </div>
-}
-
-@if (ErrorsTemp != null && ErrorsTemp.Count > 0)
-{
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (string error in ErrorsTemp)
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <strong><i class="fa fa-exclamation-circle mr-1"></i> Thông tin chưa hợp lệ:</strong>
+        <ul class="mb-0 mt-1 pl-3">
+            @foreach (string error in errors)
             {
                 <li>@error</li>
             }

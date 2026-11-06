@@ -28,38 +28,66 @@ namespace LalaCoffee.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, Category category)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+            var formValues = formCollection.AllKeys.ToDictionary(k => k, k => formCollection[k] ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+
+            var name = formCollection["name"]?.Trim();
+            var slug = formCollection["slug"]?.Trim();
+            var description = formCollection["description"]?.Trim();
+            var parentidStr = formCollection["parentid"];
+            var status = formCollection["status"] == "1" ? "1" : "0";
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                fieldErrors["name"] = "Vui lòng nhập tên danh mục.";
+            }
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                fieldErrors["slug"] = "Vui lòng nhập slug danh mục.";
+            }
+            else if (Context.Categories.Any(x => x.Slug == slug))
+            {
+                fieldErrors["slug"] = "Slug đã tồn tại, vui lòng chọn slug khác.";
+            }
+            if (string.IsNullOrWhiteSpace(description))
+            {
+                fieldErrors["description"] = "Vui lòng nhập mô tả danh mục.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                TempData["Errors"] = fieldErrors.Values.ToList();
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageCategory");
+            }
+
             try
             {
-                var name = formCollection["name"];
-                var slug = formCollection["slug"];
-                var description = formCollection["description"];
-                var parentid = formCollection["parentid"];
-                var status = formCollection["status"] == "1" ? "1" : "0";
-                var checkSlug = Context.Categories.Count(x => x.Slug == slug);
-                if (string.IsNullOrEmpty(name))
+                int parentId = 0;
+                if (int.TryParse(parentidStr, out parentId))
                 {
-                    errors.Add("Chưa nhập tên danh mục");
+                    category.ParentId = parentId;
                 }
-                if (checkSlug > 0)
-                {
-                    errors.Add("Slug đã tồn tại");
-                }
-                if (string.IsNullOrEmpty(description))
-                {
-                    errors.Add("Chưa nhập mô tả danh mục");
-                }
-                if (errors.Count == 0)
-                {
-                    category.Status = status;
-                    Add(category);
-                }
+                category.Name = name;
+                category.Slug = slug;
+                category.Description = description;
+                category.Status = status;
+                category.CreatedAt = DateTime.Now;
+                category.UpdatedAt = DateTime.Now;
+                Add(category);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                TempData["Errors"] = generalErrors;
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageCategory");
             }
-            TempData["Errors"] = errors;
 
             return RedirectToAction("Index", "ManageCategory");
         }
@@ -82,58 +110,84 @@ namespace LalaCoffee.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+
+            var idStr = formCollection["id"] ?? formCollection["Id"];
+            var name = formCollection["name"]?.Trim();
+            var slug = formCollection["slug"]?.Trim();
+            var description = formCollection["description"]?.Trim();
+            var status = formCollection["status"] == "1" ? "1" : "0";
+            var parent_idStr = formCollection["parent_id"] ?? formCollection["parentid"];
+
+            int categoryId = 0;
+            if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out categoryId))
+            {
+                TempData["Errors"] = new List<string> { "ID danh mục không hợp lệ." };
+                return RedirectToAction("Index", "ManageCategory");
+            }
+
+            var category = GetById(categoryId);
+            if (category == null)
+            {
+                TempData["Errors"] = new List<string> { "Không tìm thấy danh mục cần chỉnh sửa." };
+                return RedirectToAction("Index", "ManageCategory");
+            }
+
+            // Preserve entered values on model
+            category.Name = name;
+            category.Slug = slug;
+            category.Description = description;
+            category.Status = status;
+            int parentId = 0;
+            if (int.TryParse(parent_idStr, out parentId))
+            {
+                category.ParentId = parentId;
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                fieldErrors["name"] = "Vui lòng nhập tên danh mục.";
+            }
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                fieldErrors["slug"] = "Vui lòng nhập slug danh mục.";
+            }
+            else
+            {
+                var slugExists = Context.Categories.Any(x => x.Slug == slug && x.Id != categoryId);
+                if (slugExists)
+                {
+                    fieldErrors["slug"] = "Slug đã tồn tại, vui lòng chọn slug khác.";
+                }
+            }
+            if (string.IsNullOrWhiteSpace(description))
+            {
+                fieldErrors["description"] = "Vui lòng nhập mô tả danh mục.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                ViewBag.Errors = fieldErrors.Values.ToList();
+                ViewBag.FieldErrors = fieldErrors;
+                ViewBag.Categories = GetAll().ToList();
+                return View(category);
+            }
+
             try
             {
-                var idStr = formCollection["id"] ?? formCollection["Id"];
-                var name = formCollection["name"];
-                var slug = formCollection["slug"];
-                var description = formCollection["description"];
-                var status = formCollection["status"] == "1" ? "1" : "0";
-
-                int categoryId = 0;
-                if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out categoryId))
-                {
-                    errors.Add("ID danh mục không hợp lệ");
-                }
-
-                var checkSlug = Context.Categories.Count(x => x.Slug == slug);
-                var getCategoryContainsSlug = Context.Categories.FirstOrDefault(x => x.Slug == slug);
-                if (string.IsNullOrEmpty(name))
-                {
-                    errors.Add("Chưa nhập tên danh mục");
-                }
-                if (checkSlug > 0 && getCategoryContainsSlug != null && getCategoryContainsSlug.Id != categoryId)
-                {
-                    errors.Add("Slug đã tồn tại");
-                }
-                if (string.IsNullOrEmpty(description))
-                {
-                    errors.Add("Chưa nhập mô tả danh mục");
-                }
-                if (errors.Count == 0)
-                {
-                    var category = GetById(categoryId);
-                    if (category == null)
-                    {
-                        errors.Add("Không tìm thấy danh mục");
-                    }
-                    else
-                    {
-                        category.Name = name;
-                        category.Slug = slug;
-                        category.Status = status;
-                        category.Description = description;
-                        category.UpdatedAt = DateTime.Now;
-                        Update(category);
-                    }
-                }
+                category.UpdatedAt = DateTime.Now;
+                Update(category);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                ViewBag.Errors = generalErrors;
+                ViewBag.FieldErrors = fieldErrors;
+                ViewBag.Categories = GetAll().ToList();
+                return View(category);
             }
-            TempData["Errors"] = errors;
+
             return RedirectToAction("Index", "ManageCategory");
         }
         [HttpPost]

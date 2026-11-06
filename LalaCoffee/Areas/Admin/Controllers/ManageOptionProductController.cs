@@ -54,38 +54,58 @@ namespace LalaCoffee.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(FormCollection formCollection, OptionProduct optionProduct)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+            var formValues = formCollection.AllKeys.ToDictionary(k => k, k => formCollection[k] ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+
+            var name = formCollection["name"]?.Trim();
+            var priceStr = formCollection["price"]?.Trim();
+            var status = formCollection["status"] == "1" ? "1" : "0";
+            var productIdStr = formCollection["product_id"];
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                fieldErrors["name"] = "Vui lòng nhập tên tùy chọn.";
+            }
+            decimal parsedPrice = 0;
+            if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
+            {
+                fieldErrors["price"] = "Giá tùy chọn phải từ 0đ trở lên.";
+            }
+            int productId = 0;
+            if (!int.TryParse(productIdStr, out productId) || _productRepository.GetById(productId) == null)
+            {
+                fieldErrors["product_id"] = "Vui lòng chọn sản phẩm hợp lệ.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                TempData["Errors"] = fieldErrors.Values.ToList();
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageOptionProduct");
+            }
+
             try
             {
-                var name = formCollection["name"];
-                var priceStr = formCollection["price"];
-                var status = formCollection["status"] == "1" ? "1" : "0";
-                if (string.IsNullOrEmpty(name))
-                {
-                    errors.Add("Chưa nhập tên tùy chọn");
-                }
-                decimal parsedPrice = 0;
-                if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
-                {
-                    errors.Add("Nhập giá ít nhất là 0đ");
-                }
-                if (errors.Count == 0)
-                {
-                    int productId = 0;
-                    if (int.TryParse(formCollection["product_id"], out productId))
-                    {
-                        optionProduct.Product = _productRepository.GetById(productId);
-                    }
-                    optionProduct.Price = parsedPrice;
-                    optionProduct.Status = status;
-                    Add(optionProduct);
-                }
+                optionProduct.Product = _productRepository.GetById(productId);
+                optionProduct.Name = name;
+                optionProduct.Price = parsedPrice;
+                optionProduct.Status = status;
+                optionProduct.CreatedAt = DateTime.Now;
+                optionProduct.UpdatedAt = DateTime.Now;
+                Add(optionProduct);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                TempData["Errors"] = generalErrors;
+                TempData["FieldErrors"] = fieldErrors;
+                TempData["FormValues"] = formValues;
+                TempData["OpenModal"] = "create_modal";
+                return RedirectToAction("Index", "ManageOptionProduct");
             }
-            TempData["Errors"] = errors;
 
             return RedirectToAction("Index", "ManageOptionProduct");
         }
@@ -111,56 +131,80 @@ namespace LalaCoffee.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(FormCollection formCollection)
         {
-            List<string> errors = new List<string>();
+            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var generalErrors = new List<string>();
+
+            var idStr = formCollection["id"] ?? formCollection["Id"];
+            var name = formCollection["name"]?.Trim();
+            var priceStr = formCollection["price"]?.Trim();
+            var status = formCollection["status"] == "1" ? "1" : "0";
+            var productIdStr = formCollection["product_id"];
+
+            int optionProductId = 0;
+            if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out optionProductId))
+            {
+                TempData["Errors"] = new List<string> { "ID tùy chọn không hợp lệ." };
+                return RedirectToAction("Index", "ManageOptionProduct");
+            }
+
+            var optionProduct = GetById(optionProductId);
+            if (optionProduct == null)
+            {
+                TempData["Errors"] = new List<string> { "Không tìm thấy tùy chọn sản phẩm cần chỉnh sửa." };
+                return RedirectToAction("Index", "ManageOptionProduct");
+            }
+
+            optionProduct.Name = name;
+            optionProduct.Status = status;
+
+            int productId = 0;
+            if (int.TryParse(productIdStr, out productId))
+            {
+                optionProduct.Product = _productRepository.GetById(productId);
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                fieldErrors["name"] = "Vui lòng nhập tên tùy chọn.";
+            }
+            decimal parsedPrice = 0;
+            if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
+            {
+                fieldErrors["price"] = "Giá tùy chọn phải từ 0đ trở lên.";
+            }
+            else
+            {
+                optionProduct.Price = parsedPrice;
+            }
+            if (optionProduct.Product == null)
+            {
+                fieldErrors["product_id"] = "Vui lòng chọn sản phẩm hợp lệ.";
+            }
+
+            if (fieldErrors.Count > 0)
+            {
+                ViewBag.PriceInput = priceStr;
+                ViewBag.Errors = fieldErrors.Values.ToList();
+                ViewBag.FieldErrors = fieldErrors;
+                ViewBag.Product = _productRepository.GetAll().ToList();
+                return View(optionProduct);
+            }
+
             try
             {
-                var idStr = formCollection["id"] ?? formCollection["Id"];
-                var name = formCollection["name"];
-                var priceStr = formCollection["price"];
-                var status = formCollection["status"] == "1" ? "1" : "0";
-
-                int optionProductId = 0;
-                if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out optionProductId))
-                {
-                    errors.Add("ID tùy chọn không hợp lệ");
-                }
-
-                if (string.IsNullOrEmpty(name))
-                {
-                    errors.Add("Chưa nhập tên tùy chọn");
-                }
-                decimal parsedPrice = 0;
-                if (!TryParsePrice(priceStr, out parsedPrice) || parsedPrice < 0)
-                {
-                    errors.Add("Nhập giá ít nhất là 0đ");
-                }
-                if (errors.Count == 0)
-                {
-                    var optionProduct = GetById(optionProductId);
-                    if (optionProduct == null)
-                    {
-                        errors.Add("Không tìm thấy tùy chọn sản phẩm");
-                    }
-                    else
-                    {
-                        int productId = 0;
-                        if (int.TryParse(formCollection["product_id"], out productId))
-                        {
-                            optionProduct.Product = _productRepository.GetById(productId);
-                        }
-                        optionProduct.Name = name;
-                        optionProduct.Price = parsedPrice;
-                        optionProduct.Status = status;
-                        optionProduct.UpdatedAt = DateTime.Now;
-                        Update(optionProduct);
-                    }
-                }
+                optionProduct.UpdatedAt = DateTime.Now;
+                Update(optionProduct);
             }
             catch (Exception ex)
             {
-                errors.Add(ex.Message);
+                generalErrors.Add(ex.Message);
+                ViewBag.PriceInput = priceStr;
+                ViewBag.Errors = generalErrors;
+                ViewBag.FieldErrors = fieldErrors;
+                ViewBag.Product = _productRepository.GetAll().ToList();
+                return View(optionProduct);
             }
-            TempData["Errors"] = errors;
+
             return RedirectToAction("Index", "ManageOptionProduct");
         }
 
