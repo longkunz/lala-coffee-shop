@@ -108,28 +108,10 @@
                     <div class="form-group">
                         <label>Phương thức thanh toán</label>
                         <div class="d-flex flex-wrap align-items-center">
-                            <div class="custom-control custom-radio mr-4">
-                                <input id="Cash" name="payment" type="radio" class="custom-control-input" value="Cash" @(currentPayment == "cash" ? "checked" : "")>
+                            <div class="custom-control custom-radio">
+                                <input id="Cash" name="payment" type="radio" class="custom-control-input" value="Cash" checked>
                                 <label class="custom-control-label" for="Cash">
                                     <img style="width:20px; height:20px; margin-right:4px;" src="/Content/images/payment/cash.png"> Tiền mặt (COD)
-                                </label>
-                            </div>
-                            <div class="custom-control custom-radio mr-4">
-                                <input id="momo" name="payment" type="radio" class="custom-control-input" value="momo" @(currentPayment == "momo" ? "checked" : "")>
-                                <label class="custom-control-label" for="momo">
-                                    <img style="width:20px; height:20px; margin-right:4px;" src="/Content/images/payment/momo.png"> MoMo
-                                </label>
-                            </div>
-                            <div class="custom-control custom-radio mr-4">
-                                <input id="vnpay" name="payment" type="radio" class="custom-control-input" value="vnpay" @(currentPayment == "vnpay" ? "checked" : "")>
-                                <label class="custom-control-label" for="vnpay">
-                                    <img style="width:20px; height:20px; margin-right:4px;" src="/Content/images/payment/vnpay.png"> VNPay
-                                </label>
-                            </div>
-                            <div class="custom-control custom-radio">
-                                <input id="Credit" name="payment" type="radio" class="custom-control-input" value="Credit" @(currentPayment == "credit" ? "checked" : "")>
-                                <label class="custom-control-label" for="Credit">
-                                    <img style="width:20px; height:20px; margin-right:4px;" src="/Content/images/payment/credit.png"> Thẻ ngân hàng
                                 </label>
                             </div>
                         </div>

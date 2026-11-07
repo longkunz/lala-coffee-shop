@@ -199,7 +199,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
-    <Compile Include="Controllers\PayController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Data\ApplicationRole.cs" />
@@ -283,10 +282,8 @@
     <Compile Include="Models\CheckOutViewModel.cs" />
     <Compile Include="Models\UserProfileViewModel.cs" />
     <Compile Include="Models\OrderDetail.cs" />
-    <Compile Include="Models\Payment.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\PropertyProduct.cs" />
-    <Compile Include="Models\ResultMomo.cs" />
 
 
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -298,13 +295,6 @@
     <Compile Include="Services\OrderCalculator.cs" />
     <Compile Include="Services\Email\IEmailService.cs" />
     <Compile Include="Services\Email\EmailService.cs" />
-    <Compile Include="Services\Payment\IPaymentService.cs" />
-    <Compile Include="Services\Payment\PaymentService.cs" />
-    <Compile Include="Services\Payment\Momo\MomoSecurity.cs" />
-    <Compile Include="Services\Payment\Momo\PaymentRequest.cs" />
-    <Compile Include="Services\Payment\Momo\MomoResult.cs" />
-    <Compile Include="Services\Payment\MomoSecurityHelper.cs" />
-    <Compile Include="Services\Payment\VnPaySecurityHelper.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2641,7 +2631,6 @@
     <Content Include="Views\Order\SearchOrder.cshtml" />
     <Content Include="Views\Order\CompleteOrder.cshtml" />
     <Content Include="Views\Order\ConfirmPaymentClient.cshtml" />
-    <Content Include="Views\Pay\ErrorPayment.cshtml" />
     <Content Include="Views\Shared\_Layout_User.cshtml" />
     <Content Include="Views\Blog\Index.cshtml" />
     <Content Include="Views\Home\About.cshtml" />

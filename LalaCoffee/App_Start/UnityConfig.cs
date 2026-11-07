@@ -9,7 +9,6 @@ using LalaCoffee.Data;
 using LalaCoffee.Models;
 using LalaCoffee.Services;
 using LalaCoffee.Services.Email;
-using LalaCoffee.Services.Payment;
 
 namespace LalaCoffee
 {
@@ -171,7 +170,6 @@ namespace LalaCoffee
             container.RegisterType<IEmailService, EmailService>(new ContainerControlledLifetimeManager());
             container.RegisterType<ICartService, CartService>(new HierarchicalLifetimeManager());
             container.RegisterType<IOrderService, OrderService>(new HierarchicalLifetimeManager());
-            container.RegisterType<IPaymentService, PaymentService>(new ContainerControlledLifetimeManager());
         }
 
         public static void ResetContainer()

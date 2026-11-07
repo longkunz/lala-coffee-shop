@@ -2,7 +2,7 @@
 
 Experience the rich and aromatic world of coffee at our online store.
 
-UniCafe is a full-featured e-commerce web application for a coffee shop, built with ASP.NET MVC 5. It includes product browsing, shopping cart, online checkout with multiple payment gateways (MoMo, VNPay), blog management, and a complete admin dashboard.
+UniCafe is a full-featured e-commerce web application for a coffee shop, built with ASP.NET MVC 5. It includes product browsing, shopping cart, cash-on-delivery (COD) checkout, blog management, and a complete admin dashboard.
 
 ![Homepage](screenshots/homepage.png)
 
@@ -14,7 +14,7 @@ UniCafe is a full-featured e-commerce web application for a coffee shop, built w
 - **Authentication:** ASP.NET Identity with OWIN Cookie Authentication
 - **Admin Dashboard:** AdminLTE 3
 - **Frontend:** Bootstrap 3, jQuery 3.6
-- **Payment:** MoMo, VNPay (Sandbox)
+- **Payment:** COD (Cash on Delivery)
 - **DI Container:** Unity 5
 
 ## Prerequisites
@@ -126,7 +126,6 @@ UniCafe/
     │   ├── ProductController.cs
     │   ├── CartController.cs
     │   ├── OrderController.cs
-    │   ├── PayController.cs
     │   ├── AccountController.cs
     │   ├── BlogController.cs
     │   └── CategoryController.cs
@@ -137,7 +136,6 @@ UniCafe/
     │   ├── OrderDetail.cs
     │   ├── Blog.cs
     │   ├── CartItem.cs
-    │   └── Payment.cs
     ├── Data/                      # Data access layer
     │   ├── ApplicationDbContext.cs
     │   ├── ApplicationUser.cs
@@ -145,8 +143,6 @@ UniCafe/
     │   └── UnitOfWork.cs
     ├── Services/                  # Business services
     │   ├── CartManager.cs
-    │   └── Payment/
-    │       └── Momo/              # MoMo payment integration
     ├── Views/                     # Razor views
     ├── Content/                   # Static assets
     │   ├── images/                # Product images
@@ -163,7 +159,7 @@ UniCafe/
 - Browse products by category
 - Product detail pages
 - Shopping cart (add, update, remove items)
-- Checkout with multiple payment methods (Cash, MoMo, VNPay)
+- Checkout with Cash on Delivery (COD)
 - User registration and login
 - Blog/news section
 
@@ -175,14 +171,9 @@ UniCafe/
 - User and role management
 - Statistics/reports
 
-## Payment Gateways
+## Payment Method
 
-The application integrates with two payment gateways in **sandbox/test mode**:
-
-- **MoMo** - Vietnamese e-wallet payment
-- **VNPay** - Vietnamese bank payment gateway
-
-Payment configuration can be found in `Web.config` under `<appSettings>`.
+The application supports **Cash on Delivery (COD)** payment.
 
 ## License
 
