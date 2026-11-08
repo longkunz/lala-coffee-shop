@@ -23,6 +23,15 @@ namespace LalaCoffee.Data
             // Configure validation logic for usernames, passwords, etc.
             // ...
 
+            // Đăng ký token provider: thiếu dòng này thì mọi thao tác dùng token
+            // (GeneratePasswordResetToken, xác thực email...) đều ném InvalidOperationException.
+            var dataProtectionProvider = options.DataProtectionProvider;
+            if (dataProtectionProvider != null)
+            {
+                manager.UserTokenProvider =
+                    new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
+            }
+
             return manager;
         }
     }

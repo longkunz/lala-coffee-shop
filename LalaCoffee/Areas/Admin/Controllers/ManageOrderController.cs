@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -279,7 +280,17 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Đơn hàng không tồn tại." });
             }
-            Remove(order);
+            try
+            {
+                Remove(order);
+            }
+            catch (Exception ex)
+            {
+                // FK không có ON DELETE CASCADE: đơn hàng luôn có chi tiết (OrderDetails) nên
+                // SQL Server sẽ chặn xóa. Trả thông báo rõ ràng thay vì lỗi 500.
+                Trace.TraceError("Delete order failed: " + ex);
+                return Json(new { success = false, message = "Không thể xóa đơn hàng này vì đang có chi tiết đơn hàng liên quan. Nếu cần, hãy chuyển trạng thái đơn sang Đã hủy thay vì xóa." });
+            }
             return Json(new { success = true, message = "Xóa đơn hàng thành công." });
         }
 

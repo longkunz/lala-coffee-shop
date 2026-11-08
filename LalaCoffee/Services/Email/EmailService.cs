@@ -20,6 +20,15 @@ namespace LalaCoffee.Services.Email
         public string DisplayName { get; }
         public string BaseUrl { get; }
 
+        // Email chỉ được coi là đã cấu hình khi có địa chỉ gửi và mật khẩu thật.
+        // Mật khẩu dạng placeholder (ví dụ "DUMMY_..." trong Web.config mẫu) phải được
+        // xử lý như chưa cấu hình, nếu không mỗi lần đặt hàng sẽ tốn một lần kết nối
+        // SMTP thất bại ngay trong request của khách.
+        private bool IsEmailConfigured =>
+            !string.IsNullOrWhiteSpace(FromAddress)
+            && !string.IsNullOrWhiteSpace(FromPassword)
+            && !FromPassword.StartsWith("DUMMY", StringComparison.OrdinalIgnoreCase);
+
         public EmailService()
             : this(null, null, null)
         {
@@ -115,7 +124,10 @@ namespace LalaCoffee.Services.Email
                 EnableSsl = EnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(FromAddress, FromPassword)
+                Credentials = new NetworkCredential(FromAddress, FromPassword),
+                // Không đặt Timeout thì SmtpClient chờ mặc định 100 giây; gửi mail được gọi
+                // đồng bộ trong request đặt hàng nên timeout dài sẽ làm treo cả phiên đặt hàng.
+                Timeout = 10000
             };
         }
 
@@ -160,7 +172,7 @@ namespace LalaCoffee.Services.Email
 
         public void SendOrderConfirmation(string toEmail, string name, string orderCode, decimal totalAmount = 0)
         {
-            if (string.IsNullOrWhiteSpace(toEmail) || string.IsNullOrWhiteSpace(FromAddress) || string.IsNullOrWhiteSpace(FromPassword))
+            if (string.IsNullOrWhiteSpace(toEmail) || !IsEmailConfigured)
             {
                 Trace.TraceWarning("SendOrderConfirmation skipped: Email credentials or recipient not configured.");
                 return;
@@ -189,7 +201,7 @@ namespace LalaCoffee.Services.Email
 
         public async Task SendOrderConfirmationAsync(string toEmail, string name, string orderCode, decimal totalAmount = 0)
         {
-            if (string.IsNullOrWhiteSpace(toEmail) || string.IsNullOrWhiteSpace(FromAddress) || string.IsNullOrWhiteSpace(FromPassword))
+            if (string.IsNullOrWhiteSpace(toEmail) || !IsEmailConfigured)
             {
                 Trace.TraceWarning("SendOrderConfirmationAsync skipped: Email credentials or recipient not configured.");
                 return;

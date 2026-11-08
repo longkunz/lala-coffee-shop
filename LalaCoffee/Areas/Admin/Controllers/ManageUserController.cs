@@ -107,8 +107,23 @@ namespace LalaCoffee.Areas.Admin.Controllers
             var userStore = new UserStore<ApplicationUser>(Context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
-            var token = userManager.GeneratePasswordResetToken(model.UserId);
-            var result = userManager.ResetPassword(model.UserId, token, model.NewPassword);
+            // Admin đặt lại mật khẩu trực tiếp cho người dùng: gỡ mật khẩu cũ rồi đặt mật khẩu mới.
+            // Không dùng luồng token (GeneratePasswordResetToken/ResetPassword) vì UserManager
+            // tạo thủ công tại đây không có IUserTokenProvider — gọi token sẽ luôn ném
+            // InvalidOperationException (lỗi 500). Luồng token chỉ dành cho người dùng tự khôi phục.
+            IdentityResult result;
+            if (userManager.HasPassword(model.UserId))
+            {
+                result = userManager.RemovePassword(model.UserId);
+                if (result.Succeeded)
+                {
+                    result = userManager.AddPassword(model.UserId, model.NewPassword);
+                }
+            }
+            else
+            {
+                result = userManager.AddPassword(model.UserId, model.NewPassword);
+            }
             if (result.Succeeded)
             {
                 TempData["SuccessMessage"] = $"Đổi mật khẩu cho người dùng '{model.UserName}' thành công!";
