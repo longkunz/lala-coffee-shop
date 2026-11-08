@@ -107,6 +107,18 @@ namespace LalaCoffee.Areas.Admin.Controllers
             var userStore = new UserStore<ApplicationUser>(Context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
+            // Validate mật khẩu mới TRƯỚC khi gỡ mật khẩu cũ: nếu mật khẩu mới không hợp lệ
+            // mà đã RemovePassword thì tài khoản sẽ bị mất mật khẩu.
+            var validationResult = userManager.PasswordValidator.ValidateAsync(model.NewPassword).GetAwaiter().GetResult();
+            if (!validationResult.Succeeded)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+                return View(model);
+            }
+
             // Admin đặt lại mật khẩu trực tiếp cho người dùng: gỡ mật khẩu cũ rồi đặt mật khẩu mới.
             // Không dùng luồng token (GeneratePasswordResetToken/ResetPassword) vì UserManager
             // tạo thủ công tại đây không có IUserTokenProvider — gọi token sẽ luôn ném

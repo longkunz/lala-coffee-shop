@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -203,18 +202,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Danh mục không tồn tại" });
             }
-            try
-            {
-                Remove(category);
-            }
-            catch (Exception ex)
-            {
-                // FK không có ON DELETE CASCADE: danh mục còn sản phẩm sẽ bị SQL Server chặn.
-                // Trả thông báo rõ ràng thay vì lỗi 500.
-                Trace.TraceError("Delete category failed: " + ex);
-                return Json(new { success = false, message = "Không thể xóa danh mục này vì vẫn còn sản phẩm thuộc danh mục. Hãy chuyển hoặc xóa các sản phẩm đó trước." });
-            }
-            return Json(new { success = true, message = "Xóa danh mục thành công" });
+            return TryRemove(category, "Xóa danh mục thành công", "Không thể xóa danh mục này vì vẫn còn sản phẩm thuộc danh mục. Hãy chuyển hoặc xóa các sản phẩm đó trước.");
         }
     }
 }

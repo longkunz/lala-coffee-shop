@@ -2,6 +2,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -82,6 +84,26 @@ namespace LalaCoffee.Controllers
                 UnitOfWork.Rollback();
                 throw;
             }
+        }
+
+        protected JsonResult TryRemove(T entity, string successMessage, string relatedDataMessage)
+        {
+            try
+            {
+                Remove(entity);
+            }
+            catch (DbUpdateException ex)
+            {
+                // FK không có ON DELETE CASCADE: bản ghi còn dữ liệu liên quan sẽ bị SQL Server chặn.
+                Trace.TraceError("TryRemove failed (related data): " + ex);
+                return Json(new { success = false, message = relatedDataMessage });
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("TryRemove failed: " + ex);
+                return Json(new { success = false, message = "Đã xảy ra lỗi khi xóa. Vui lòng thử lại sau." });
+            }
+            return Json(new { success = true, message = successMessage });
         }
 
         protected override void Dispose(bool disposing)
