@@ -50,8 +50,10 @@ namespace LalaCoffee.Helpers
 
         public static MvcHtmlString Menu(this HtmlHelper helper)
         {
-            string hostUrl = HttpContext.Current?.Request?.Url?.Authority ?? "";
-            string host = string.IsNullOrEmpty(hostUrl) ? "" : "https://" + hostUrl;
+            var requestUrl = HttpContext.Current?.Request?.Url;
+            string hostUrl = requestUrl?.Authority ?? "";
+            string scheme = requestUrl?.Scheme ?? "http";
+            string host = string.IsNullOrEmpty(hostUrl) ? "" : scheme + "://" + hostUrl;
 
             using (var context = new ApplicationDbContext())
             {

@@ -1,14 +1,14 @@
-# UniCafe
+# LalaCoffee
 
 Experience the rich and aromatic world of coffee at our online store.
 
-UniCafe is a full-featured e-commerce web application for a coffee shop, built with ASP.NET MVC 5. It includes product browsing, shopping cart, cash-on-delivery (COD) checkout, blog management, and a complete admin dashboard.
+LalaCoffee (originally UniCafe) is a full-featured e-commerce web application for a coffee shop, built with ASP.NET MVC 5. It includes product browsing, shopping cart, cash-on-delivery (COD) checkout, blog management, and a complete admin dashboard.
 
 ![Homepage](screenshots/homepage.png)
 
 ## Tech Stack
 
-- **Framework:** ASP.NET MVC 5 (.NET Framework 4.7.2)
+- **Framework:** ASP.NET MVC 5 (.NET Framework 4.8)
 - **ORM:** Entity Framework 6 (Code First)
 - **Database:** SQL Server
 - **Authentication:** ASP.NET Identity with OWIN Cookie Authentication
@@ -20,7 +20,7 @@ UniCafe is a full-featured e-commerce web application for a coffee shop, built w
 ## Prerequisites
 
 - Visual Studio 2017 or later (recommended: Visual Studio 2022)
-- .NET Framework 4.7.2 Developer Pack
+- .NET Framework 4.8 Developer Pack
 - SQL Server (LocalDB, SQL Server Express, or Docker)
 
 ## Getting Started
@@ -28,13 +28,13 @@ UniCafe is a full-featured e-commerce web application for a coffee shop, built w
 ### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/phuchautea/UniCafe.git
-cd UniCafe
+git clone https://github.com/longkunz/lala-coffee-shop.git
+cd lala-coffee-shop
 ```
 
 ### Step 2: Open the solution
 
-Open `UniCafe.sln` with Visual Studio.
+Open `LalaCoffee.sln` with Visual Studio.
 
 ### Step 3: Restore NuGet packages
 
@@ -45,7 +45,7 @@ Visual Studio should automatically restore packages on open. If not:
 
 ### Step 4: Configure the database connection
 
-Open `UniCafe/Web.config` and update the connection string to match your SQL Server instance:
+Open `LalaCoffee/Web.config` and update the connection string to match your SQL Server instance:
 
 **Option A: Using SQL Server Express (local)**
 
@@ -73,17 +73,21 @@ Open `UniCafe/Web.config` and update the connection string to match your SQL Ser
 
 ### Step 5: Create the database
 
-Open **Package Manager Console** in Visual Studio:
+Create the database by running the deployment script **`Database_Deploy.sql`**
+(at the repository root) in SQL Server Management Studio (SSMS) or with sqlcmd:
 
-```
-Tools -> NuGet Package Manager -> Package Manager Console
+```powershell
+sqlcmd -S .\SQLEXPRESS -E -b -f 65001 -i .\Database_Deploy.sql
 ```
 
-Run the following command to apply all migrations and create the database:
+The script creates the schema and the seed data in a single transaction.
 
-```
-Update-Database
-```
+> **Warning — do NOT use `Update-Database` (EF migrations):** the migrations do
+> not include the `FullName`/`Address` columns of `ApplicationUser`, so a
+> migration-built database fails at login with `Invalid column name`.
+> `Database_Deploy.sql` already contains those fixes. The script only accepts
+> an **empty database** and rolls back on error; see
+> `docs/database-deployment.md` for details.
 
 ### Step 6: Run the application
 
@@ -104,9 +108,9 @@ Sau khi khởi tạo database hoặc chạy script `Database_Seed.sql`, bạn c�
 ## Project Structure
 
 ```
-UniCafe/
-├── UniCafe.sln                    # Solution file
-└── UniCafe/                       # Main project
+lala-coffee-shop/
+├── LalaCoffee.sln                 # Solution file
+└── LalaCoffee/                    # Main project
     ├── App_Start/                 # App configuration
     │   ├── BundleConfig.cs        # CSS/JS bundling
     │   ├── FilterConfig.cs        # Global filters

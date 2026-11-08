@@ -114,6 +114,7 @@ namespace LalaCoffee.Services.Email
                 Port = Port,
                 EnableSsl = EnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
+                Timeout = 10000,
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(FromAddress, FromPassword)
             };
@@ -160,7 +161,7 @@ namespace LalaCoffee.Services.Email
 
         public void SendOrderConfirmation(string toEmail, string name, string orderCode, decimal totalAmount = 0)
         {
-            if (string.IsNullOrWhiteSpace(toEmail) || string.IsNullOrWhiteSpace(FromAddress) || string.IsNullOrWhiteSpace(FromPassword))
+            if (string.IsNullOrWhiteSpace(toEmail) || string.IsNullOrWhiteSpace(FromAddress) || string.IsNullOrWhiteSpace(FromPassword) || FromPassword.StartsWith("DUMMY", StringComparison.OrdinalIgnoreCase))
             {
                 Trace.TraceWarning("SendOrderConfirmation skipped: Email credentials or recipient not configured.");
                 return;
@@ -189,7 +190,7 @@ namespace LalaCoffee.Services.Email
 
         public async Task SendOrderConfirmationAsync(string toEmail, string name, string orderCode, decimal totalAmount = 0)
         {
-            if (string.IsNullOrWhiteSpace(toEmail) || string.IsNullOrWhiteSpace(FromAddress) || string.IsNullOrWhiteSpace(FromPassword))
+            if (string.IsNullOrWhiteSpace(toEmail) || string.IsNullOrWhiteSpace(FromAddress) || string.IsNullOrWhiteSpace(FromPassword) || FromPassword.StartsWith("DUMMY", StringComparison.OrdinalIgnoreCase))
             {
                 Trace.TraceWarning("SendOrderConfirmationAsync skipped: Email credentials or recipient not configured.");
                 return;

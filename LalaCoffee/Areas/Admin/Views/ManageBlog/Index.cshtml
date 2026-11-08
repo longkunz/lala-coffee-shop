@@ -19,7 +19,7 @@
 @Html.Partial("ErrorsAlert")
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script type="text/javascript">
-    CKEDITOR.config.versionCheck = false;
+    if (window.CKEDITOR) { CKEDITOR.config.versionCheck = false; }
 </script>
 <style>
     .cke_notification_warning, .cke_display_version_check, .cke_display_version_check-absolute {
@@ -247,6 +247,7 @@
     // Quản lý vòng đời CKEditor trong Modal để đảm bảo hiển thị đủ thanh công cụ (toolbar)
     var blogEditor = null;
     function initBlogEditor() {
+        if (!window.CKEDITOR) { return; }
         if (!CKEDITOR.instances['Content']) {
             blogEditor = CKEDITOR.replace('Content', {
                 versionCheck: false,
@@ -262,14 +263,14 @@
     });
 
     $('#create_modal').on('hidden.bs.modal', function () {
-        if (CKEDITOR.instances['Content']) {
+        if (window.CKEDITOR && CKEDITOR.instances['Content']) {
             CKEDITOR.instances['Content'].destroy(true);
             blogEditor = null;
         }
     });
 
     $('#create_modal form').on('submit', function () {
-        if (CKEDITOR.instances['Content']) {
+        if (window.CKEDITOR && CKEDITOR.instances['Content']) {
             CKEDITOR.instances['Content'].updateElement();
         }
     });

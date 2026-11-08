@@ -203,7 +203,15 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Danh mục không tồn tại" });
             }
-            Remove(category);
+            try
+            {
+                Remove(category);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("Delete category failed: " + ex);
+                return Json(new { success = false, message = "Không thể xóa danh mục này vì đang có sản phẩm hoặc danh mục con liên quan. Hãy chuyển sản phẩm sang danh mục khác trước khi xóa." });
+            }
             return Json(new { success = true, message = "Xóa danh mục thành công" });
         }
     }

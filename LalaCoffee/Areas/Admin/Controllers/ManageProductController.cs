@@ -351,7 +351,15 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Sản phẩm không tồn tại" });
             }
-            Remove(product);
+            try
+            {
+                Remove(product);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("Delete product failed: " + ex);
+                return Json(new { success = false, message = "Không thể xóa sản phẩm này vì đang có dữ liệu liên quan (đơn hàng, tùy chọn size/topping...). Hãy ẩn sản phẩm thay vì xóa." });
+            }
             return Json(new { success = true, message = "Xóa sản phẩm thành công" });
         }
     }

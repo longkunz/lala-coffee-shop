@@ -107,8 +107,18 @@ namespace LalaCoffee.Areas.Admin.Controllers
             var userStore = new UserStore<ApplicationUser>(Context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
-            var token = userManager.GeneratePasswordResetToken(model.UserId);
-            var result = userManager.ResetPassword(model.UserId, token, model.NewPassword);
+            // Admin reset must not depend on a token provider: remove the old
+            // password, then set the new one directly.
+            var removeResult = userManager.RemovePassword(model.UserId);
+            if (!removeResult.Succeeded)
+            {
+                foreach (var error in removeResult.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+                return View(model);
+            }
+            var result = userManager.AddPassword(model.UserId, model.NewPassword);
             if (result.Succeeded)
             {
                 TempData["SuccessMessage"] = $"Đổi mật khẩu cho người dùng '{model.UserName}' thành công!";
