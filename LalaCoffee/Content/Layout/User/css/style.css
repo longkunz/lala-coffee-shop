@@ -5246,6 +5246,78 @@ button.remove {
         color: #fff !important;
         background: red
     }
+/* Order lookup */
+.order-lookup { color: #4b3930; }
+.order-lookup-heading { margin-bottom: 32px; text-align: center; }
+.order-lookup-heading h1 { margin-bottom: 12px; font-size: 32px; }
+.order-lookup-card {
+    margin-bottom: 24px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e9e1d7;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(75, 57, 48, 0.05);
+}
+.order-lookup-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 24px;
+    border-bottom: 1px solid #eee7df;
+}
+.order-lookup-card h2 { margin: 0; font-size: 22px; }
+.order-lookup-card-heading p { margin: 8px 0 0; overflow-wrap: anywhere; }
+.order-lookup-status {
+    padding: 8px 16px;
+    border-radius: 24px;
+    background: #f6eddc;
+    color: #795b24;
+    font-weight: 700;
+}
+.order-lookup-info {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    padding: 24px;
+}
+.order-lookup-info h3 { margin: 0 0 20px; font-size: 18px; }
+.order-lookup-fields {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 12px 16px;
+    margin: 0;
+}
+.order-lookup-fields dt { color: #74675d; font-weight: 500; }
+.order-lookup-fields dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.order-lookup-note { white-space: pre-line; }
+.order-lookup-table-wrap { overflow-x: auto; }
+.order-lookup-table { min-width: 720px; margin: 0; color: #4b3930; }
+.order-lookup-table > :not(caption) > * > * {
+    padding: 18px 24px;
+    vertical-align: middle;
+    border-color: #eee7df;
+}
+.order-lookup-table thead, .order-lookup-table tfoot { background: #faf7f2; }
+.order-lookup-table .order-lookup-number { text-align: right; white-space: nowrap; }
+.order-lookup-total { color: #906b29; font-size: 18px; font-weight: 700; }
+.order-lookup-empty { padding: 40px 24px; text-align: center; }
+.order-lookup-empty p { margin: 16px 0 0; }
+.order-lookup-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+}
+@media (max-width: 575px) {
+    .order-lookup-heading h1 { font-size: 26px; }
+    .order-lookup-info { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 20px; }
+    .order-lookup-card-heading { padding: 20px; }
+    .order-lookup-fields { grid-template-columns: 95px minmax(0, 1fr); gap: 12px; }
+}
+
 #button_login {
     width: 100%;
     line-height: 40px;

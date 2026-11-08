@@ -33,7 +33,7 @@
                         <div class="blog-left-section">
                             <form method="get" action="/Collections/@(string.IsNullOrEmpty(ViewBag.CurrentSlug) ? "All" : ViewBag.CurrentSlug)" class="blog-left-search blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                 <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm món...">
-                                <input type="submit" value="Tìm">
+                                <input type="submit" value="&#xf002;" aria-label="Tìm kiếm" title="Tìm kiếm">
                             </form>
                             <div class="blog-left-categories blog-common-wide wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
                                 <h5>
@@ -42,7 +42,8 @@
                                 <ul class="list">
                                     @foreach (var Category in ViewBag.ListCate)
                                     {
-                                        <li><a href="/Collections/@Category.Slug">@Category.Name</a></li>
+                                        var isCurrentCategory = string.Equals((string)Category.Slug, (string)ViewBag.CurrentSlug, StringComparison.OrdinalIgnoreCase);
+                                        <li><a href="/Collections/@Category.Slug" style="@(isCurrentCategory ? "font-weight: 700;" : null)" aria-current="@(isCurrentCategory ? "page" : null)">@Category.Name</a></li>
                                     }
                                 </ul>
                             </div>
