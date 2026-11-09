@@ -77,11 +77,9 @@ namespace LalaCoffee.Data
             }
             catch (InvalidOperationException)
             {
-                // Transaction đã commit/rollback trước đó.
-            }
-            catch (ObjectDisposedException)
-            {
-                // Transaction đã dispose trước đó.
+                // Transaction đã commit/rollback, dispose, hoặc hoàn tất trước đó.
+                // (ObjectDisposedException kế thừa InvalidOperationException nên
+                // đã được nhánh này bao phủ; không bắt riêng để tránh CS0160.)
             }
             catch (DbException)
             {

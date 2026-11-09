@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
@@ -189,11 +190,21 @@ namespace LalaCoffee.Areas.Admin.Controllers
             }
             catch (InvalidOperationException)
             {
-                // Transaction đã commit/rollback hoặc hoàn tất trước đó.
+                // Transaction đã commit/rollback, dispose, hoặc hoàn tất trước đó.
+                // (ObjectDisposedException kế thừa InvalidOperationException nên
+                // đã được nhánh này bao phủ; không bắt riêng để tránh CS0160.)
             }
-            catch (ObjectDisposedException)
+            catch (DbException)
             {
-                // Transaction đã dispose trước đó.
+                // Mất kết nối giữa chừng, transaction bị server abort, ...:
+                // rollback không thực hiện được, nhưng lỗi gốc / thông báo lỗi
+                // mới là thứ cần tới được người dùng.
+            }
+            catch (Exception)
+            {
+                // Rollback là best-effort: mọi lỗi rollback khác cũng không được
+                // biến lỗi validation lẽ ra hiển thị lại trong View thành 500
+                // hay che mất exception gốc.
             }
         }
     }
