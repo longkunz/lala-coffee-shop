@@ -1,432 +1,428 @@
+using LalaCoffee.Data;
+using LalaCoffee.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.PeerToPeer;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
-using System.Web.Security;
-using System.Web.UI.WebControls;
-using LalaCoffee.Data;
-using LalaCoffee.Models;
 
 namespace LalaCoffee.Controllers
 {
-    public class AccountController : Controller
-    {
-        private ApplicationDbContext _context;
-        public AccountController()
-        {
-            _context = new ApplicationDbContext();
-        }
-        // GET: Account
-        public ActionResult Index()
-        {
-            return View();
-        }
-        public ActionResult Register()
-        {
-            return View();
-        }
-        public static bool ValidateVNPhoneNumber(string phoneNumber)
-        {
-            phoneNumber = phoneNumber.Replace("+84", "0");
-            Regex regex = new Regex(@"^(0)(86|96|97|98|32|33|34|35|36|37|38|39|91|94|83|84|85|81|82|90|93|70|79|77|76|78|92|56|58|99|59|55|87)\d{7}$");
-            return regex.IsMatch(phoneNumber);
-        }
-        public bool ValidateEmail(string email)
-        {
-            Regex regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-            return regex.IsMatch(email);
-        }
-        public bool ValidatePassword(string password)
-        {
-            Regex regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
-            return regex.IsMatch(password);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Register(FormCollection formCollection)
-        {
-            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var generalErrors = new List<string>();
+	public class AccountController : Controller
+	{
+		private ApplicationDbContext _context;
+		public AccountController()
+		{
+			_context = new ApplicationDbContext();
+		}
 
-            var Email = formCollection["Email"]?.Trim();
-            var Password = formCollection["PasswordHash"];
-            var PhoneNumber = formCollection["PhoneNumber"]?.Trim();
-            var UserName = formCollection["UserName"]?.Trim();
+		public ActionResult Index()
+		{
+			return View();
+		}
 
-            ViewBag.UserName = UserName;
-            ViewBag.Email = Email;
-            ViewBag.PhoneNumber = PhoneNumber;
+		public ActionResult Register()
+		{
+			return View();
+		}
 
-            // 1. Validate UserName
-            if (string.IsNullOrWhiteSpace(UserName))
-            {
-                fieldErrors["UserName"] = "Vui lòng nhập tên đăng nhập.";
-            }
-            else if (_context.Users.Any(x => x.UserName == UserName))
-            {
-                fieldErrors["UserName"] = "Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.";
-            }
+		public static bool ValidateVNPhoneNumber(string phoneNumber)
+		{
+			phoneNumber = phoneNumber.Replace("+84", "0");
+			Regex regex = new Regex(@"^(0)(86|96|97|98|32|33|34|35|36|37|38|39|91|94|83|84|85|81|82|90|93|70|79|77|76|78|92|56|58|99|59|55|87)\d{7}$");
+			return regex.IsMatch(phoneNumber);
+		}
 
-            // 2. Validate Password
-            if (string.IsNullOrEmpty(Password))
-            {
-                fieldErrors["PasswordHash"] = "Vui lòng nhập mật khẩu.";
-            }
-            else if (!ValidatePassword(Password))
-            {
-                fieldErrors["PasswordHash"] = "Mật khẩu phải có ít nhất 8 ký tự (bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt).";
-            }
+		public bool ValidateEmail(string email)
+		{
+			Regex regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+			return regex.IsMatch(email);
+		}
 
-            // 3. Validate Email
-            if (string.IsNullOrWhiteSpace(Email))
-            {
-                fieldErrors["Email"] = "Vui lòng nhập địa chỉ email.";
-            }
-            else if (!ValidateEmail(Email))
-            {
-                fieldErrors["Email"] = "Email không đúng định dạng.";
-            }
-            else if (_context.Users.Any(x => x.Email == Email))
-            {
-                fieldErrors["Email"] = "Email đã tồn tại, vui lòng sử dụng email khác.";
-            }
+		public bool ValidatePassword(string password)
+		{
+			Regex regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
+			return regex.IsMatch(password);
+		}
 
-            // 4. Validate PhoneNumber
-            if (string.IsNullOrWhiteSpace(PhoneNumber))
-            {
-                fieldErrors["PhoneNumber"] = "Vui lòng nhập số điện thoại.";
-            }
-            else if (!ValidateVNPhoneNumber(PhoneNumber))
-            {
-                fieldErrors["PhoneNumber"] = "Số điện thoại không hợp lệ (cần 10 chữ số đúng định dạng Việt Nam).";
-            }
-            else if (_context.Users.Any(x => x.PhoneNumber == PhoneNumber))
-            {
-                fieldErrors["PhoneNumber"] = "Số điện thoại đã tồn tại, vui lòng sử dụng số khác.";
-            }
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Register(FormCollection formCollection)
+		{
+			var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			var generalErrors = new List<string>();
 
-            if (fieldErrors.Count == 0)
-            {
-                try
-                {
-                    // Create a UserStore
-                    var userStore = new UserStore<ApplicationUser>(_context);
+			var Email = formCollection["Email"]?.Trim();
+			var Password = formCollection["PasswordHash"];
+			var PhoneNumber = formCollection["PhoneNumber"]?.Trim();
+			var UserName = formCollection["UserName"]?.Trim();
 
-                    // Create a UserManager with the UserStore
-                    var userManager = new UserManager<ApplicationUser>(userStore);
-                    var user = new ApplicationUser { UserName = UserName, Email = Email, PhoneNumber = PhoneNumber };
+			ViewBag.UserName = UserName;
+			ViewBag.Email = Email;
+			ViewBag.PhoneNumber = PhoneNumber;
 
-                    var result = userManager.Create(user, Password);
-                    if (result.Succeeded)
-                    {
-                        try
-                        {
-                            var roleStore = new RoleStore<IdentityRole>(_context);
-                            var roleManager = new RoleManager<IdentityRole>(roleStore);
-                            if (roleManager.RoleExists("User"))
-                            {
-                                userManager.AddToRole(user.Id, "User");
-                            }
-                        }
-                        catch
-                        {
-                            // Bỏ qua lỗi gán quyền nếu role User chưa được khởi tạo
-                        }
+			if (string.IsNullOrWhiteSpace(UserName))
+			{
+				fieldErrors["UserName"] = "Vui lòng nhập tên đăng nhập.";
+			}
+			else if (_context.Users.Any(x => x.UserName == UserName))
+			{
+				fieldErrors["UserName"] = "Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.";
+			}
 
-                        var authenticationManager = HttpContext.GetOwinContext().Authentication;
-                        var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
-                        authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
+			if (string.IsNullOrEmpty(Password))
+			{
+				fieldErrors["PasswordHash"] = "Vui lòng nhập mật khẩu.";
+			}
+			else if (!ValidatePassword(Password))
+			{
+				fieldErrors["PasswordHash"] = "Mật khẩu phải có ít nhất 8 ký tự (bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt).";
+			}
 
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        var identityError = result.Errors.FirstOrDefault();
-                        if (!string.IsNullOrEmpty(identityError))
-                        {
-                            generalErrors.Add(identityError);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    generalErrors.Add(ex.Message);
-                }
-            }
+			if (string.IsNullOrWhiteSpace(Email))
+			{
+				fieldErrors["Email"] = "Vui lòng nhập địa chỉ email.";
+			}
+			else if (!ValidateEmail(Email))
+			{
+				fieldErrors["Email"] = "Email không đúng định dạng.";
+			}
+			else if (_context.Users.Any(x => x.Email == Email))
+			{
+				fieldErrors["Email"] = "Email đã tồn tại, vui lòng sử dụng email khác.";
+			}
 
-            ViewBag.FieldErrors = fieldErrors;
-            ViewBag.GeneralErrors = generalErrors;
-            ViewBag.Errors = generalErrors;
-            TempData["Errors"] = generalErrors;
-            return View();
-        }
-        public ActionResult Login()
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Login(FormCollection formCollection)
-        {
-            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var generalErrors = new List<string>();
+			if (string.IsNullOrWhiteSpace(PhoneNumber))
+			{
+				fieldErrors["PhoneNumber"] = "Vui lòng nhập số điện thoại.";
+			}
+			else if (!ValidateVNPhoneNumber(PhoneNumber))
+			{
+				fieldErrors["PhoneNumber"] = "Số điện thoại không hợp lệ (cần 10 chữ số đúng định dạng Việt Nam).";
+			}
+			else if (_context.Users.Any(x => x.PhoneNumber == PhoneNumber))
+			{
+				fieldErrors["PhoneNumber"] = "Số điện thoại đã tồn tại, vui lòng sử dụng số khác.";
+			}
 
-            var UserName = formCollection["UserName"]?.Trim();
-            var Password = formCollection["Password"] ?? formCollection["PassWord"];
-            var rememberMe = formCollection["RememberMe"] == "true" || formCollection["RememberMe"] == "on";
+			if (fieldErrors.Count == 0)
+			{
+				try
+				{
+					var userStore = new UserStore<ApplicationUser>(_context);
 
-            ViewBag.UserName = UserName;
-            ViewBag.RememberMe = rememberMe;
+					var userManager = new UserManager<ApplicationUser>(userStore);
+					var user = new ApplicationUser { UserName = UserName, Email = Email, PhoneNumber = PhoneNumber };
 
-            if (string.IsNullOrWhiteSpace(UserName))
-            {
-                fieldErrors["UserName"] = "Vui lòng nhập tên đăng nhập.";
-            }
+					var result = userManager.Create(user, Password);
+					if (result.Succeeded)
+					{
+						try
+						{
+							var roleStore = new RoleStore<IdentityRole>(_context);
+							var roleManager = new RoleManager<IdentityRole>(roleStore);
+							if (roleManager.RoleExists("User"))
+							{
+								userManager.AddToRole(user.Id, "User");
+							}
+						}
+						catch
+						{
+						}
 
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                fieldErrors["Password"] = "Vui lòng nhập mật khẩu.";
-            }
+						var authenticationManager = HttpContext.GetOwinContext().Authentication;
+						var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+						authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
 
-            if (fieldErrors.Count == 0)
-            {
-                try
-                {
-                    var userStore = new UserStore<ApplicationUser>(_context);
-                    var userManager = new UserManager<ApplicationUser>(userStore);
-                    var user = userManager.Find(UserName, Password);
-                    if (user != null)
-                    {
-                        var authenticationManager = HttpContext.GetOwinContext().Authentication;
+						return RedirectToAction("Index", "Home");
+					}
+					else
+					{
+						var identityError = result.Errors.FirstOrDefault();
+						if (!string.IsNullOrEmpty(identityError))
+						{
+							generalErrors.Add(identityError);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					generalErrors.Add(ex.Message);
+				}
+			}
 
-                        var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+			ViewBag.FieldErrors = fieldErrors;
+			ViewBag.GeneralErrors = generalErrors;
+			ViewBag.Errors = generalErrors;
+			TempData["Errors"] = generalErrors;
+			return View();
+		}
+		public ActionResult Login()
+		{
+			if (User.Identity.IsAuthenticated)
+			{
+				return RedirectToAction("Index", "Home");
+			}
+			return View();
+		}
 
-                        authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = rememberMe }, userIdentity);
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        generalErrors.Add("Tên đăng nhập hoặc mật khẩu không chính xác.");
-                        ViewBag.LoginFailed = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    generalErrors.Add(ex.Message);
-                }
-            }
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Login(FormCollection formCollection)
+		{
+			var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			var generalErrors = new List<string>();
 
-            ViewBag.FieldErrors = fieldErrors;
-            ViewBag.GeneralErrors = generalErrors;
-            ViewBag.Errors = generalErrors;
-            TempData["Errors"] = generalErrors;
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
-        {
-            var authenticationManager = HttpContext.GetOwinContext().Authentication;
-            authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
-        }
+			var UserName = formCollection["UserName"]?.Trim();
+			var Password = formCollection["Password"] ?? formCollection["PassWord"];
+			var rememberMe = formCollection["RememberMe"] == "true" || formCollection["RememberMe"] == "on";
 
-        public ActionResult Logout()
-        {
-            var AuthenticationManager = HttpContext.GetOwinContext().Authentication;
-            AuthenticationManager.SignOut();
-            return RedirectToAction("Index", "Home");
-        }
+			ViewBag.UserName = UserName;
+			ViewBag.RememberMe = rememberMe;
 
-        [Authorize]
-        [ActionName("Profile")]
-        public ActionResult UserProfile()
-        {
-            var userId = User.Identity.GetUserId();
-            var user = _context.Users.Find(userId);
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+			if (string.IsNullOrWhiteSpace(UserName))
+			{
+				fieldErrors["UserName"] = "Vui lòng nhập tên đăng nhập.";
+			}
 
-            var model = new UserProfileViewModel
-            {
-                UserName = user.UserName,
-                FullName = user.FullName,
-                PhoneNumber = user.PhoneNumber,
-                Email = user.Email,
-                Address = user.Address
-            };
+			if (string.IsNullOrWhiteSpace(Password))
+			{
+				fieldErrors["Password"] = "Vui lòng nhập mật khẩu.";
+			}
 
-            return View("Profile", model);
-        }
+			if (fieldErrors.Count == 0)
+			{
+				try
+				{
+					var userStore = new UserStore<ApplicationUser>(_context);
+					var userManager = new UserManager<ApplicationUser>(userStore);
+					var user = userManager.Find(UserName, Password);
+					if (user != null)
+					{
+						var authenticationManager = HttpContext.GetOwinContext().Authentication;
 
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        [ActionName("Profile")]
-        public ActionResult UserProfile(UserProfileViewModel model)
-        {
-            var userId = User.Identity.GetUserId();
-            var user = _context.Users.Find(userId);
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+						var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
 
-            model.UserName = user.UserName;
+						authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = rememberMe }, userIdentity);
+						return RedirectToAction("Index", "Home");
+					}
+					else
+					{
+						generalErrors.Add("Tên đăng nhập hoặc mật khẩu không chính xác.");
+						ViewBag.LoginFailed = true;
+					}
+				}
+				catch (Exception ex)
+				{
+					generalErrors.Add(ex.Message);
+				}
+			}
 
-            var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			ViewBag.FieldErrors = fieldErrors;
+			ViewBag.GeneralErrors = generalErrors;
+			ViewBag.Errors = generalErrors;
+			TempData["Errors"] = generalErrors;
+			return View();
+		}
 
-            if (string.IsNullOrWhiteSpace(model.FullName))
-            {
-                fieldErrors["FullName"] = "Vui lòng nhập họ và tên.";
-            }
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult LogOff()
+		{
+			var authenticationManager = HttpContext.GetOwinContext().Authentication;
+			authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+			return RedirectToAction("Index", "Home");
+		}
 
-            if (string.IsNullOrWhiteSpace(model.PhoneNumber))
-            {
-                fieldErrors["PhoneNumber"] = "Vui lòng nhập số điện thoại.";
-            }
-            else if (!ValidateVNPhoneNumber(model.PhoneNumber))
-            {
-                fieldErrors["PhoneNumber"] = "Số điện thoại không hợp lệ (cần 10 chữ số đúng định dạng Việt Nam).";
-            }
-            else if (_context.Users.Any(x => x.PhoneNumber == model.PhoneNumber && x.Id != userId))
-            {
-                fieldErrors["PhoneNumber"] = "Số điện thoại đã được tài khoản khác sử dụng.";
-            }
+		public ActionResult Logout()
+		{
+			var AuthenticationManager = HttpContext.GetOwinContext().Authentication;
+			AuthenticationManager.SignOut();
+			return RedirectToAction("Index", "Home");
+		}
 
-            if (string.IsNullOrWhiteSpace(model.Email))
-            {
-                fieldErrors["Email"] = "Vui lòng nhập địa chỉ email.";
-            }
-            else if (!ValidateEmail(model.Email))
-            {
-                fieldErrors["Email"] = "Email không đúng định dạng.";
-            }
-            else if (_context.Users.Any(x => x.Email == model.Email && x.Id != userId))
-            {
-                fieldErrors["Email"] = "Email đã được tài khoản khác sử dụng.";
-            }
+		[Authorize]
+		[ActionName("Profile")]
+		public ActionResult UserProfile()
+		{
+			var userId = User.Identity.GetUserId();
+			var user = _context.Users.Find(userId);
+			if (user == null)
+			{
+				return RedirectToAction("Login", "Account");
+			}
 
-            if (string.IsNullOrWhiteSpace(model.Address))
-            {
-                fieldErrors["Address"] = "Vui lòng nhập địa chỉ nhận hàng.";
-            }
+			var model = new UserProfileViewModel
+			{
+				UserName = user.UserName,
+				FullName = user.FullName,
+				PhoneNumber = user.PhoneNumber,
+				Email = user.Email,
+				Address = user.Address
+			};
 
-            if (fieldErrors.Count > 0)
-            {
-                ViewBag.ProfileFieldErrors = fieldErrors;
-                return View("Profile", model);
-            }
+			return View("Profile", model);
+		}
 
-            user.FullName = model.FullName.Trim();
-            user.PhoneNumber = model.PhoneNumber.Trim();
-            user.Email = model.Email.Trim();
-            user.Address = model.Address.Trim();
+		[HttpPost]
+		[Authorize]
+		[ValidateAntiForgeryToken]
+		[ActionName("Profile")]
+		public ActionResult UserProfile(UserProfileViewModel model)
+		{
+			var userId = User.Identity.GetUserId();
+			var user = _context.Users.Find(userId);
+			if (user == null)
+			{
+				return RedirectToAction("Login", "Account");
+			}
 
-            _context.SaveChanges();
+			model.UserName = user.UserName;
 
-            TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
-            return RedirectToAction("Profile");
-        }
+			var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public ActionResult ChangePassword(ChangePasswordViewModel model)
-        {
-            var userId = User.Identity.GetUserId();
-            var user = _context.Users.Find(userId);
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+			if (string.IsNullOrWhiteSpace(model.FullName))
+			{
+				fieldErrors["FullName"] = "Vui lòng nhập họ và tên.";
+			}
 
-            var profileModel = new UserProfileViewModel
-            {
-                UserName = user.UserName,
-                FullName = user.FullName,
-                PhoneNumber = user.PhoneNumber,
-                Email = user.Email,
-                Address = user.Address
-            };
+			if (string.IsNullOrWhiteSpace(model.PhoneNumber))
+			{
+				fieldErrors["PhoneNumber"] = "Vui lòng nhập số điện thoại.";
+			}
+			else if (!ValidateVNPhoneNumber(model.PhoneNumber))
+			{
+				fieldErrors["PhoneNumber"] = "Số điện thoại không hợp lệ (cần 10 chữ số đúng định dạng Việt Nam).";
+			}
+			else if (_context.Users.Any(x => x.PhoneNumber == model.PhoneNumber && x.Id != userId))
+			{
+				fieldErrors["PhoneNumber"] = "Số điện thoại đã được tài khoản khác sử dụng.";
+			}
 
-            var passwordErrors = new List<string>();
+			if (string.IsNullOrWhiteSpace(model.Email))
+			{
+				fieldErrors["Email"] = "Vui lòng nhập địa chỉ email.";
+			}
+			else if (!ValidateEmail(model.Email))
+			{
+				fieldErrors["Email"] = "Email không đúng định dạng.";
+			}
+			else if (_context.Users.Any(x => x.Email == model.Email && x.Id != userId))
+			{
+				fieldErrors["Email"] = "Email đã được tài khoản khác sử dụng.";
+			}
 
-            if (string.IsNullOrEmpty(model.CurrentPassword))
-            {
-                passwordErrors.Add("Vui lòng nhập mật khẩu hiện tại.");
-            }
+			if (string.IsNullOrWhiteSpace(model.Address))
+			{
+				fieldErrors["Address"] = "Vui lòng nhập địa chỉ nhận hàng.";
+			}
 
-            if (string.IsNullOrEmpty(model.NewPassword))
-            {
-                passwordErrors.Add("Vui lòng nhập mật khẩu mới.");
-            }
-            else if (!ValidatePassword(model.NewPassword))
-            {
-                passwordErrors.Add("Mật khẩu mới phải có ít nhất 8 ký tự (bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt).");
-            }
+			if (fieldErrors.Count > 0)
+			{
+				ViewBag.ProfileFieldErrors = fieldErrors;
+				return View("Profile", model);
+			}
 
-            if (model.NewPassword != model.ConfirmPassword)
-            {
-                passwordErrors.Add("Mật khẩu xác nhận không khớp.");
-            }
+			user.FullName = model.FullName.Trim();
+			user.PhoneNumber = model.PhoneNumber.Trim();
+			user.Email = model.Email.Trim();
+			user.Address = model.Address.Trim();
 
-            if (passwordErrors.Count > 0)
-            {
-                ViewBag.PasswordErrors = passwordErrors;
-                return View("Profile", profileModel);
-            }
+			_context.SaveChanges();
 
-            var userStore = new UserStore<ApplicationUser>(_context);
-            var userManager = new UserManager<ApplicationUser>(userStore);
+			TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
+			return RedirectToAction("Profile");
+		}
 
-            var result = userManager.ChangePassword(userId, model.CurrentPassword, model.NewPassword);
-            if (result.Succeeded)
-            {
-                var refreshedUser = userManager.FindById(userId);
-                var authenticationManager = HttpContext.GetOwinContext().Authentication;
-                authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-                var identity = userManager.CreateIdentity(refreshedUser, DefaultAuthenticationTypes.ApplicationCookie);
-                authenticationManager.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
+		[HttpPost]
+		[Authorize]
+		[ValidateAntiForgeryToken]
+		public ActionResult ChangePassword(ChangePasswordViewModel model)
+		{
+			var userId = User.Identity.GetUserId();
+			var user = _context.Users.Find(userId);
+			if (user == null)
+			{
+				return RedirectToAction("Login", "Account");
+			}
 
-                TempData["SuccessPasswordMessage"] = "Đổi mật khẩu thành công!";
-                return RedirectToAction("Profile");
-            }
+			var profileModel = new UserProfileViewModel
+			{
+				UserName = user.UserName,
+				FullName = user.FullName,
+				PhoneNumber = user.PhoneNumber,
+				Email = user.Email,
+				Address = user.Address
+			};
 
-            foreach (var err in result.Errors)
-            {
-                string msg = err;
-                if (err.Contains("Incorrect password"))
-                {
-                    msg = "Mật khẩu hiện tại không chính xác.";
-                }
-                passwordErrors.Add(msg);
-            }
+			var passwordErrors = new List<string>();
 
-            ViewBag.PasswordErrors = passwordErrors;
-            return View("Profile", profileModel);
-        }
+			if (string.IsNullOrEmpty(model.CurrentPassword))
+			{
+				passwordErrors.Add("Vui lòng nhập mật khẩu hiện tại.");
+			}
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _context?.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
+			if (string.IsNullOrEmpty(model.NewPassword))
+			{
+				passwordErrors.Add("Vui lòng nhập mật khẩu mới.");
+			}
+			else if (!ValidatePassword(model.NewPassword))
+			{
+				passwordErrors.Add("Mật khẩu mới phải có ít nhất 8 ký tự (bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt).");
+			}
+
+			if (model.NewPassword != model.ConfirmPassword)
+			{
+				passwordErrors.Add("Mật khẩu xác nhận không khớp.");
+			}
+
+			if (passwordErrors.Count > 0)
+			{
+				ViewBag.PasswordErrors = passwordErrors;
+				return View("Profile", profileModel);
+			}
+
+			var userStore = new UserStore<ApplicationUser>(_context);
+			var userManager = new UserManager<ApplicationUser>(userStore);
+
+			var result = userManager.ChangePassword(userId, model.CurrentPassword, model.NewPassword);
+			if (result.Succeeded)
+			{
+				var refreshedUser = userManager.FindById(userId);
+				var authenticationManager = HttpContext.GetOwinContext().Authentication;
+				authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+				var identity = userManager.CreateIdentity(refreshedUser, DefaultAuthenticationTypes.ApplicationCookie);
+				authenticationManager.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
+
+				TempData["SuccessPasswordMessage"] = "Đổi mật khẩu thành công!";
+				return RedirectToAction("Profile");
+			}
+
+			foreach (var err in result.Errors)
+			{
+				string msg = err;
+				if (err.Contains("Incorrect password"))
+				{
+					msg = "Mật khẩu hiện tại không chính xác.";
+				}
+				passwordErrors.Add(msg);
+			}
+
+			ViewBag.PasswordErrors = passwordErrors;
+			return View("Profile", profileModel);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				_context?.Dispose();
+			}
+			base.Dispose(disposing);
+		}
+	}
 }
