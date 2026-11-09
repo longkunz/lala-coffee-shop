@@ -366,7 +366,7 @@ IF NOT EXISTS (SELECT 1 FROM dbo.AspNetRoles WHERE Name=N'User')
     INSERT dbo.AspNetRoles (Id,Name,Discriminator) VALUES (CONVERT(nvarchar(128),NEWID()),N'User',N'IdentityRole');
 DECLARE @Accounts TABLE (UserName nvarchar(256), Email nvarchar(256), PasswordHash nvarchar(max), RoleName nvarchar(256), FullName nvarchar(100), Address nvarchar(255));
 INSERT INTO @Accounts VALUES
-(N'admin',N'admin@lalacoffee.vn',N'AKdgfQL6E5xmRrV/3I8IUVGpEgMyhTUtbypGQsTiIcFfoI8vhVoNc46w4BZ7kU+M0A==',N'Admin',N'Quản trị viên',N'Chưa cập nhật'),
+(N'admin',N'admin@lalacoffee.vn',N'AKdgfQL6E5xmRrV/3I8IUVGpEgMyhTUtbypGQsTiIcFfoI8vhVoNc46w4BZ7kU+M0A==',N'Admin',N'Quản trị viên',N'738 Võ Văn Kiệt, phường An Đông, TPHCM'),
 (N'user',N'user@lalacoffee.vn',N'AO/jeKDdiNQSL6rU8PMhalHFDHrIdy/LGeSRp32h9Hy/PMPwMmUb8/K8PohCFb62MA==',N'User',NULL,NULL);
 DECLARE @NewUsers TABLE (Id nvarchar(128), UserName nvarchar(256));
 INSERT dbo.AspNetUsers (Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnabled,AccessFailedCount,UserName,FullName,Address)

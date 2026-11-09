@@ -47,7 +47,7 @@
                     PhoneNumber = "0901234567",
                     PhoneNumberConfirmed = true,
                     FullName = "Quản trị viên",
-                    Address = "Chưa cập nhật"
+                    Address = "738 Võ Văn Kiệt, phường An Đông, TPHCM"
                 };
                 var createResult = userManager.Create(adminUser, "Admin@123");
                 if (createResult.Succeeded)
