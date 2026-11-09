@@ -50,8 +50,10 @@ namespace LalaCoffee.Helpers
 
         public static MvcHtmlString Menu(this HtmlHelper helper)
         {
-            string hostUrl = HttpContext.Current?.Request?.Url?.Authority ?? "";
-            string host = string.IsNullOrEmpty(hostUrl) ? "" : "https://" + hostUrl;
+            // Dùng đúng scheme của request hiện tại (http khi chạy IIS Express, https khi triển khai thật).
+            // Trước đây host bị ép cứng "https://" khiến toàn bộ link danh mục lỗi kết nối khi demo bằng http.
+            var requestUrl = HttpContext.Current?.Request?.Url;
+            string host = requestUrl == null ? "" : requestUrl.Scheme + "://" + requestUrl.Authority;
 
             using (var context = new ApplicationDbContext())
             {

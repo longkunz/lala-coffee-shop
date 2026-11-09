@@ -2,6 +2,9 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -82,6 +85,40 @@ namespace LalaCoffee.Controllers
                 UnitOfWork.Rollback();
                 throw;
             }
+        }
+
+        private static bool IsForeignKeyViolation(Exception ex)
+        {
+            // Mã 547 là lỗi vi phạm ràng buộc REFERENCE (khóa ngoại) của SQL Server.
+            for (var inner = ex; inner != null; inner = inner.InnerException)
+            {
+                var sqlException = inner as SqlException;
+                if (sqlException != null && sqlException.Number == 547)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        protected JsonResult TryRemove(T entity, string successMessage, string relatedDataMessage)
+        {
+            try
+            {
+                Remove(entity);
+            }
+            catch (DbUpdateException ex) when (IsForeignKeyViolation(ex))
+            {
+                // FK không có ON DELETE CASCADE: bản ghi còn dữ liệu liên quan sẽ bị SQL Server chặn.
+                Trace.TraceError("TryRemove failed (related data): " + ex);
+                return Json(new { success = false, message = relatedDataMessage });
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("TryRemove failed: " + ex);
+                return Json(new { success = false, message = "Đã xảy ra lỗi khi xóa. Vui lòng thử lại sau." });
+            }
+            return Json(new { success = true, message = successMessage });
         }
 
         protected override void Dispose(bool disposing)

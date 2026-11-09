@@ -279,8 +279,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Đơn hàng không tồn tại." });
             }
-            Remove(order);
-            return Json(new { success = true, message = "Xóa đơn hàng thành công." });
+            return TryRemove(order, "Xóa đơn hàng thành công.", "Không thể xóa đơn hàng này vì đang có chi tiết đơn hàng liên quan. Nếu cần, hãy chuyển trạng thái đơn sang Đã hủy thay vì xóa.");
         }
 
         //--DETAIL

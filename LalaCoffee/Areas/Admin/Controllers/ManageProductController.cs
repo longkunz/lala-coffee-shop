@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Web;
@@ -351,8 +350,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Sản phẩm không tồn tại" });
             }
-            Remove(product);
-            return Json(new { success = true, message = "Xóa sản phẩm thành công" });
+            return TryRemove(product, "Xóa sản phẩm thành công", "Không thể xóa sản phẩm này vì đang có dữ liệu liên quan (kích cỡ, topping hoặc đơn hàng). Hãy xóa dữ liệu liên quan trước hoặc ẩn sản phẩm thay vì xóa.");
         }
     }
 }

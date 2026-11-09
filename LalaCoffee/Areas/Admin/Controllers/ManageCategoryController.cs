@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -203,8 +202,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Danh mục không tồn tại" });
             }
-            Remove(category);
-            return Json(new { success = true, message = "Xóa danh mục thành công" });
+            return TryRemove(category, "Xóa danh mục thành công", "Không thể xóa danh mục này vì vẫn còn sản phẩm thuộc danh mục. Hãy chuyển hoặc xóa các sản phẩm đó trước.");
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -97,7 +98,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
         // POST: Admin/ManageUser/ResetPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ResetPassword(AdminResetPasswordViewModel model)
+        public async Task<ActionResult> ResetPassword(AdminResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -107,8 +108,59 @@ namespace LalaCoffee.Areas.Admin.Controllers
             var userStore = new UserStore<ApplicationUser>(Context);
             var userManager = new UserManager<ApplicationUser>(userStore);
 
-            var token = userManager.GeneratePasswordResetToken(model.UserId);
-            var result = userManager.ResetPassword(model.UserId, token, model.NewPassword);
+            // Validate mật khẩu mới TRƯỚC khi gỡ mật khẩu cũ: nếu mật khẩu mới không hợp lệ
+            // mà đã RemovePassword thì tài khoản sẽ bị mất mật khẩu.
+            var validationResult = await userManager.PasswordValidator.ValidateAsync(model.NewPassword);
+            if (!validationResult.Succeeded)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+                return View(model);
+            }
+
+            // Admin đặt lại mật khẩu trực tiếp cho người dùng: gỡ mật khẩu cũ rồi đặt mật khẩu mới.
+            // Không dùng luồng token (GeneratePasswordResetToken/ResetPassword) vì UserManager
+            // tạo thủ công tại đây không có IUserTokenProvider — gọi token sẽ luôn ném
+            // InvalidOperationException (lỗi 500). Luồng token chỉ dành cho người dùng tự khôi phục.
+            // Cả hai bước phải nằm trong MỘT transaction của cùng DbContext (UserStore dùng
+            // Context của controller): RemovePassword lưu ngay PasswordHash = NULL, nên nếu
+            // AddPassword sau đó lỗi mà không có transaction thì tài khoản mất mật khẩu.
+            // Chỉ commit khi cả hai thành công; bước nào lỗi cũng rollback về mật khẩu cũ.
+            IdentityResult result;
+            using (var transaction = Context.Database.BeginTransaction())
+            {
+                try
+                {
+                    if (userManager.HasPassword(model.UserId))
+                    {
+                        result = userManager.RemovePassword(model.UserId);
+                        if (result.Succeeded)
+                        {
+                            result = userManager.AddPassword(model.UserId, model.NewPassword);
+                        }
+                    }
+                    else
+                    {
+                        result = userManager.AddPassword(model.UserId, model.NewPassword);
+                    }
+
+                    if (result.Succeeded)
+                    {
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        LalaCoffee.Data.UnitOfWork.RollbackBestEffort(transaction);
+                    }
+                }
+                catch
+                {
+                    LalaCoffee.Data.UnitOfWork.RollbackBestEffort(transaction);
+                    throw;
+                }
+            }
             if (result.Succeeded)
             {
                 TempData["SuccessMessage"] = $"Đổi mật khẩu cho người dùng '{model.UserName}' thành công!";
@@ -122,5 +174,6 @@ namespace LalaCoffee.Areas.Admin.Controllers
 
             return View(model);
         }
+
     }
 }
