@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -99,7 +99,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
         // POST: Admin/ManageUser/ResetPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ResetPassword(AdminResetPasswordViewModel model)
+        public async Task<ActionResult> ResetPassword(AdminResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -111,7 +111,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
 
             // Validate mật khẩu mới TRƯỚC khi gỡ mật khẩu cũ: nếu mật khẩu mới không hợp lệ
             // mà đã RemovePassword thì tài khoản sẽ bị mất mật khẩu.
-            var validationResult = userManager.PasswordValidator.ValidateAsync(model.NewPassword).GetAwaiter().GetResult();
+            var validationResult = await userManager.PasswordValidator.ValidateAsync(model.NewPassword);
             if (!validationResult.Succeeded)
             {
                 foreach (var error in validationResult.Errors)
@@ -153,12 +153,12 @@ namespace LalaCoffee.Areas.Admin.Controllers
                     }
                     else
                     {
-                        RollbackBestEffort(transaction);
+                        UnitOfWork.RollbackBestEffort(transaction);
                     }
                 }
                 catch
                 {
-                    RollbackBestEffort(transaction);
+                    UnitOfWork.RollbackBestEffort(transaction);
                     throw;
                 }
             }
@@ -176,36 +176,5 @@ namespace LalaCoffee.Areas.Admin.Controllers
             return View(model);
         }
 
-        // Rollback là best-effort: nếu Commit() thất bại thì transaction phía
-        // SQL Server thường đã hoàn tất/bị rollback, gọi Rollback() lúc này có
-        // thể ném InvalidOperationException (che mất lỗi commit gốc); tương tự,
-        // Rollback() ở nhánh result-failed mà ném (mất kết nối) sẽ biến lỗi
-        // validation lẽ ra hiển thị lại trong View thành 500. Bỏ qua lỗi của
-        // Rollback() để lỗi gốc / thông báo lỗi luôn tới được người dùng.
-        private static void RollbackBestEffort(DbContextTransaction transaction)
-        {
-            try
-            {
-                transaction.Rollback();
-            }
-            catch (InvalidOperationException)
-            {
-                // Transaction đã commit/rollback, dispose, hoặc hoàn tất trước đó.
-                // (ObjectDisposedException kế thừa InvalidOperationException nên
-                // đã được nhánh này bao phủ; không bắt riêng để tránh CS0160.)
-            }
-            catch (DbException)
-            {
-                // Mất kết nối giữa chừng, transaction bị server abort, ...:
-                // rollback không thực hiện được, nhưng lỗi gốc / thông báo lỗi
-                // mới là thứ cần tới được người dùng.
-            }
-            catch (Exception)
-            {
-                // Rollback là best-effort: mọi lỗi rollback khác cũng không được
-                // biến lỗi validation lẽ ra hiển thị lại trong View thành 500
-                // hay che mất exception gốc.
-            }
-        }
     }
 }

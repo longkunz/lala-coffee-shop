@@ -16,7 +16,7 @@ SET XACT_ABORT ON;
 BEGIN TRY
     BEGIN TRANSACTION;
 IF EXISTS (SELECT 1 FROM sys.tables WHERE is_ms_shipped=0)
-    THROW 51000, N'Database không trống. Dùng Database_Seed.sql để cập nhật dữ liệu; không import đè schema.', 1;
+    THROW 51000, N'Database không trống. Xóa (drop) database rồi chạy lại Database_Deploy.sql; không import đè schema.', 1;
 -- Schema tương ứng migration cuối + FullName/Address của ApplicationUser hiện tại.
 CREATE TABLE dbo.[AspNetRoles] (
     [Id] nvarchar(128) NOT NULL PRIMARY KEY,
