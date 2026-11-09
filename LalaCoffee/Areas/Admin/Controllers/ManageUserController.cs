@@ -123,18 +123,42 @@ namespace LalaCoffee.Areas.Admin.Controllers
             // Không dùng luồng token (GeneratePasswordResetToken/ResetPassword) vì UserManager
             // tạo thủ công tại đây không có IUserTokenProvider — gọi token sẽ luôn ném
             // InvalidOperationException (lỗi 500). Luồng token chỉ dành cho người dùng tự khôi phục.
+            // Cả hai bước phải nằm trong MỘT transaction của cùng DbContext (UserStore dùng
+            // Context của controller): RemovePassword lưu ngay PasswordHash = NULL, nên nếu
+            // AddPassword sau đó lỗi mà không có transaction thì tài khoản mất mật khẩu.
+            // Chỉ commit khi cả hai thành công; bước nào lỗi cũng rollback về mật khẩu cũ.
             IdentityResult result;
-            if (userManager.HasPassword(model.UserId))
+            using (var transaction = Context.Database.BeginTransaction())
             {
-                result = userManager.RemovePassword(model.UserId);
-                if (result.Succeeded)
+                try
                 {
-                    result = userManager.AddPassword(model.UserId, model.NewPassword);
+                    if (userManager.HasPassword(model.UserId))
+                    {
+                        result = userManager.RemovePassword(model.UserId);
+                        if (result.Succeeded)
+                        {
+                            result = userManager.AddPassword(model.UserId, model.NewPassword);
+                        }
+                    }
+                    else
+                    {
+                        result = userManager.AddPassword(model.UserId, model.NewPassword);
+                    }
+
+                    if (result.Succeeded)
+                    {
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                    }
                 }
-            }
-            else
-            {
-                result = userManager.AddPassword(model.UserId, model.NewPassword);
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
             if (result.Succeeded)
             {

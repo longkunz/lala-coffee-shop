@@ -30,27 +30,66 @@ namespace LalaCoffee.Data
             }
             catch
             {
-                _transaction?.Rollback();
+                // Rollback ở đây đã dispose transaction; BaseController.Remove() trong
+                // catch còn gọi Rollback() lần nữa — lần thứ hai phải là no-op, không
+                // được ném exception mới che mất DbUpdateException gốc (để nhánh FK 547
+                // ở TryRemove bắt đúng). RollbackTransaction() lo việc đó.
+                RollbackTransaction();
                 throw;
             }
             finally
             {
-                _transaction?.Dispose();
+                DisposeTransaction();
             }
             //_transaction.Commit();
         }
 
         public void Rollback()
         {
-            _transaction?.Rollback();
-            _transaction?.Dispose();
-            //_transaction.Rollback();
+            RollbackTransaction();
         }
 
         public void Dispose()
         {
-            _transaction?.Dispose();
+            DisposeTransaction();
             _dbContext?.Dispose();
+        }
+
+        // Rollback + dispose transaction rồi null trường, để mọi lần gọi sau đều no-op.
+        // Lỗi trong lúc rollback (transaction đã hoàn tất/dispose) được bỏ qua: lỗi gốc
+        // (nếu có) mới là lỗi cần propagate; Rollback() gọi riêng thì không có lỗi gốc.
+        private void RollbackTransaction()
+        {
+            var transaction = _transaction;
+            _transaction = null;
+            if (transaction == null)
+            {
+                return;
+            }
+
+            try
+            {
+                transaction.Rollback();
+            }
+            catch (InvalidOperationException)
+            {
+                // Transaction đã commit/rollback trước đó.
+            }
+            catch (ObjectDisposedException)
+            {
+                // Transaction đã dispose trước đó.
+            }
+            finally
+            {
+                transaction.Dispose();
+            }
+        }
+
+        private void DisposeTransaction()
+        {
+            var transaction = _transaction;
+            _transaction = null;
+            transaction?.Dispose();
         }
     }
 
