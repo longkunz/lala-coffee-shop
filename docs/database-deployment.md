@@ -3,8 +3,8 @@
 ## Triển khai mới: chỉ cần một file SQL
 
 File **`Database_Deploy.sql`** ở thư mục gốc chứa schema, khóa chính/khóa ngoại,
-index, lịch sử migration EF6 và toàn bộ dữ liệu mẫu. Đây là nguồn schema/seed
-duy nhất — EF Code First migrations đã bị xóa khỏi source, không còn quy trình
+index và toàn bộ dữ liệu mẫu. Đây là nguồn schema/seed duy nhất — EF Code First
+migrations đã bị xóa hoàn toàn khỏi source (kể cả `Configuration.cs`), không còn quy trình
 `Update-Database` hay file `Database_Seed.sql`.
 
 1. Mở file bằng SQL Server Management Studio (SSMS), kết nối SQL Server.
@@ -34,10 +34,10 @@ hỗ trợ `GO`. File dùng UTF-8 và chuỗi Unicode `N'...'` để giữ tiế
 - 8 bài viết có nội dung dài, chia mục và gợi ý thưởng thức/đặt món.
 - 2 vai trò và 2 tài khoản mẫu:
 
-| Tên đăng nhập | Mật khẩu ban đầu | Vai trò |
-| --- | --- | --- |
-| `admin` | `Admin@123` | Admin |
-| `user` | `User@123` | User |
+| Tên đăng nhập | Mật khẩu ban đầu | Vai trò | Họ tên | Số điện thoại | Địa chỉ |
+| --- | --- | --- | --- | --- | --- |
+| `admin` | `Admin@123` | Admin | Quản trị viên | `0901234567` | 738 Võ Văn Kiệt, phường An Đông, TPHCM |
+| `user` | `User@123` | User | Nguyễn Văn A | `0987654321` | 123 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 1, TPHCM |
 
 Đổi mật khẩu các tài khoản mẫu trước khi mở web công khai. Database triển khai
 không chứa đơn hàng, tài khoản cá nhân hay các bản ghi thử trên máy phát triển.

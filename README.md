@@ -143,7 +143,6 @@ lala-coffee-shop/
     ├── Content/                   # Static assets
     │   ├── images/                # Product images
     │   └── Layout/Admin/          # AdminLTE template
-    ├── Migrations/                # Chỉ còn Configuration.cs (Seed); schema tạo bằng Database_Deploy.sql
     ├── Startup.cs                 # OWIN startup
     ├── Global.asax.cs             # Application entry point
     └── Web.config                 # App configuration
