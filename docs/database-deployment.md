@@ -3,8 +3,9 @@
 ## Triển khai mới: chỉ cần một file SQL
 
 File **`Database_Deploy.sql`** ở thư mục gốc chứa schema, khóa chính/khóa ngoại,
-index, lịch sử migration EF6 và toàn bộ dữ liệu mẫu. Không cần chạy
-`Update-Database` hoặc chạy thêm `Database_Seed.sql` sau khi import.
+index và toàn bộ dữ liệu mẫu. Đây là nguồn schema/seed duy nhất — EF Code First
+migrations đã bị xóa hoàn toàn khỏi source (kể cả `Configuration.cs`), không còn quy trình
+`Update-Database` hay file `Database_Seed.sql`.
 
 1. Mở file bằng SQL Server Management Studio (SSMS), kết nối SQL Server.
 2. Tên database mặc định là `UniCafe`. Nếu dùng tên khác, đổi tên trong khối
@@ -33,34 +34,18 @@ hỗ trợ `GO`. File dùng UTF-8 và chuỗi Unicode `N'...'` để giữ tiế
 - 8 bài viết có nội dung dài, chia mục và gợi ý thưởng thức/đặt món.
 - 2 vai trò và 2 tài khoản mẫu:
 
-| Tên đăng nhập | Mật khẩu ban đầu | Vai trò |
-| --- | --- | --- |
-| `admin` | `Admin@123` | Admin |
-| `user` | `User@123` | User |
+| Tên đăng nhập | Mật khẩu ban đầu | Vai trò | Họ tên | Số điện thoại | Địa chỉ |
+| --- | --- | --- | --- | --- | --- |
+| `admin` | `Admin@123` | Admin | Quản trị viên | `0901234567` | 738 Võ Văn Kiệt, phường An Đông, TPHCM |
+| `user` | `User@123` | User | Nguyễn Văn A | `0987654321` | 123 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 1, TPHCM |
 
 Đổi mật khẩu các tài khoản mẫu trước khi mở web công khai. Database triển khai
 không chứa đơn hàng, tài khoản cá nhân hay các bản ghi thử trên máy phát triển.
 Ảnh lấy từ `LalaCoffee/Content` đã có trong repository; cần triển khai cả thư mục
 này cùng ứng dụng, vì file SQL chỉ lưu đường dẫn ảnh.
 
-## Cập nhật seed trên database đã có schema
+## Cập nhật seed
 
-Chọn đúng database trong SSMS rồi chạy **`Database_Seed.sql`**, hoặc:
-
-```powershell
-sqlcmd -S .\SQLEXPRESS -E -d UniCafe -b -f 65001 -i .\Database_Seed.sql
-```
-
-Script cập nhật sản phẩm/danh mục theo slug, bài viết theo tiêu đề, tùy chọn theo
-sản phẩm và tên. Chạy lại không nhân đôi bộ seed. ID hiện có, ngày tạo, trạng thái
-hiển thị/xuất bản, tài khoản, mật khẩu và đơn hàng được giữ lại. Giá, nội dung,
-ảnh và phân loại của các món thuộc bộ seed sẽ được cập nhật. Bài viết thuộc bộ
-seed được cập nhật nội dung và ảnh. Bản ghi ngoài bộ seed được giữ nguyên.
-
-Tài khoản mẫu chỉ được tạo nếu chưa có tên đăng nhập hoặc email tương ứng;
-script không đặt lại mật khẩu và không tự cấp quyền cho tài khoản đã tồn tại.
-Nếu có nhiều danh mục/sản phẩm cùng slug hoặc nhiều bài cùng tiêu đề trong bộ
-seed, script dừng và rollback để bạn xử lý dữ liệu trùng trước.
-
-`Database_Deploy.sql` là bản độc lập chứa cùng nội dung seed. Khi thay đổi bộ
-seed về sau, cập nhật cả hai file để bản triển khai mới có nội dung tương ứng.
+`Database_Deploy.sql` là nguồn schema/seed duy nhất của dự án (EF Code First
+migrations và `Database_Seed.sql` đã bị xóa khỏi source). Khi thay đổi bộ seed
+về sau, chỉ cập nhật file này.
