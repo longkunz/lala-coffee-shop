@@ -45,7 +45,9 @@
                     Email = "admin@lalacoffee.vn",
                     EmailConfirmed = true,
                     PhoneNumber = "0901234567",
-                    PhoneNumberConfirmed = true
+                    PhoneNumberConfirmed = true,
+                    FullName = "Quản trị viên",
+                    Address = "Chưa cập nhật"
                 };
                 var createResult = userManager.Create(adminUser, "Admin@123");
                 if (createResult.Succeeded)

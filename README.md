@@ -79,7 +79,7 @@ Run the deployment script `Database_Deploy.sql` at the repository root with SQL 
 sqlcmd -S .\SQLEXPRESS -E -i Database_Deploy.sql
 ```
 
-> **Do NOT use `Update-Database` (EF migrations) to create the database.** The existing migrations do not include the `FullName`/`Address` columns of `ApplicationUser`, so a migration-built database throws `Invalid column name` on login. `Database_Deploy.sql` already contains the final schema plus those columns. The script also refuses to run against a non-empty database — drop the database first if you need to re-create it.
+> **EF Code First migrations đã bị xóa khỏi source — không còn quy trình `Update-Database`.** Database chỉ được tạo bằng `Database_Deploy.sql`, script chứa schema cuối cùng (gồm cột `FullName`/`Address` của `ApplicationUser`) và toàn bộ seed. Script chỉ chạy trên database trống — drop database trước nếu cần tạo lại.
 
 ### Step 6: Run the application
 
@@ -143,7 +143,7 @@ lala-coffee-shop/
     ├── Content/                   # Static assets
     │   ├── images/                # Product images
     │   └── Layout/Admin/          # AdminLTE template
-    ├── Migrations/                # EF Code First migrations
+    ├── Migrations/                # Chỉ còn Configuration.cs (Seed); schema tạo bằng Database_Deploy.sql
     ├── Startup.cs                 # OWIN startup
     ├── Global.asax.cs             # Application entry point
     └── Web.config                 # App configuration

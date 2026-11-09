@@ -214,62 +214,6 @@
     <Compile Include="Data\ApplicationUser.cs" />
     <Compile Include="Helpers\MenuHelper.cs" />
     <Compile Include="Helpers\ImageUploadValidator.cs" />
-    <Compile Include="Migrations\202303030337250_InitCreate.cs" />
-    <Compile Include="Migrations\202303030337250_InitCreate.designer.cs">
-      <DependentUpon>202303030337250_InitCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303030338180_CreateTableProduct.cs" />
-    <Compile Include="Migrations\202303030338180_CreateTableProduct.designer.cs">
-      <DependentUpon>202303030338180_CreateTableProduct.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303060348197_updateDecimalPrice.cs" />
-    <Compile Include="Migrations\202303060348197_updateDecimalPrice.designer.cs">
-      <DependentUpon>202303060348197_updateDecimalPrice.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303091344171_addPriceProduct.cs" />
-    <Compile Include="Migrations\202303091344171_addPriceProduct.designer.cs">
-      <DependentUpon>202303091344171_addPriceProduct.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303130912242_addShowProductAndDeleteSlug.cs" />
-    <Compile Include="Migrations\202303130912242_addShowProductAndDeleteSlug.designer.cs">
-      <DependentUpon>202303130912242_addShowProductAndDeleteSlug.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303161313217_CreateTableOrder.cs" />
-    <Compile Include="Migrations\202303161313217_CreateTableOrder.designer.cs">
-      <DependentUpon>202303161313217_CreateTableOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303171117081_deleteEmailOnOrder.cs" />
-    <Compile Include="Migrations\202303171117081_deleteEmailOnOrder.designer.cs">
-      <DependentUpon>202303171117081_deleteEmailOnOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303171128493_addNoteOnOrder.cs" />
-    <Compile Include="Migrations\202303171128493_addNoteOnOrder.designer.cs">
-      <DependentUpon>202303171128493_addNoteOnOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303171851389_updateOrderAndOrderDetail.cs" />
-    <Compile Include="Migrations\202303171851389_updateOrderAndOrderDetail.designer.cs">
-      <DependentUpon>202303171851389_updateOrderAndOrderDetail.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303200616043_addPaidOrder.cs" />
-    <Compile Include="Migrations\202303200616043_addPaidOrder.designer.cs">
-      <DependentUpon>202303200616043_addPaidOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303220945146_addTotal.cs" />
-    <Compile Include="Migrations\202303220945146_addTotal.designer.cs">
-      <DependentUpon>202303220945146_addTotal.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303301909186_updateAuthorBLOG1.cs" />
-    <Compile Include="Migrations\202303301909186_updateAuthorBLOG1.designer.cs">
-      <DependentUpon>202303301909186_updateAuthorBLOG1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303302050054_updateImageBlog.cs" />
-    <Compile Include="Migrations\202303302050054_updateImageBlog.designer.cs">
-      <DependentUpon>202303302050054_updateImageBlog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202304050247087_addUserIdToOrderTable.cs" />
-    <Compile Include="Migrations\202304050247087_addUserIdToOrderTable.designer.cs">
-      <DependentUpon>202304050247087_addUserIdToOrderTable.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AspNetUserRoles.cs" />
     <Compile Include="Models\Blog.cs" />
@@ -2655,48 +2599,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202303030337250_InitCreate.resx">
-      <DependentUpon>202303030337250_InitCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303030338180_CreateTableProduct.resx">
-      <DependentUpon>202303030338180_CreateTableProduct.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303060348197_updateDecimalPrice.resx">
-      <DependentUpon>202303060348197_updateDecimalPrice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303091344171_addPriceProduct.resx">
-      <DependentUpon>202303091344171_addPriceProduct.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303130912242_addShowProductAndDeleteSlug.resx">
-      <DependentUpon>202303130912242_addShowProductAndDeleteSlug.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303161313217_CreateTableOrder.resx">
-      <DependentUpon>202303161313217_CreateTableOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303171117081_deleteEmailOnOrder.resx">
-      <DependentUpon>202303171117081_deleteEmailOnOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303171128493_addNoteOnOrder.resx">
-      <DependentUpon>202303171128493_addNoteOnOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303171851389_updateOrderAndOrderDetail.resx">
-      <DependentUpon>202303171851389_updateOrderAndOrderDetail.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303200616043_addPaidOrder.resx">
-      <DependentUpon>202303200616043_addPaidOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303220945146_addTotal.resx">
-      <DependentUpon>202303220945146_addTotal.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303301909186_updateAuthorBLOG1.resx">
-      <DependentUpon>202303301909186_updateAuthorBLOG1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303302050054_updateImageBlog.resx">
-      <DependentUpon>202303302050054_updateImageBlog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202304050247087_addUserIdToOrderTable.resx">
-      <DependentUpon>202304050247087_addUserIdToOrderTable.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
