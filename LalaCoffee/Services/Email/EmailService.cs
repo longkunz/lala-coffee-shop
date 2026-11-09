@@ -26,6 +26,7 @@ namespace LalaCoffee.Services.Email
         public int Port { get; }
         public bool EnableSsl { get; }
         public string FromAddress { get; }
+        public string Username { get; }
         public string FromPassword { get; }
         public string DisplayName { get; }
         public string BaseUrl { get; }
@@ -57,6 +58,8 @@ namespace LalaCoffee.Services.Email
                           ?? string.Empty;
 
             FromPassword = GetSetting("Email_Password", configResolver) ?? string.Empty;
+            var username = GetSetting("Email_Username", configResolver);
+            Username = string.IsNullOrWhiteSpace(username) ? FromAddress : username;
 
             Host = GetSetting("Email_Host", configResolver) ?? "smtp.gmail.com";
 
@@ -134,7 +137,7 @@ namespace LalaCoffee.Services.Email
                 EnableSsl = EnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(FromAddress, FromPassword),
+                Credentials = new NetworkCredential(Username, FromPassword),
                 // Không đặt Timeout thì SmtpClient chờ mặc định 100 giây; gửi mail được gọi
                 // đồng bộ trong request đặt hàng nên timeout dài sẽ làm treo cả phiên đặt hàng.
                 // Lưu ý: Timeout này chỉ giới hạn Send() đồng bộ, không giới hạn SendMailAsync
