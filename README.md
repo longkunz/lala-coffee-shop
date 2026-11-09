@@ -89,7 +89,7 @@ The application will launch in your default browser using IIS Express.
 
 ## Default Accounts / Tài khoản mặc định
 
-Sau khi khởi tạo database hoặc chạy script `Database_Seed.sql`, bạn có thể sử dụng các tài khoản có sẵn dưới đây:
+Sau khi khởi tạo database bằng script `Database_Deploy.sql` (xem Step 5), bạn có thể sử dụng các tài khoản có sẵn dưới đây:
 
 | Vai trò | Tên đăng nhập (Username) | Email | Mật khẩu | Quyền (Role) | Khu vực truy cập |
 | :--- | :--- | :--- | :--- | :--- | :--- |
