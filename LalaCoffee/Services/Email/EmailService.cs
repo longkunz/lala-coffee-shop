@@ -16,6 +16,12 @@ namespace LalaCoffee.Services.Email
         // còn đường async (SendMailAsync) phải tự áp deadline bằng giá trị này.
         private const int SmtpTimeoutMilliseconds = 10000;
 
+        // Thời gian chờ thêm sau khi SendAsyncCancel(): tác vụ gửi nền có thể còn
+        // đang chờ TCP connect ở mức OS (xem ghi chú trong SendEmailAsync) nên cho
+        // nó thêm tối đa ngần này để kết thúc trước khi SmtpClient/MailMessage bị
+        // dispose; caller không bao giờ treo theo tác vụ nền quá giới hạn này.
+        private const int SmtpCancelGraceMilliseconds = 5000;
+
         public string Host { get; }
         public int Port { get; }
         public bool EnableSsl { get; }
@@ -177,11 +183,32 @@ namespace LalaCoffee.Services.Email
                     // CancellationToken, nên đua tác vụ gửi với Task.Delay rồi hủy bằng
                     // SendAsyncCancel() khi hết hạn; ném TimeoutException rõ ràng để
                     // caller (SendOrderConfirmationAsync) ghi log thay vì treo lặng lẽ.
+                    // Lưu ý: SendAsyncCancel() KHÔNG hủy được lần TCP connect đang
+                    // pending — SendAsync → BeginGetConnection, còn Abort() chỉ đóng
+                    // pooledStream khi khác null; trong lúc connect đang chờ thì
+                    // pooledStream == null nên Abort() chỉ set isClosed=true. Tác vụ
+                    // nền vì vậy có thể còn sống tới khi lần connect TCP tự xong/thất
+                    // bại ở mức OS (mail không bị gửi muộn: ConnectionCreatedCallback
+                    // kiểm tra isClosed, ConnectCallback kiểm tra cancelled trước khi
+                    // handshake/gửi). Vì thế sau khi hủy vẫn chờ thêm tối đa
+                    // SmtpCancelGraceMilliseconds cho tác vụ nền kết thúc trước khi
+                    // rời using (tránh dispose đua với tác vụ đang chạy), rồi mới
+                    // ném timeout; caller không bao giờ treo theo tác vụ nền vô hạn.
+                    // Timeout ≠ chưa gửi: nếu mail đã gửi xong thì đó là thành công.
                     var sendTask = client.SendMailAsync(message);
                     var timeoutTask = Task.Delay(SmtpTimeoutMilliseconds);
                     var completedTask = await Task.WhenAny(sendTask, timeoutTask).ConfigureAwait(false);
                     if (completedTask == timeoutTask)
                     {
+                        // Tác vụ gửi có thể đã hoàn tất đúng lúc hết hạn: nếu đã
+                        // xong thì thành công là thành công (không báo timeout sai),
+                        // lỗi thì ném lỗi gốc thay vì TimeoutException.
+                        if (sendTask.IsCompleted)
+                        {
+                            await sendTask.ConfigureAwait(false);
+                            return;
+                        }
+
                         try
                         {
                             client.SendAsyncCancel();
@@ -191,11 +218,41 @@ namespace LalaCoffee.Services.Email
                             // Hủy gửi là best-effort; lỗi timeout mới là lỗi cần báo.
                         }
 
-                        // Quan sát lỗi muộn của tác vụ gửi đã bị hủy để không thành
-                        // unobserved exception; kết quả gửi đã hết hạn không còn ý nghĩa.
-                        _ = sendTask.ContinueWith(
-                            t => { var ignored = t.Exception; },
-                            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+                        // Chờ tác vụ nền kết thúc trong giới hạn grace period trước
+                        // khi dispose client/message.
+                        var settledTask = await Task.WhenAny(
+                            sendTask, Task.Delay(SmtpCancelGraceMilliseconds)).ConfigureAwait(false);
+                        if (settledTask == sendTask)
+                        {
+                            if (sendTask.Status == TaskStatus.RanToCompletion)
+                            {
+                                // Mail đã gửi xong trong lúc chờ hủy: thành công.
+                                await sendTask.ConfigureAwait(false);
+                                return;
+                            }
+
+                            // Tác vụ kết thúc lỗi/bị hủy sau khi đã hết hạn: lỗi
+                            // timeout mới là lỗi cần báo; nuốt lỗi tác vụ nền.
+                            try
+                            {
+                                await sendTask.ConfigureAwait(false);
+                            }
+                            catch
+                            {
+                            }
+                        }
+                        else
+                        {
+                            Trace.TraceWarning(
+                                $"Sending email to '{toEmail}' timed out after {SmtpTimeoutMilliseconds} milliseconds and the background send task did not finish within the additional {SmtpCancelGraceMilliseconds} milliseconds grace period; it may still be waiting on an OS-level TCP connect and its delivery status is unknown (timeout does not mean the email was not sent).");
+
+                            // Quan sát lỗi muộn của tác vụ gửi đã bị hủy để không thành
+                            // unobserved exception.
+                            _ = sendTask.ContinueWith(
+                                t => { var ignored = t.Exception; },
+                                TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+                        }
+
                         throw new TimeoutException(
                             $"Sending email to '{toEmail}' timed out after {SmtpTimeoutMilliseconds} milliseconds.");
                     }

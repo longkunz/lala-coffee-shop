@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
@@ -56,8 +57,11 @@ namespace LalaCoffee.Data
         }
 
         // Rollback + dispose transaction rồi null trường, để mọi lần gọi sau đều no-op.
-        // Lỗi trong lúc rollback (transaction đã hoàn tất/dispose) được bỏ qua: lỗi gốc
-        // (nếu có) mới là lỗi cần propagate; Rollback() gọi riêng thì không có lỗi gốc.
+        // Mọi lỗi trong lúc rollback đều được bỏ qua: ngoài transaction đã hoàn tất/
+        // dispose, Rollback() còn có thể ném DbException (vd SqlException khi mất kết
+        // nối giữa chừng, hoặc transaction bị server abort như deadlock-victim). Lỗi
+        // gốc (nếu có) mới là lỗi cần propagate; Rollback() gọi riêng thì không có
+        // lỗi gốc. Rollback là best-effort, không bao giờ được che mất lỗi gốc.
         private void RollbackTransaction()
         {
             var transaction = _transaction;
@@ -78,6 +82,17 @@ namespace LalaCoffee.Data
             catch (ObjectDisposedException)
             {
                 // Transaction đã dispose trước đó.
+            }
+            catch (DbException)
+            {
+                // Mất kết nối giữa chừng, transaction bị server abort, ...: rollback
+                // không thực hiện được, nhưng lỗi gốc (nếu có) mới là lỗi cần báo.
+            }
+            catch (Exception)
+            {
+                // Rollback là best-effort: mọi lỗi rollback khác cũng không được che
+                // mất DbUpdateException gốc trong Commit() hay làm TryRemove lệch
+                // khỏi nhánh FK 547 trong BaseController.Remove().
             }
             finally
             {

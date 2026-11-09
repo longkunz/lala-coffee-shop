@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -151,12 +152,12 @@ namespace LalaCoffee.Areas.Admin.Controllers
                     }
                     else
                     {
-                        transaction.Rollback();
+                        RollbackBestEffort(transaction);
                     }
                 }
                 catch
                 {
-                    transaction.Rollback();
+                    RollbackBestEffort(transaction);
                     throw;
                 }
             }
@@ -172,6 +173,28 @@ namespace LalaCoffee.Areas.Admin.Controllers
             }
 
             return View(model);
+        }
+
+        // Rollback là best-effort: nếu Commit() thất bại thì transaction phía
+        // SQL Server thường đã hoàn tất/bị rollback, gọi Rollback() lúc này có
+        // thể ném InvalidOperationException (che mất lỗi commit gốc); tương tự,
+        // Rollback() ở nhánh result-failed mà ném (mất kết nối) sẽ biến lỗi
+        // validation lẽ ra hiển thị lại trong View thành 500. Bỏ qua lỗi của
+        // Rollback() để lỗi gốc / thông báo lỗi luôn tới được người dùng.
+        private static void RollbackBestEffort(DbContextTransaction transaction)
+        {
+            try
+            {
+                transaction.Rollback();
+            }
+            catch (InvalidOperationException)
+            {
+                // Transaction đã commit/rollback hoặc hoàn tất trước đó.
+            }
+            catch (ObjectDisposedException)
+            {
+                // Transaction đã dispose trước đó.
+            }
         }
     }
 }
