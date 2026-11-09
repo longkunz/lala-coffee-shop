@@ -152,12 +152,12 @@ namespace LalaCoffee.Areas.Admin.Controllers
                     }
                     else
                     {
-                        UnitOfWork.RollbackBestEffort(transaction);
+                        LalaCoffee.Data.UnitOfWork.RollbackBestEffort(transaction);
                     }
                 }
                 catch
                 {
-                    UnitOfWork.RollbackBestEffort(transaction);
+                    LalaCoffee.Data.UnitOfWork.RollbackBestEffort(transaction);
                     throw;
                 }
             }
