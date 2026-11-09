@@ -214,63 +214,6 @@
     <Compile Include="Data\ApplicationUser.cs" />
     <Compile Include="Helpers\MenuHelper.cs" />
     <Compile Include="Helpers\ImageUploadValidator.cs" />
-    <Compile Include="Migrations\202303030337250_InitCreate.cs" />
-    <Compile Include="Migrations\202303030337250_InitCreate.designer.cs">
-      <DependentUpon>202303030337250_InitCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303030338180_CreateTableProduct.cs" />
-    <Compile Include="Migrations\202303030338180_CreateTableProduct.designer.cs">
-      <DependentUpon>202303030338180_CreateTableProduct.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303060348197_updateDecimalPrice.cs" />
-    <Compile Include="Migrations\202303060348197_updateDecimalPrice.designer.cs">
-      <DependentUpon>202303060348197_updateDecimalPrice.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303091344171_addPriceProduct.cs" />
-    <Compile Include="Migrations\202303091344171_addPriceProduct.designer.cs">
-      <DependentUpon>202303091344171_addPriceProduct.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303130912242_addShowProductAndDeleteSlug.cs" />
-    <Compile Include="Migrations\202303130912242_addShowProductAndDeleteSlug.designer.cs">
-      <DependentUpon>202303130912242_addShowProductAndDeleteSlug.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303161313217_CreateTableOrder.cs" />
-    <Compile Include="Migrations\202303161313217_CreateTableOrder.designer.cs">
-      <DependentUpon>202303161313217_CreateTableOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303171117081_deleteEmailOnOrder.cs" />
-    <Compile Include="Migrations\202303171117081_deleteEmailOnOrder.designer.cs">
-      <DependentUpon>202303171117081_deleteEmailOnOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303171128493_addNoteOnOrder.cs" />
-    <Compile Include="Migrations\202303171128493_addNoteOnOrder.designer.cs">
-      <DependentUpon>202303171128493_addNoteOnOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303171851389_updateOrderAndOrderDetail.cs" />
-    <Compile Include="Migrations\202303171851389_updateOrderAndOrderDetail.designer.cs">
-      <DependentUpon>202303171851389_updateOrderAndOrderDetail.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303200616043_addPaidOrder.cs" />
-    <Compile Include="Migrations\202303200616043_addPaidOrder.designer.cs">
-      <DependentUpon>202303200616043_addPaidOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303220945146_addTotal.cs" />
-    <Compile Include="Migrations\202303220945146_addTotal.designer.cs">
-      <DependentUpon>202303220945146_addTotal.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303301909186_updateAuthorBLOG1.cs" />
-    <Compile Include="Migrations\202303301909186_updateAuthorBLOG1.designer.cs">
-      <DependentUpon>202303301909186_updateAuthorBLOG1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202303302050054_updateImageBlog.cs" />
-    <Compile Include="Migrations\202303302050054_updateImageBlog.designer.cs">
-      <DependentUpon>202303302050054_updateImageBlog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202304050247087_addUserIdToOrderTable.cs" />
-    <Compile Include="Migrations\202304050247087_addUserIdToOrderTable.designer.cs">
-      <DependentUpon>202304050247087_addUserIdToOrderTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AspNetUserRoles.cs" />
     <Compile Include="Models\Blog.cs" />
     <Compile Include="Models\CartItem.cs" />
@@ -2288,32 +2231,22 @@
     <Content Include="Content\Layout\User\images\arrow-right.png" />
     <Content Include="Content\Layout\User\images\arrow-top.png" />
     <Content Include="Content\Layout\User\images\bac-xiu.jpg" />
-    <Content Include="Content\Layout\User\images\background.jpg" />
-    <Content Include="Content\Layout\User\images\banner1.jpg" />
-    <Content Include="Content\Layout\User\images\banner2.jpg" />
     <Content Include="Content\Layout\User\images\hero-banner-1.jpg" />
-    <Content Include="Content\Layout\User\images\hero-banner-2.jpg" />
-    <Content Include="Content\Layout\User\images\hero-banner-3.jpg" />
     <Content Include="Content\Layout\User\images\bewerages.png" />
-    <Content Include="Content\Layout\User\images\bg1.jpg" />
     <Content Include="Content\Layout\User\images\blog1.jpg" />
     <Content Include="Content\Layout\User\images\blog2.jpg" />
     <Content Include="Content\Layout\User\images\blog3.jpg" />
     <Content Include="Content\Layout\User\images\ca-phe-den-da.jpg" />
     <Content Include="Content\Layout\User\images\ca-phe-sua-da.jpg" />
     <Content Include="Content\Layout\User\images\cake.png" />
-    <Content Include="Content\Layout\User\images\client1.png" />
     <Content Include="Content\Layout\User\images\cocktail.png" />
     <Content Include="Content\Layout\User\images\coffee.png" />
     <Content Include="Content\Layout\User\images\delete.png" />
-    <Content Include="Content\Layout\User\images\dummy.png" />
     <Content Include="Content\Layout\User\images\favicon.png" />
-    <Content Include="Content\Layout\User\images\feature1.jpg" />
-    <Content Include="Content\Layout\User\images\feature2.jpg" />
-    <Content Include="Content\Layout\User\images\feature3.jpg" />
-    <Content Include="Content\Layout\User\images\footer-bg.jpg" />
+    <Content Include="Content\Layout\User\images\favicon.ico" />
+    <Content Include="Content\Layout\User\images\lalacoffee-logo-horizontal-dark.svg" />
+    <Content Include="Content\Layout\User\images\lalacoffee-logo-horizontal-dark.png" />
     <Content Include="Content\Layout\User\images\footer-bg-new.jpg" />
-    <Content Include="Content\Layout\User\images\gallery\gallery1.png" />
     <Content Include="Content\Layout\User\images\gallery\gallery12.jpg" />
     <Content Include="Content\Layout\User\images\gallery\gallery13.jpg" />
     <Content Include="Content\Layout\User\images\gallery\gallery14.jpg" />
@@ -2322,45 +2255,11 @@
     <Content Include="Content\Layout\User\images\gallery\gallery17.jpg" />
     <Content Include="Content\Layout\User\images\gallery\gallery18.jpg" />
     <Content Include="Content\Layout\User\images\gallery\gallery19.jpg" />
-    <Content Include="Content\Layout\User\images\gallery\gallery2.png" />
-    <Content Include="Content\Layout\User\images\gallery\gallery3.png" />
-    <Content Include="Content\Layout\User\images\gallery\gallery4.png" />
-    <Content Include="Content\Layout\User\images\gallery\gallery5.png" />
     <Content Include="Content\Layout\User\images\gradient-bg.png" />
-    <Content Include="Content\Layout\User\images\hong-tra-sua-tran-chau-detail-1.jpg" />
-    <Content Include="Content\Layout\User\images\hong-tra-sua-tran-chau-detail-2.jpg" />
-    <Content Include="Content\Layout\User\images\hong-tra-sua-tran-chau-detail4.jpg" />
     <Content Include="Content\Layout\User\images\hong-tra-sua-tran-chau.jpg" />
-    <Content Include="Content\Layout\User\images\icon\icon1.png" />
-    <Content Include="Content\Layout\User\images\icon\icon2.png" />
-    <Content Include="Content\Layout\User\images\icon\icon3.png" />
-    <Content Include="Content\Layout\User\images\icon\icon4.png" />
-    <Content Include="Content\Layout\User\images\img1.png" />
-    <Content Include="Content\Layout\User\images\img10.png" />
-    <Content Include="Content\Layout\User\images\img2.png" />
-    <Content Include="Content\Layout\User\images\img21.png" />
-    <Content Include="Content\Layout\User\images\img3.png" />
-    <Content Include="Content\Layout\User\images\img32.png" />
-    <Content Include="Content\Layout\User\images\img33.png" />
-    <Content Include="Content\Layout\User\images\img34.png" />
-    <Content Include="Content\Layout\User\images\img4.png" />
-    <Content Include="Content\Layout\User\images\img5.png" />
-    <Content Include="Content\Layout\User\images\img6.png" />
-    <Content Include="Content\Layout\User\images\img7.png" />
-    <Content Include="Content\Layout\User\images\img9.png" />
-    <Content Include="Content\Layout\User\images\item1.png" />
-    <Content Include="Content\Layout\User\images\item2.png" />
-    <Content Include="Content\Layout\User\images\item3.png" />
-    <Content Include="Content\Layout\User\images\item4.png" />
-    <Content Include="Content\Layout\User\images\item5.png" />
-    <Content Include="Content\Layout\User\images\item6.png" />
     <Content Include="Content\Layout\User\images\logo-cafe.gif" />
     <Content Include="Content\Layout\User\images\logo-icon.png" />
     <Content Include="Content\Layout\User\images\milk.png" />
-    <Content Include="Content\Layout\User\images\product1.png" />
-    <Content Include="Content\Layout\User\images\product2.png" />
-    <Content Include="Content\Layout\User\images\product3.png" />
-    <Content Include="Content\Layout\User\images\product4.png" />
     <Content Include="Content\Layout\User\images\tea.png" />
     <Content Include="Content\Layout\User\images\tra-dao-cam-sa.jpg" />
     <Content Include="Content\Layout\User\images\tra-den-matchiato.jpg" />
@@ -2368,7 +2267,6 @@
     <Content Include="Content\Layout\User\images\tra-sen.jpg" />
     <Content Include="Content\Layout\User\images\tra-sua-oolong-nuong-tran-chau.jpg" />
     <Content Include="Content\Layout\User\images\tra=sua-macca.jpg" />
-    <Content Include="Content\Layout\User\images\video-bg.png" />
     <Content Include="Content\Layout\User\js\animation\wow.min.js" />
     <Content Include="Content\Layout\User\js\app.js" />
     <Content Include="Content\Layout\User\js\bootstrap\bootstrap-slider.js" />
@@ -2653,50 +2551,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202303030337250_InitCreate.resx">
-      <DependentUpon>202303030337250_InitCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303030338180_CreateTableProduct.resx">
-      <DependentUpon>202303030338180_CreateTableProduct.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303060348197_updateDecimalPrice.resx">
-      <DependentUpon>202303060348197_updateDecimalPrice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303091344171_addPriceProduct.resx">
-      <DependentUpon>202303091344171_addPriceProduct.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303130912242_addShowProductAndDeleteSlug.resx">
-      <DependentUpon>202303130912242_addShowProductAndDeleteSlug.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303161313217_CreateTableOrder.resx">
-      <DependentUpon>202303161313217_CreateTableOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303171117081_deleteEmailOnOrder.resx">
-      <DependentUpon>202303171117081_deleteEmailOnOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303171128493_addNoteOnOrder.resx">
-      <DependentUpon>202303171128493_addNoteOnOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303171851389_updateOrderAndOrderDetail.resx">
-      <DependentUpon>202303171851389_updateOrderAndOrderDetail.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303200616043_addPaidOrder.resx">
-      <DependentUpon>202303200616043_addPaidOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303220945146_addTotal.resx">
-      <DependentUpon>202303220945146_addTotal.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303301909186_updateAuthorBLOG1.resx">
-      <DependentUpon>202303301909186_updateAuthorBLOG1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202303302050054_updateImageBlog.resx">
-      <DependentUpon>202303302050054_updateImageBlog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202304050247087_addUserIdToOrderTable.resx">
-      <DependentUpon>202304050247087_addUserIdToOrderTable.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

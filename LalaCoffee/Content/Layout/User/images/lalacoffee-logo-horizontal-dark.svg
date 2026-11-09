@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 90" width="460" height="90">
+  <defs>
+    <linearGradient id="darkBrownGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A2810"/>
+      <stop offset="50%" stop-color="#2C1810"/>
+      <stop offset="100%" stop-color="#1B0E09"/>
+    </linearGradient>
+    <linearGradient id="warmGoldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5C298"/>
+      <stop offset="50%" stop-color="#C7A17A"/>
+      <stop offset="100%" stop-color="#9C6B38"/>
+    </linearGradient>
+    <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#ffffff" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Group Icon -->
+  <g transform="translate(15, 10)">
+    <path d="M 35 5 A 33 33 0 1 0 68 38" fill="none" stroke="url(#warmGoldAccent)" stroke-width="2" stroke-linecap="round" stroke-dasharray="90 10"/>
+    <circle cx="68" cy="38" r="3" fill="#C7A17A"/>
+
+    <path d="M 22 28 C 22 46, 26 53, 38 54 C 50 53, 54 46, 54 28 Z" fill="url(#darkBrownGrad)" stroke="#C7A17A" stroke-width="1"/>
+    <ellipse cx="38" cy="28" rx="16" ry="3.5" fill="#9C6B38" stroke="url(#warmGoldAccent)" stroke-width="1.2"/>
+    <ellipse cx="38" cy="28" rx="12" ry="2" fill="#1B0E09"/>
+    
+    <path d="M 52 32 C 60 32, 62 43, 50 45" fill="none" stroke="url(#warmGoldAccent)" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 20 57 C 28 61, 48 61, 56 57" fill="none" stroke="url(#warmGoldAccent)" stroke-width="2.5" stroke-linecap="round"/>
+
+    <path d="M 32 23 C 30 18, 36 15, 33 10 C 31 7, 34 5, 36 4" fill="none" stroke="url(#warmGoldAccent)" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M 40 22 C 38 17, 44 14, 42 8 C 40 5, 43 3, 45 2" fill="none" stroke="#E5C298" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 47 23 C 45 19, 49 16, 48 11" fill="none" stroke="url(#warmGoldAccent)" stroke-width="1.6" stroke-linecap="round"/>
+
+    <g transform="translate(38, 41) scale(0.7) translate(-10, -10)">
+      <path d="M 4 10 C 4 3, 16 3, 16 10 C 16 17, 4 17, 4 10 Z" fill="#9C6B38"/>
+      <path d="M 6 10 Q 10 5, 10 10 T 14 10" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+
+    <path d="M 12 36 C 8 28, 16 22, 20 25 C 21 29, 16 37, 12 36 Z" fill="url(#warmGoldAccent)"/>
+    <path d="M 13 35 Q 16 29, 19 26" fill="none" stroke="#2C1810" stroke-width="0.8"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="105" y="48" font-family="'Pacifico', 'Playfair Display', cursive, sans-serif" font-size="44" font-weight="bold" letter-spacing="1">
+    <tspan fill="url(#warmGoldAccent)">Lala</tspan>
+    <tspan fill="#2C1810" stroke="#EFE6DA" stroke-width="0.9" paint-order="stroke fill">Coffee</tspan>
+  </text>
+  <text x="108" y="68" font-family="'Montserrat', 'Segoe UI', sans-serif" font-size="9.5" font-weight="700" fill="#C7A17A" letter-spacing="4.5">ARTISAN ROASTERY &amp; CAFÉ</text>
+  <line x1="365" y1="65" x2="430" y2="65" stroke="url(#warmGoldAccent)" stroke-width="0.8" opacity="0.8"/>
+</svg>

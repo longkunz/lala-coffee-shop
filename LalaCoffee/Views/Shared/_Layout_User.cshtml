@@ -20,7 +20,8 @@
 
     <title>@Page.Title | LalaCoffee</title>
 
-    <link rel="shortcut icon" href="~/Content/Layout/User/images/favicon.png">
+    <link rel="icon" type="image/png" href="~/Content/Layout/User/images/favicon.png">
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,7 +78,9 @@
                     <div class="container-fluid">
                         <div class="header-nav-inside">
                             <div class="logo">
-                                <a href="@Url.Action("Index","Home")"><span>LalaCoffee</span></a>
+                                <a href="@Url.Action("Index","Home")" class="d-inline-flex align-items-center" title="LalaCoffee">
+                                    <img src="~/Content/Layout/User/images/lalacoffee-logo-horizontal-dark.png" alt="LalaCoffee" class="site-brand-logo" />
+                                </a>
                             </div>
                             <div class="menu-top-part">
                                 <div class="menu-nav-main">
@@ -259,7 +262,9 @@
                             <!-- Cột 1: Thông tin thương hiệu -->
                             <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-4">
                                 <div class="logo">
-                                    <a href="@Url.Action("Index","Home")"><span>LalaCoffee</span></a>
+                                    <a href="@Url.Action("Index","Home")" class="d-inline-flex align-items-center" title="LalaCoffee">
+                                        <img src="~/Content/Layout/User/images/lalacoffee-logo-horizontal-dark.png" alt="LalaCoffee" class="site-brand-logo footer-logo" />
+                                    </a>
                                 </div>
                                 <p style="line-height: 1.7; margin-bottom: 15px; color: #e0d5cb;">
                                     Hương vị cà phê mộc nguyên bản từ nông trại Tây Nguyên. LalaCoffee đồng hành cùng bạn trong từng khoảnh khắc thư thái và sáng tạo mỗi ngày.
