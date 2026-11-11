@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LalaCoffee.Models.Product>
+@model IEnumerable<LalaCoffee.Models.Product>
 
 @{
     ViewBag.Title = "Index";
@@ -137,7 +137,6 @@
                 data: { productId: productId, quantity: quantity },
                 success: function (data) {
                     alert("Thêm thành công");
-                    // Thực hiện các thay đổi trên giao diện để hiển thị giỏ hàng mới nhất
                 },
                 error: function () {
                     alert('An error occurred while adding to cart.');
@@ -156,8 +155,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Start Blog List -->
 
         <section class="default-section shop-page">
             <div class="container">
@@ -484,24 +481,11 @@
                                 </div>
                             </div>
 
-                            @*<div class="gallery-pagination">
-            <div class="gallery-pagination-inner">
-                <ul>
-                    <li><a href="#" class="pagination-prev"><i class="icon-left-4"></i> <span>Trang Trước</span></a></li>
-                    <li class="active"><a href="#"><span>1</span></a></li>
-                    <li><a href="#"><span>2</span></a></li>
-                    <li><a href="#"><span>3</span></a></li>
-                    <li><a href="#" class="pagination-next"><span>Trang Sau</span> <i class="icon-right-4"></i></a></li>
-                </ul>
-            </div>
-        </div>*@
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- End Blog List -->
 
     </div>
 </main>

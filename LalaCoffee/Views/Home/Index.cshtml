@@ -9,13 +9,8 @@
 <main>
     <div class="main-part">
 
-        @* ═══════════════════════════════════════════
-           1. BANNER CHÍNH — tĩnh, không carousel
-           Ref: NN/g khuyến nghị không dùng auto-forwarding
-           ═══════════════════════════════════════════ *@
-
         <style>
-            /* ── Hero Banner ── */
+
             .lala-hero {
                 position: relative;
                 width: 100%;
@@ -85,7 +80,6 @@
                 text-decoration: none;
             }
 
-            /* ── Chọn theo gu ── */
             .lala-categories {
                 padding: 60px 0;
                 background: #fff;
@@ -145,7 +139,6 @@
                 margin: 0;
             }
 
-            /* ── Hôm nay uống gì? ── */
             .lala-featured {
                 padding: 60px 0;
                 background: #faf7f2;
@@ -218,7 +211,6 @@
                 color: #e4b95b;
             }
 
-            /* ── Ghé Lala ── */
             .lala-visit {
                 padding: 60px 0;
                 background: #fff;
@@ -289,7 +281,6 @@
                 color: #20202f !important;
             }
 
-            /* ── Blog cuối trang ── */
             .lala-blog {
                 padding: 60px 0;
                 background: #f5f3ee;
@@ -365,7 +356,6 @@
                 overflow: hidden;
             }
 
-            /* ── Responsive ── */
             @@media (max-width: 991px) {
                 .lala-hero { height: 480px; }
                 .lala-hero__title { font-size: 32px; }
@@ -383,7 +373,6 @@
             }
         </style>
 
-        @* ── 1. BANNER CHÍNH ── *@
         <section class="lala-hero">
             <div class="lala-hero__bg"></div>
             <div class="lala-hero__overlay"></div>
@@ -399,7 +388,6 @@
             </div>
         </section>
 
-        @* ── 2. CHỌN THEO GU ── *@
         <section class="lala-categories">
             <div class="container">
                 <div class="lala-section-title">
@@ -431,10 +419,8 @@
             </div>
         </section>
 
-        @* ── 3. HÔM NAY UỐNG GÌ? ── *@
         @{
             var featured = ViewBag.FeaturedProducts as List<LalaCoffee.Models.Product>;
-            // Mô tả vị ngắn gọn cho từng món gợi ý
             var flavorMap = new Dictionary<string, string>
             {
                 { "Cà Phê Đen Đá", "Đắng mạnh, hậu ngọt thanh." },
@@ -461,7 +447,6 @@
                         @foreach (var item in featured)
                         {
                             var flavor = flavorMap.ContainsKey(item.Name) ? flavorMap[item.Name] : item.Description;
-                            // Cắt ngắn nếu description quá dài
                             if (flavor != null && flavor.Length > 60)
                             {
                                 flavor = flavor.Substring(0, 57) + "...";
@@ -483,7 +468,6 @@
             </div>
         </section>
 
-        @* ── 4. GHÉ LALA, NGỒI LẠI MỘT CHÚT ── *@
         <section class="lala-visit">
             <div class="container">
                 <div class="lala-section-title">
@@ -518,7 +502,6 @@
             </div>
         </section>
 
-        @* ── 5. BLOG — chỉ bài đã xuất bản, có đường dẫn thật ── *@
         @{
             var blogs = ViewBag.Blogs as List<LalaCoffee.Models.Blog>;
         }

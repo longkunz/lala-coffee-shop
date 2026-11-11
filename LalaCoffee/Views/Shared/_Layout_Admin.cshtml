@@ -16,13 +16,11 @@
     <link rel="stylesheet" href="/Content/Layout/Admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <link rel="stylesheet" href="/Content/Layout/Admin/dist/css/adminlte.min.css">
     <script src="/Content/Layout/Admin/plugins/jquery/jquery.min.js"></script>
-    @* DataTables dùng bản local đi kèm AdminLTE thay cho CDN: mất mạng tại nơi demo thì
-       bảng quản lý vẫn hoạt động. Plugin jquery-price-format trên CDN cũ không được
-       dùng ở bất kỳ view nào nên đã gỡ bỏ. *@
+
     <link rel="stylesheet" href="/Content/Layout/Admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css?v=20261110">
     <link rel="stylesheet" href="/Content/Layout/Admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <style>
-        /* Fix DataTables sorting arrows encoding (tránh lỗi hiển thị ký tự lạ â†‘ / â†“ trên header bảng) */
+
         table.dataTable > thead .sorting:before,
         table.dataTable > thead .sorting_asc:before,
         table.dataTable > thead .sorting_desc:before,
