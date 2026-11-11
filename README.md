@@ -1,175 +1,155 @@
-# LalaCoffee
+# HỆ THỐNG WEBSITE BÁN CÀ PHÊ GIẢI KHÁT - LALACOFFEE
 
-Experience the rich and aromatic world of coffee at our online store.
+> **Tài liệu hướng dẫn cài đặt, cấu hình và triển khai**  
+> **Nền tảng công nghệ:** C# (.NET Framework 4.8), ASP.NET MVC 5, Entity Framework 6, Microsoft SQL Server.
 
-LalaCoffee (trước đây là UniCafe) is a full-featured e-commerce web application for a coffee shop, built with ASP.NET MVC 5. It includes product browsing, shopping cart, cash-on-delivery (COD) checkout, blog management, and a complete admin dashboard.
+---
 
-![Homepage](screenshots/homepage.png)
+## 1. Yêu cầu môi trường &amp; Công cụ
 
-## Tech Stack
+Để cài đặt và vận hành hệ thống trên môi trường phát triển (Local Development), máy trạm cần đáp ứng các yêu cầu sau:
 
-- **Framework:** ASP.NET MVC 5 (.NET Framework 4.8)
-- **ORM:** Entity Framework 6 (Code First)
-- **Database:** SQL Server
-- **Authentication:** ASP.NET Identity with OWIN Cookie Authentication
-- **Admin Dashboard:** AdminLTE 3
-- **Frontend:** Bootstrap 3, jQuery 3.6
-- **Payment:** COD (Cash on Delivery)
-- **DI Container:** Unity 5
 
-## Prerequisites
+| Thành phần                      | Yêu cầu kỹ thuật                               | Ghi chú                                          |
+| :------------------------------- | :---------------------------------------------- | :------------------------------------------------ |
+| **Hệ điều hành**                | Windows 10 / Windows 11 (64-bit)               | Tương thích với .NET Framework 4.8               |
+| **Môi trường phát triển (IDE)** | Visual Studio 2019 / 2022                      | Cần cài đặt workload ASP.NET and web development |
+| **Nền tảng SDK/Runtime**        | .NET Framework 4.8 Developer Pack              | Cần thiết để biên dịch dự án                     |
+| **Hệ quản trị CSDL**            | Microsoft SQL Server 2016+ / Express / LocalDB | Hỗ trợ lưu trữ và truy vấn dữ liệu               |
+| **Công cụ quản trị CSDL**       | SQL Server Management Studio (SSMS) / `sqlcmd` | Dùng để thực thi script khởi tạo CSDL            |
+| **Web Server cục bộ**           | IIS Express (tích hợp sẵn trong Visual Studio) | Chạy thử nghiệm trên localhost                   |
 
-- Visual Studio 2017 or later (recommended: Visual Studio 2022)
-- .NET Framework 4.8 Developer Pack
-- SQL Server (LocalDB, SQL Server Express, or Docker)
 
-## Getting Started
+---
 
-### Step 1: Clone the repository
+## 2. Kiến trúc &amp; Công nghệ sử dụng
 
-```bash
-git clone https://github.com/longkunz/lala-coffee-shop.git
-cd lala-coffee-shop
-```
+- **Mô hình kiến trúc:** MVC (Model - View - Controller), áp dụng Repository và Unit of Work pattern.
+- **Backend:** ASP.NET MVC 5, C# (.NET Framework 4.8).
+- **ORM / Truy xuất dữ liệu:** Entity Framework 6.
+- **Xác thực &amp; Phân quyền:** ASP.NET Identity 2.0 (OWIN Cookie Authentication).
+- **Dependency Injection:** Unity Container 5.
+- **Frontend &amp; Giao diện:** Razor View Engine, Bootstrap 3.4.1, jQuery 3.6, AdminLTE 3 (khu vực Admin).
+- **Phương thức thanh toán:** COD (Cash on Delivery - Thanh toán khi nhận hàng).
 
-### Step 2: Open the solution
+---
 
-Open `LalaCoffee.sln` with Visual Studio.
+## 3. Hướng dẫn cài đặt &amp; Triển khai từng bước
 
-### Step 3: Restore NuGet packages
+### Bước 1: Khởi tạo Cơ sở dữ liệu (Database)
 
-Visual Studio should automatically restore packages on open. If not:
+Dự án sử dụng tệp kịch bản `Database_Deploy.sql` đặt tại thư mục gốc để khởi tạo toàn bộ cấu trúc bảng, ràng buộc khóa, chỉ mục và nạp dữ liệu mẫu (danh mục, sản phẩm, bài viết, tài khoản mặc định).
 
-1. Right-click the **Solution** in Solution Explorer
-2. Select **Restore NuGet Packages**
+Thực hiện một trong hai cách sau: 
 
-### Step 4: Configure the database connection
+Sử dụng SQL Server Management Studio (SSMS)
 
-Open `LalaCoffee/Web.config` and update the connection string to match your SQL Server instance:
+1. Mở **SSMS** và kết nối tới SQL Server của bạn (ví dụ: `.\SQLEXPRESS` hoặc `(localdb)\MSSQLLocalDB`).
+2. Mở tệp `Database_Deploy.sql` trong SSMS.
+3. Nhấn **Execute** (hoặc phím **F5**) để chạy toàn bộ script.
+4. Script sẽ tự động tạo database `LalaCoffee` và nạp toàn bộ dữ liệu khởi tạo.
 
-**Option A: Using SQL Server Express (local)**
+---
+
+### Bước 2: Mở giải pháp và phục hồi thư viện (NuGet Restore)
+
+1. Mở tệp giải pháp `LalaCoffee.sln` bằng **Visual Studio**.
+2. Phục hồi các gói thư viện phụ thuộc:
+   - Nhấp chuột phải vào **Solution 'LalaCoffee'** trong cửa sổ *Solution Explorer*.
+   - Chọn **Restore NuGet Packages**.
+   - Hoặc hệ thống sẽ tự động phục hồi khi biên dịch dự án lần đầu.
+
+---
+
+### Bước 3: Cấu hình chuỗi kết nối CSDL (`Web.config`)
+
+Mở tệp `LalaCoffee/Web.config`, tìm đến thẻ `<connectionStrings>` và cập nhật thông số kết nối khớp với máy chủ SQL Server của bạn:
 
 ```xml
-<add name="DefaultConnection"
-     connectionString="Server=.\SQLEXPRESS;Initial Catalog=UniCafe;Integrated Security=True;"
-     providerName="System.Data.SqlClient" />
+<connectionStrings>
+  <!-- Sử dụng SQL Server Express -->
+  <add name="DefaultConnection" 
+       connectionString="Server=.\SQLEXPRESS;Initial Catalog=LalaCoffee;Integrated Security=True;" 
+       providerName="System.Data.SqlClient" />
+</connectionStrings>
 ```
 
-**Option B: Using LocalDB**
+> **Lưu ý cấu hình `Initial Catalog`:**
+>
+> - Giá trị `Initial Catalog` phải khớp chính xác với tên Database đã tạo ở Bước 1 (`LalaCoffee`).
+> - Nếu sử dụng **LocalDB**, cấu hình: `Server=(localdb)\MSSQLLocalDB;Initial Catalog=LalaCoffee;Integrated Security=True;`.
+> - Nếu sử dụng tài khoản `sa` có mật khẩu: `Server=localhost,1433;Initial Catalog=LalaCoffee;User Id=sa;Password=YourPassword;`.
+
+---
+
+### Bước 4: (Tùy chọn) Cấu hình dịch vụ Email SMTP
+
+Dự án tích hợp dịch vụ gửi email xác nhận đơn hàng qua giao thức SMTP. Trong `LalaCoffee/Web.config`:
 
 ```xml
-<add name="DefaultConnection"
-     connectionString="Server=(localdb)\MSSQLLocalDB;Initial Catalog=UniCafe;Integrated Security=True;"
-     providerName="System.Data.SqlClient" />
+<appSettings>
+  <!-- Cấu hình dịch vụ SMTP -->
+  <add key="Email_Sender" value="verified-sender@example.com" />
+  <add key="Email_Username" value="your-smtp-username" />
+  <add key="Email_Password" value="your-smtp-password" />
+  <add key="Email_Host" value="smtp-relay.brevo.com" />
+  <add key="Email_Port" value="587" />
+  <add key="Email_EnableSsl" value="true" />
+</appSettings>
 ```
 
-**Option C: Using Docker SQL Server**
+*Ghi chú: Nếu giữ nguyên giá trị mặc định, hệ thống vẫn vận hành bình thường; chức năng gửi email sẽ ghi nhận thất bại an toàn mà không làm gián đoạn luồng đặt hàng.*
 
-```xml
-<add name="DefaultConnection"
-     connectionString="Server=localhost,1433;Initial Catalog=UniCafe;User Id=sa;Password=YourPassword;"
-     providerName="System.Data.SqlClient" />
-```
+---
 
-### Step 5: Create the database
+### Bước 5: Biên dịch và Khởi chạy ứng dụng
 
-Run the deployment script `Database_Deploy.sql` at the repository root with SQL Server Management Studio (SSMS) or sqlcmd. The script creates the `UniCafe` database, the full schema and all seed data (categories, products, blogs and the default accounts below):
+1. Trên thanh công cụ của Visual Studio, chọn cấu hình biên dịch **Debug** hoặc **Release**.
+2. Nhấn **F5** (chạy kèm trình gỡ lỗi) hoặc tổ hợp phím **Ctrl + F5** (chạy không gỡ lỗi).
+3. Ứng dụng sẽ tự động khởi chạy trên trình duyệt web mặc định thông qua máy chủ IIS Express tại đường dẫn:
+   ```
+    http://localhost:[Port]/
+   ```
 
-```
-sqlcmd -S .\SQLEXPRESS -E -i Database_Deploy.sql
-```
+---
 
-> **EF Code First migrations đã bị xóa khỏi source — không còn quy trình `Update-Database`.** Database chỉ được tạo bằng `Database_Deploy.sql`, script chứa schema cuối cùng (gồm cột `FullName`/`Address` của `ApplicationUser`) và toàn bộ seed. Script chỉ chạy trên database trống — drop database trước nếu cần tạo lại.
+## 4. Tài khoản thử nghiệm mặc định
 
-### Step 6: Run the application
-
-Press **F5** (Debug) or **Ctrl+F5** (Run without debugging).
-
-The application will launch in your default browser using IIS Express.
-
-## Default Accounts / Tài khoản mặc định
-
-Sau khi khởi tạo database bằng script `Database_Deploy.sql` (xem Step 5), bạn có thể sử dụng các tài khoản có sẵn dưới đây:
-
-| Vai trò | Tên đăng nhập (Username) | Email | Mật khẩu | Quyền (Role) | Khu vực truy cập |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Quản trị viên (Admin)** | `admin` | `admin@lalacoffee.vn` | `Admin@123` | `Admin` | `/Account/Login` hoặc trực tiếp `/Admin` |
-| **Khách hàng (User)** | `user` | `user@lalacoffee.vn` | `User@123` | `User` | `/Account/Login` (đặt hàng, xem đơn cá nhân) |
+Cơ sở dữ liệu khởi tạo sẵn 02 tài khoản mẫu phục vụ việc kiểm thử các luồng chức năng:
 
 
-## Project Structure
+| Vai trò (Role)            | Tên đăng nhập (Username) | Email                 | Mật khẩu mặc định | Phạm vi quyền hạn                                                                            |
+| :------------------------- | :------------------------ | :--------------------- | :----------------- | :-------------------------------------------------------------------------------------------- |
+| **Quản trị viên (Admin)** | `admin`                  | `admin@lalacoffee.vn` | `Admin@123`       | Quản lý danh mục, sản phẩm, đơn hàng, bài viết, tài khoản và phân quyền tại khu vực `/Admin` |
+| **Khách hàng (User)**     | `user`                   | `user@lalacoffee.vn`  | `User@123`        | Duyệt thực đơn, thêm giỏ hàng, đặt hàng (COD), quản lý đơn cá nhân và hồ sơ                  |
+
+
+---
+
+## 5. Cấu trúc thư mục dự án
 
 ```
 lala-coffee-shop/
-├── LalaCoffee.sln                 # Solution file
-└── LalaCoffee/                    # Main project
-    ├── App_Start/                 # App configuration
-    │   ├── BundleConfig.cs        # CSS/JS bundling
-    │   ├── FilterConfig.cs        # Global filters
-    │   └── RouteConfig.cs         # URL routing
+├── Database_Deploy.sql        # Kịch bản triển khai schema và dữ liệu mẫu CSDL
+├── LalaCoffee.sln             # Tệp giải pháp Visual Studio
+└── LalaCoffee/                # Mã nguồn chính của ứng dụng web
+    ├── App_Start/             # Cấu hình khởi tạo: Routing, Bundle, Filter, Unity DI
     ├── Areas/
-    │   └── Admin/                 # Admin area
-    │       └── Controllers/       # Admin controllers
-    │           ├── ManageProductController.cs
-    │           ├── ManageCategoryController.cs
-    │           ├── ManageOrderController.cs
-    │           ├── ManageBlogController.cs
-    │           ├── ManageRoleController.cs
-    │           ├── ManageUserController.cs
-    │           └── StatsController.cs
-    ├── Controllers/               # Public controllers
-    │   ├── HomeController.cs
-    │   ├── ProductController.cs
-    │   ├── CartController.cs
-    │   ├── OrderController.cs
-    │   ├── AccountController.cs
-    │   ├── BlogController.cs
-    │   └── CategoryController.cs
-    ├── Models/                    # Data models
-    │   ├── Product.cs
-    │   ├── Category.cs
-    │   ├── Order.cs
-    │   ├── OrderDetail.cs
-    │   ├── Blog.cs
-    │   ├── CartItem.cs
-    ├── Data/                      # Data access layer
-    │   ├── ApplicationDbContext.cs
-    │   ├── ApplicationUser.cs
-    │   ├── Repository.cs          # Generic repository
-    │   └── UnitOfWork.cs
-    ├── Services/                  # Business services
-    │   ├── CartManager.cs
-    ├── Views/                     # Razor views
-    ├── Content/                   # Static assets
-    │   ├── images/                # Product images
-    │   └── Layout/Admin/          # AdminLTE template
-    ├── Startup.cs                 # OWIN startup
-    ├── Global.asax.cs             # Application entry point
-    └── Web.config                 # App configuration
+    │   └── Admin/             # Khu vực quản trị hệ thống (Admin Panel)
+    │       ├── Controllers/   # Bộ điều khiển quản lý: Sản phẩm, Danh mục, Đơn hàng...
+    │       └── Views/         # Giao diện quản trị AdminLTE
+    ├── Controllers/           # Bộ điều khiển phân hệ khách hàng (Home, Product, Cart...)
+    ├── Data/                  # Tầng truy xuất dữ liệu (DbContext, Generic Repository, UoW)
+    ├── Models/                # Các lớp thực thể (Entity Models) và ViewModels
+    ├── Services/              # Tầng xử lý nghiệp vụ (CartService, OrderService, EmailService)
+    ├── Views/                 # Giao diện Razor Views dành cho người dùng
+    ├── Content/               # Tài nguyên tĩnh: CSS, JavaScript, hình ảnh sản phẩm
+    ├── Web.config             # Tệp cấu hình ứng dụng (Connection strings, App settings)
+    └── Global.asax.cs         # Điểm khởi nhập và cấu hình vòng đời ứng dụng
 ```
 
-## Features
+---
 
-**Customer-facing:**
-- Browse products by category
-- Product detail pages
-- Shopping cart (add, update, remove items)
-- Checkout with Cash on Delivery (COD)
-- User registration and login
-- Blog/news section
+## 6. Mục đích sử dụng
 
-**Admin dashboard:**
-- Product management (CRUD)
-- Category management
-- Order management
-- Blog management
-- User and role management
-- Statistics/reports
-
-## Payment Method
-
-The application supports **Cash on Delivery (COD)** payment.
-
-## License
-
-This project is for educational purposes.
+Dự án được xây dựng phục vụ mục đích học thuật, nghiên cứu và báo cáo đồ án học phần môn Lập trình ASP.NET

@@ -84,7 +84,7 @@ table.dataTable tbody th.select-checkbox:before {
 }
 table.dataTable tr.selected td.select-checkbox:after,
 table.dataTable tr.selected th.select-checkbox:after {
-  content: "✓";
+  content: "\2713";
   font-size: 20px;
   margin-top: -19px;
   margin-left: -6px;

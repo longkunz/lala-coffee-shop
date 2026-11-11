@@ -19,8 +19,25 @@
     @* DataTables dùng bản local đi kèm AdminLTE thay cho CDN: mất mạng tại nơi demo thì
        bảng quản lý vẫn hoạt động. Plugin jquery-price-format trên CDN cũ không được
        dùng ở bất kỳ view nào nên đã gỡ bỏ. *@
-    <link rel="stylesheet" href="/Content/Layout/Admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/Content/Layout/Admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css?v=20261110">
     <link rel="stylesheet" href="/Content/Layout/Admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <style>
+        /* Fix DataTables sorting arrows encoding (tránh lỗi hiển thị ký tự lạ â†‘ / â†“ trên header bảng) */
+        table.dataTable > thead .sorting:before,
+        table.dataTable > thead .sorting_asc:before,
+        table.dataTable > thead .sorting_desc:before,
+        table.dataTable > thead .sorting_asc_disabled:before,
+        table.dataTable > thead .sorting_desc_disabled:before {
+            content: "\2191" !important;
+        }
+        table.dataTable > thead .sorting:after,
+        table.dataTable > thead .sorting_asc:after,
+        table.dataTable > thead .sorting_desc:after,
+        table.dataTable > thead .sorting_asc_disabled:after,
+        table.dataTable > thead .sorting_desc_disabled:after {
+            content: "\2193" !important;
+        }
+    </style>
     <script src="/Content/Layout/Admin/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="/Content/Layout/Admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script type="text/javascript">
@@ -176,7 +193,7 @@
         </form>
 
         <footer class="main-footer">
-            <strong>Copyright &copy; 2023 by <a href="#">LalaCoffee</a>.</strong> All rights reserved.
+            <strong>Copyright &copy; 2026 by <a href="#">LalaCoffee</a>.</strong> All rights reserved.
         </footer>
         <script src="/Content/Layout/Admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="/Content/Layout/Admin/dist/js/adminlte.min.js"></script>
