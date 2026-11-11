@@ -1,23 +1,17 @@
-﻿-- LalaCoffee | TRIỂN KHAI MỚI | schema + dữ liệu mẫu | SQL Server 2012+ | UTF-8
--- Chạy toàn bộ file bằng SSMS hoặc sqlcmd, không cần migrate, không cần file SQL khác.
--- Database mặc định: UniCafe. Đổi tên ở CREATE DATABASE và USE nếu cần.
--- Hosting cấp sẵn database: bỏ khối CREATE DATABASE, đổi USE sang database được cấp.
--- Chỉ import vào database trống; script sẽ từ chối nếu có bảng người dùng.
--- Tài khoản mẫu: admin / Admin@123; user / User@123. Đổi mật khẩu trước khi public.
--- Không chứa đơn hàng, tài khoản cá nhân hoặc các bản ghi thử từ máy phát triển.
+﻿-- Tài khoản: admin / Admin@123; user / User@123.
 USE [master];
 GO
-IF DB_ID(N'UniCafe') IS NULL
-    EXEC(N'CREATE DATABASE [UniCafe]');
+IF DB_ID(N'LalaCoffee') IS NULL
+    EXEC(N'CREATE DATABASE [LalaCoffee]');
 GO
-USE [UniCafe];
+USE [LalaCoffee];
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 BEGIN TRY
     BEGIN TRANSACTION;
 IF EXISTS (SELECT 1 FROM sys.tables WHERE is_ms_shipped=0)
-    THROW 51000, N'Database không trống. Xóa (drop) database rồi chạy lại Database_Deploy.sql; không import đè schema.', 1;
--- Schema ứng dụng LalaCoffee (DB-first, không phụ thuộc EF Code First migrations).
+    THROW 51000, N'Database đã tồn tại.', 1;
+-- Schema LalaCoffee.
 CREATE TABLE dbo.[AspNetRoles] (
     [Id] nvarchar(128) NOT NULL PRIMARY KEY,
     [Name] nvarchar(256) NOT NULL,
@@ -148,8 +142,6 @@ ALTER TABLE dbo.[OptionProducts] ADD CONSTRAINT [FK_dbo.OptionProducts_dbo.Produ
 CREATE INDEX [IX_Product_Id] ON dbo.[OptionProducts] ([Product_Id]);
 ALTER TABLE dbo.[OrderDetails] ADD CONSTRAINT [FK_dbo.OrderDetails_dbo.Orders_Order_Id] FOREIGN KEY ([Order_Id]) REFERENCES dbo.[Orders] ([Id]);
 CREATE INDEX [IX_Order_Id] ON dbo.[OrderDetails] ([Order_Id]);
--- Nội dung seed được cập nhật theo Slug (menu), Title (blog), Product_Id + Name (tùy chọn).
--- Giữ nguyên ID, tài khoản, mật khẩu, đơn hàng và dữ liệu ngoài bộ seed.
 DECLARE @Now datetime = GETDATE();
 DECLARE @Categories TABLE (Name nvarchar(max), Slug nvarchar(200) PRIMARY KEY, Description nvarchar(max));
 INSERT INTO @Categories VALUES
@@ -338,7 +330,6 @@ INSERT dbo.Blogs (Title,Content,Image,CreatedDate,Published,Author)
 SELECT s.Title,s.Content,s.Image,DATEADD(day,-s.DaysAgo,@Now),1,N'LalaCoffee Team' FROM @Blogs s
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Blogs b WHERE b.Title=s.Title);
 
--- Chỉ tạo tài khoản mẫu còn thiếu, không đặt lại mật khẩu hoặc nâng quyền tài khoản đã có.
 IF NOT EXISTS (SELECT 1 FROM dbo.AspNetRoles WHERE Name=N'Admin')
     INSERT dbo.AspNetRoles (Id,Name,Discriminator) VALUES (CONVERT(nvarchar(128),NEWID()),N'Admin',N'IdentityRole');
 IF NOT EXISTS (SELECT 1 FROM dbo.AspNetRoles WHERE Name=N'User')
@@ -354,7 +345,7 @@ SELECT CONVERT(nvarchar(128),NEWID()),a.Email,1,a.PasswordHash,CONVERT(nvarchar(
 FROM @Accounts a WHERE NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers u WHERE u.UserName=a.UserName OR u.Email=a.Email);
 INSERT dbo.AspNetUserRoles (UserId,RoleId)
 SELECT u.Id,r.Id FROM @NewUsers u JOIN @Accounts a ON a.UserName=u.UserName JOIN dbo.AspNetRoles r ON r.Name=a.RoleName;
--- Cập nhật FullName, PhoneNumber, Address cho tài khoản seed nếu đã tồn tại nhưng chưa có thông tin
+
 UPDATE u
 SET FullName = COALESCE(u.FullName, a.FullName),
     PhoneNumber = COALESCE(u.PhoneNumber, a.PhoneNumber),
