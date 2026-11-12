@@ -6,72 +6,81 @@
     string successMessage = TempData["SuccessMessage"] as string;
 }
 
+<div class="admin-page-header d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Quản lý người dùng</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/Admin/ManageProduct">Quản trị</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Người dùng</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/Admin/ManageUser/ChangePassword" class="btn btn-warning btn-sm fw-bold">
+            <i class="fas fa-key me-1"></i> Đổi mật khẩu Admin của tôi
+        </a>
+    </div>
+</div>
+
 @if (!string.IsNullOrEmpty(successMessage))
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle mr-2"></i> @successMessage
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @successMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-<div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title">
-                    <i class="fa fa-users mr-1"></i> QUẢN LÝ NGƯỜI DÙNG
-                </h3>
-                <div class="card-tools ml-auto">
-                    <a href="/Admin/ManageUser/ChangePassword" class="btn btn-warning btn-sm text-dark font-weight-bold">
-                        <i class="fas fa-key mr-1"></i> Đổi mật khẩu Admin của tôi
-                    </a>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap table-hover" id="nTable">
-                        <thead>
-                            <tr>
-                                <th>Tên đăng nhập</th>
-                                <th>Họ tên</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Địa chỉ nhận hàng</th>
-                                <th class="text-center">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        <strong>@Html.DisplayFor(modelItem => item.UserName)</strong>
-                                    </td>
-                                    <td>
-                                        @(string.IsNullOrWhiteSpace(item.FullName) ? "-" : item.FullName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Email)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.PhoneNumber)
-                                    </td>
-                                    <td style="max-width: 250px; white-space: normal;">
-                                        @(string.IsNullOrWhiteSpace(item.Address) ? "-" : item.Address)
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="/Admin/ManageUser/ResetPassword/@item.Id" class="btn btn-sm btn-outline-warning" title="Đổi mật khẩu cho người dùng này">
-                                            <i class="fas fa-key"></i> Đổi mật khẩu
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+        <h5 class="card-title fw-bold mb-0 text-dark">
+            <i class="fas fa-users text-primary me-2"></i>Danh sách tài khoản
+        </h5>
+        <span class="badge bg-light text-muted border">Tổng cộng: @(Model != null ? Model.Count() : 0) tài khoản</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 w-100" id="nTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tên đăng nhập</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ giao hàng</th>
+                        <th class="text-center" style="width: 150px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-dark">
+                                    <i class="fas fa-user-circle text-muted me-1"></i>@Html.DisplayFor(modelItem => item.UserName)
+                                </span>
+                            </td>
+                            <td>
+                                @(string.IsNullOrWhiteSpace(item.FullName) ? "-" : item.FullName)
+                            </td>
+                            <td>
+                                <a href="mailto:@item.Email" class="text-decoration-none text-muted">@Html.DisplayFor(modelItem => item.Email)</a>
+                            </td>
+                            <td>
+                                @(string.IsNullOrWhiteSpace(item.PhoneNumber) ? "-" : item.PhoneNumber)
+                            </td>
+                            <td style="max-width: 250px; white-space: normal;">
+                                <span class="small text-muted">@(string.IsNullOrWhiteSpace(item.Address) ? "-" : item.Address)</span>
+                            </td>
+                            <td class="text-center">
+                                <a href="/Admin/ManageUser/ResetPassword/@item.Id" class="btn btn-sm btn-outline-warning" title="Đổi mật khẩu cho người dùng này">
+                                    <i class="fas fa-key me-1"></i> Đổi mật khẩu
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

@@ -1,7 +1,7 @@
 @model IEnumerable<LalaCoffee.Models.OptionProduct>
 
 @{
-    ViewBag.Title = "Option Product Manager";
+    ViewBag.Title = "Quản lý tùy chọn sản phẩm";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
 @functions{
@@ -15,7 +15,9 @@
     }
     public string NorActive(string active = "1")
     {
-        return IsActive(active) ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
+        return IsActive(active) 
+            ? "<span class='badge bg-success-subtle text-success border border-success-subtle px-2 py-1'>Bật</span>" 
+            : "<span class='badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1'>Tắt</span>";
     }
 }
 @{
@@ -26,40 +28,60 @@
     string selectedProduct = formValues.ContainsKey("product_id") ? formValues["product_id"] : "0";
 }
 @Html.Partial("ErrorsAlert")
-<div class="modal fade" id="create_modal">
-    <div class="modal-dialog modal-lg">
+
+<div class="admin-page-header">
+    <div>
+        <h1 class="admin-page-title">Tùy chọn Topping Thêm</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb admin-breadcrumb">
+                <li class="breadcrumb-item"><a href="/Admin/ManageOrder" class="text-decoration-none text-muted">Quản trị</a></li>
+                <li class="breadcrumb-item"><a href="/Admin/ManageProduct" class="text-decoration-none text-muted">Sản phẩm</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Topping thêm</li>
+            </ol>
+        </nav>
+    </div>
+    <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#create_modal">
+        <i class="fas fa-plus-circle"></i>
+        <span>Thêm topping mới</span>
+    </button>
+</div>
+
+<!-- Modal Thêm tùy chọn -->
+<div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             @using (Html.BeginForm("Create", "ManageOptionProduct", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
-                    <h4 class="modal-title">Tạo tùy chọn sản phẩm mới</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+                    <h5 class="modal-title" id="createModalLabel">
+                        <i class="fas fa-plus-circle text-primary me-2"></i>Thêm tùy chọn topping mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="card-body table-responsive p-0">
-                        <div class="form-group">
-                            <label>Tên <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" name="name" id="name" value="@(formValues.ContainsKey("name") ? formValues["name"] : "")" onchange="getSlug();">
-                            @if (fieldErrors.ContainsKey("name"))
-                            {
-                                <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
-                            }
-                        </div>
-                        <div class="form-group">
-                            <label>Giá <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control @(fieldErrors.ContainsKey("price") ? "is-invalid" : "")" name="price" id="price" value="@(formValues.ContainsKey("price") ? formValues["price"] : "1000")">
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Tên tùy chọn / Topping <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" name="name" id="name" placeholder="VD: Trân châu trắng, Kem cheese, Thạch dừa..." value="@(formValues.ContainsKey("name") ? formValues["name"] : "")">
+                        @if (fieldErrors.ContainsKey("name"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="price">Giá thêm (VNĐ) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control @(fieldErrors.ContainsKey("price") ? "is-invalid" : "")" name="price" id="price" min="0" step="1000" placeholder="VD: 10000" value="@(formValues.ContainsKey("price") ? formValues["price"] : "0")">
                             @if (fieldErrors.ContainsKey("price"))
                             {
                                 <span class="invalid-feedback d-block">@fieldErrors["price"]</span>
                             }
                         </div>
-                        <div class="form-group">
-                            <label>Sản phẩm <span class="text-danger">*</span></label>
-                            <select class="form-control @(fieldErrors.ContainsKey("product_id") ? "is-invalid" : "")" name="product_id" id="product_id">
-                                @foreach (var product in ViewBag.Product)
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="product_id">Áp dụng cho món <span class="text-danger">*</span></label>
+                            <select class="form-select @(fieldErrors.ContainsKey("product_id") ? "is-invalid" : "")" name="product_id" id="product_id">
+                                <option value="0">-- Chọn món --</option>
+                                @foreach (var product in ViewBag.Products)
                                 {
                                     <option value="@product.Id" @(selectedProduct == product.Id.ToString() ? "selected" : "")>@product.Name</option>
                                 }
@@ -69,87 +91,77 @@
                                 <span class="invalid-feedback d-block">@fieldErrors["product_id"]</span>
                             }
                         </div>
-                        <div class="form-group">
-                            <label>Trạng thái</label>
-                            <input type="checkbox" name="status" id="status" value="1" @(isCreateActive ? "checked" : "")>
-                            <label class="form-check-label" for="status">ON</label>
-                        </div>
+                    </div>
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @(isCreateActive ? "checked" : "")>
+                        <label class="form-check-label fw-semibold" for="status">Cho phép khách thêm topping này</label>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Lưu topping
+                    </button>
                 </div>
             }
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fa fa-list"></i> DANH SÁCH TÙY CHỌN SẢN PHẨM <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap" id="nTable">
-                        <thead>
-                            <tr>
-                                <th>Hành động</th>
-                                <th>Id</th>
-                                <th>Tên</th>
-                                <th>Giá</th>
-                                <th>Sản phẩm</th>
-                                <th>Trạng thái</th>
-                                <th>CreatedAt</th>
-                                <th>UpdatedAt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="@Url.Action("Edit", "ManageOptionProduct", new { id = item.Id })" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-danger btn-sm" onclick="del('@item.Id')">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                                    <td>@item.Price.ToString("N0")đ</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Product.Name)</td>
-                                    <td>@Html.Raw(NorActive(item.Status))</td>
-                                    <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+<!-- Table Card -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list me-2"></i> Danh sách topping / tùy chọn
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive p-3">
+            <table class="table table-hover align-middle" id="nTable">
+                <thead>
+                    <tr>
+                        <th style="width: 90px;">Thao tác</th>
+                        <th style="width: 50px;">ID</th>
+                        <th>Tên tùy chọn</th>
+                        <th>Giá thêm (VNĐ)</th>
+                        <th>Sản phẩm</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Cập nhật</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-inline-flex gap-1">
+                                    <a href="@Url.Action("Edit", "ManageOptionProduct", new { id = item.Id })" class="btn btn-outline-primary btn-sm" title="Chỉnh sửa">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-danger btn-sm" onclick="del('@item.Id')" title="Xóa">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                            <td><strong>@Html.DisplayFor(modelItem => item.Name)</strong></td>
+                            <td>+@item.Price.ToString("N0")đ</td>
+                            <td><span class="badge bg-light text-dark border">@(item.Product != null ? item.Product.Name : "-")</span></td>
+                            <td>@Html.Raw(NorActive(item.Status))</td>
+                            <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                            <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-    function removeDiacritics(str) {
-        str = str.replace(/Đ/g, "D");
-        str = str.replace(/đ/g, "d");
-        str = str.replace(/ /g, "-"); // replace space to "-"
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
-    function getSlug() {
-        var name = $('#name').val();
-        var result = removeDiacritics(name);
-        $('#slug').val(result.toLowerCase());
-    }
     function del(id) {
-        if (confirm("Bạn chắc chắn muốn xóa?")) {
+        if (confirm("Bạn chắc chắn muốn xóa tùy chọn này?")) {
             $.ajax({
                 url: "@Url.Action("Delete", "ManageOptionProduct")",
                 type: "POST",
@@ -172,7 +184,11 @@
     {
         <text>
         $(document).ready(function () {
-            $('#@openModal').modal('show');
+            var modalEl = document.getElementById('@openModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                var modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
         });
         </text>
     }

@@ -2,131 +2,140 @@
 @using LalaCoffee.Models
 
 @{
-    ViewBag.Title = "Chỉnh sửa đơn hàng";
+    ViewBag.Title = "Chỉnh sửa đơn hàng #" + Model.Code;
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
     string currentStatus = OrderStatus.NormalizeStatus(Model.Status);
     string currentPayment = (Model.Payment ?? "Cash").ToLowerInvariant();
     var fieldErrors = (ViewBag.FieldErrors ?? TempData["FieldErrors"]) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }
 
+<div class="admin-page-header d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Chỉnh sửa đơn hàng: @Model.Code</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "ManageOrder")">Đơn hàng</a></li>
+                <li class="breadcrumb-item active" aria-current="page">#@Model.Code</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Detail", "ManageOrder", new { id = Model.Id })" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-eye me-1"></i> Xem chi tiết
+        </a>
+        <a href="@Url.Action("Index", "ManageOrder")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Danh sách
+        </a>
+    </div>
+</div>
+
 @Html.Partial("ErrorsAlert")
 
-<div class="row">
-    <div class="col-12 col-md-10 offset-md-1">
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-edit mr-1"></i> CHỈNH SỬA ĐƠN HÀNG: <strong>@Model.Code</strong>
-                </h3>
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title fw-bold mb-0 text-dark">
+                    <i class="fas fa-edit text-primary me-2"></i>Thông tin đơn hàng #@Model.Code
+                </h5>
             </div>
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.Id)
-                <div class="card-body">
-                    <div class="row">
+                <div class="card-body p-4">
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="Code">Mã đơn hàng</label>
-                                <input class="form-control" id="Code" type="text" value="@Model.Code" readonly disabled>
-                            </div>
+                            <label for="Code" class="form-label fw-semibold">Mã đơn hàng</label>
+                            <input class="form-control bg-light" id="Code" type="text" value="@Model.Code" readonly disabled>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Tổng tiền</label>
-                                <input class="form-control text-success font-weight-bold" type="text" value="@Model.Total.ToString("N0")đ" readonly disabled>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="name">Tên người nhận <span class="text-danger">*</span></label>
-                                <input class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" id="name" name="name" type="text" value="@Model.Name">
-                                @if (fieldErrors.ContainsKey("name"))
-                                {
-                                    <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
-                                }
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="phonenumber">Số điện thoại <span class="text-danger">*</span></label>
-                                <input class="form-control @(fieldErrors.ContainsKey("phonenumber") ? "is-invalid" : "")" id="phonenumber" name="phonenumber" type="text" value="@Model.PhoneNumber">
-                                @if (fieldErrors.ContainsKey("phonenumber"))
-                                {
-                                    <span class="invalid-feedback d-block">@fieldErrors["phonenumber"]</span>
-                                }
+                            <label class="form-label fw-semibold">Tổng tiền</label>
+                            <div class="input-group">
+                                <input class="form-control bg-light text-success fw-bold fs-5" type="text" value="@Model.Total.ToString("N0")" readonly disabled>
+                                <span class="input-group-text bg-light text-success fw-bold">VNĐ</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="address">Địa chỉ giao hàng <span class="text-danger">*</span></label>
-                        <textarea class="form-control @(fieldErrors.ContainsKey("address") ? "is-invalid" : "")" id="address" name="address" rows="2">@Model.Address</textarea>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label fw-semibold">Tên người nhận <span class="text-danger">*</span></label>
+                            <input class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" id="name" name="name" type="text" value="@Model.Name" required>
+                            @if (fieldErrors.ContainsKey("name"))
+                            {
+                                <div class="invalid-feedback d-block">@fieldErrors["name"]</div>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phonenumber" class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input class="form-control @(fieldErrors.ContainsKey("phonenumber") ? "is-invalid" : "")" id="phonenumber" name="phonenumber" type="text" value="@Model.PhoneNumber" required>
+                            @if (fieldErrors.ContainsKey("phonenumber"))
+                            {
+                                <div class="invalid-feedback d-block">@fieldErrors["phonenumber"]</div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label fw-semibold">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                        <textarea class="form-control @(fieldErrors.ContainsKey("address") ? "is-invalid" : "")" id="address" name="address" rows="2" required>@Model.Address</textarea>
                         @if (fieldErrors.ContainsKey("address"))
                         {
-                            <span class="invalid-feedback d-block">@fieldErrors["address"]</span>
+                            <div class="invalid-feedback d-block">@fieldErrors["address"]</div>
                         }
                     </div>
 
-                    <div class="form-group">
-                        <label for="note">Ghi chú</label>
-                        <input class="form-control" id="note" name="note" type="text" value="@Model.Note">
+                    <div class="mb-4">
+                        <label for="note" class="form-label fw-semibold">Ghi chú</label>
+                        <input class="form-control" id="note" name="note" type="text" value="@Model.Note" placeholder="Ghi chú thêm cho đơn hàng...">
                     </div>
 
-                    <div class="row">
+                    <div class="row g-3 p-3 bg-light rounded-3 mb-3 border">
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="status" class="font-weight-bold text-primary">
-                                    <i class="fas fa-tasks mr-1"></i> Trạng thái đơn hàng
-                                </label>
-                                <select class="form-control custom-select" id="status" name="status">
-                                    <option value="@OrderStatus.PendingConfirmation" @(currentStatus == OrderStatus.PendingConfirmation ? "selected" : "")>Chờ xác nhận</option>
-                                    <option value="@OrderStatus.Preparing" @(currentStatus == OrderStatus.Preparing ? "selected" : "")>Đang chuẩn bị</option>
-                                    <option value="@OrderStatus.Delivering" @(currentStatus == OrderStatus.Delivering ? "selected" : "")>Đang giao</option>
-                                    <option value="@OrderStatus.Completed" @(currentStatus == OrderStatus.Completed ? "selected" : "")>Hoàn tất</option>
-                                    <option value="@OrderStatus.Cancelled" @(currentStatus == OrderStatus.Cancelled ? "selected" : "")>Đã hủy</option>
-                                </select>
-                            </div>
+                            <label for="status" class="form-label fw-semibold text-primary">
+                                <i class="fas fa-tasks me-1"></i> Trạng thái đơn hàng
+                            </label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="@OrderStatus.PendingConfirmation" @(currentStatus == OrderStatus.PendingConfirmation ? "selected" : "")>Chờ xác nhận</option>
+                                <option value="@OrderStatus.Preparing" @(currentStatus == OrderStatus.Preparing ? "selected" : "")>Đang chuẩn bị</option>
+                                <option value="@OrderStatus.Delivering" @(currentStatus == OrderStatus.Delivering ? "selected" : "")>Đang giao</option>
+                                <option value="@OrderStatus.Completed" @(currentStatus == OrderStatus.Completed ? "selected" : "")>Hoàn tất</option>
+                                <option value="@OrderStatus.Cancelled" @(currentStatus == OrderStatus.Cancelled ? "selected" : "")>Đã hủy</option>
+                            </select>
                         </div>
 
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="paid" class="font-weight-bold text-success">
-                                    <i class="fas fa-money-check-alt mr-1"></i> Trạng thái thanh toán
-                                </label>
-                                <select class="form-control custom-select" id="paid" name="paid">
-                                    <option value="@OrderStatus.Unpaid" @(Model.Paid == OrderStatus.Unpaid ? "selected" : "")>Chưa thanh toán</option>
-                                    <option value="@OrderStatus.Paid" @(Model.Paid == OrderStatus.Paid ? "selected" : "")>Đã thanh toán</option>
-                                </select>
-                            </div>
+                            <label for="paid" class="form-label fw-semibold text-success">
+                                <i class="fas fa-money-check-alt me-1"></i> Trạng thái thanh toán
+                            </label>
+                            <select class="form-select" id="paid" name="paid">
+                                <option value="@OrderStatus.Unpaid" @(Model.Paid == OrderStatus.Unpaid ? "selected" : "")>Chưa thanh toán</option>
+                                <option value="@OrderStatus.Paid" @(Model.Paid == OrderStatus.Paid ? "selected" : "")>Đã thanh toán</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Phương thức thanh toán</label>
-                        <div class="d-flex flex-wrap align-items-center">
-                            <div class="custom-control custom-radio">
-                                <input id="Cash" name="payment" type="radio" class="custom-control-input" value="Cash" checked>
-                                <label class="custom-control-label" for="Cash">
-                                    <img style="width:20px; height:20px; margin-right:4px;" src="/Content/images/payment/cash.png"> Tiền mặt (COD)
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold">Phương thức thanh toán</label>
+                        <div class="d-flex align-items-center">
+                            <div class="form-check">
+                                <input id="Cash" name="payment" type="radio" class="form-check-input" value="Cash" checked>
+                                <label class="form-check-label d-flex align-items-center" for="Cash">
+                                    <img style="width:20px; height:20px; margin-right:6px;" src="/Content/images/payment/cash.png" alt="Cash">
+                                    <span>Tiền mặt khi nhận hàng (COD)</span>
                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer bg-white border-top py-3 d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("Index", "ManageOrder")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Quay lại
+                    </a>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save mr-1"></i> Lưu thay đổi
+                        <i class="fas fa-save me-1"></i> Lưu thay đổi
                     </button>
-                    <a href="@Url.Action("Detail", "ManageOrder", new { id = Model.Id })" class="btn btn-info ml-2">
-                        <i class="fas fa-eye mr-1"></i> Xem chi tiết
-                    </a>
-                    <a href="@Url.Action("Index", "ManageOrder")" class="btn btn-secondary ml-2">
-                        <i class="fas fa-arrow-left mr-1"></i> Quay lại
-                    </a>
                 </div>
             }
         </div>

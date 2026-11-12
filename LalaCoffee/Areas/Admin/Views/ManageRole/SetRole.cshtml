@@ -1,7 +1,7 @@
 @model IEnumerable<LalaCoffee.Models.AspNetUserRoles>
 @using Microsoft.AspNet.Identity
 @{
-    ViewBag.Title = "Set Role Manage";
+    ViewBag.Title = "Gán vai trò người dùng";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
     List<LalaCoffee.Data.ApplicationUser> users = ViewBag.Users as List<LalaCoffee.Data.ApplicationUser> ?? new List<LalaCoffee.Data.ApplicationUser>();
     List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole> roles = ViewBag.Roles as List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole> ?? new List<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>();
@@ -17,157 +17,184 @@
     string selectedUser = formValues.ContainsKey("UserId") ? formValues["UserId"] : "";
     string selectedRole = formValues.ContainsKey("RoleId") ? formValues["RoleId"] : "";
 }
+
+<div class="admin-page-header d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Gán vai trò người dùng</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/Admin/ManageUser">Người dùng & Phân quyền</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "ManageRole")">Vai trò</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Gán vai trò</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index", "ManageRole")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-list me-1"></i> Danh sách vai trò
+        </a>
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#create_modal">
+            <i class="fas fa-user-plus me-1"></i> Gán quyền mới
+        </button>
+    </div>
+</div>
+
 @Html.Partial("ErrorsAlert")
 
-<div class="modal fade" id="create_modal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+<div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
             @using (Html.BeginForm("SetRole", "ManageRole", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-                <div class="modal-header">
-                    <h4 class="modal-title">Gán vai trò cho người dùng</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+                <div class="modal-header bg-white border-bottom">
+                    <h5 class="modal-title fw-bold text-dark" id="createModalLabel">
+                        <i class="fas fa-user-plus text-primary me-2"></i>Gán quyền mới cho người dùng
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="card-body table-responsive p-0">
-                        <div class="form-group">
-                            <label>Người dùng (User) <span class="text-danger">*</span></label>
-                            <select class="form-control @(fieldErrors.ContainsKey("UserId") ? "is-invalid" : "")" name="UserId" id="UserId">
-                                <option value="">-- Chọn người dùng --</option>
-                                @foreach (var user in users)
-                                {
-                                    <option value="@user.Id" @(selectedUser == user.Id ? "selected" : "")>@user.UserName (@user.Email)</option>
-                                }
-                            </select>
-                            @if (fieldErrors.ContainsKey("UserId"))
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="UserId" class="form-label fw-semibold">Người dùng (User) <span class="text-danger">*</span></label>
+                        <select class="form-select @(fieldErrors.ContainsKey("UserId") ? "is-invalid" : "")" name="UserId" id="UserId" required>
+                            <option value="">-- Chọn tài khoản người dùng --</option>
+                            @foreach (var user in users)
                             {
-                                <span class="invalid-feedback d-block">@fieldErrors["UserId"]</span>
+                                <option value="@user.Id" @(selectedUser == user.Id ? "selected" : "")>@user.UserName (@user.Email)</option>
                             }
-                        </div>
-                        <div class="form-group">
-                            <label>Vai trò (Role) <span class="text-danger">*</span></label>
-                            <select class="form-control @(fieldErrors.ContainsKey("RoleId") ? "is-invalid" : "")" name="RoleId" id="RoleId">
-                                <option value="">-- Chọn vai trò --</option>
-                                @foreach (var role in roles)
-                                {
-                                    <option value="@role.Id" @(selectedRole == role.Id ? "selected" : "")>@role.Name</option>
-                                }
-                            </select>
-                            @if (fieldErrors.ContainsKey("RoleId"))
+                        </select>
+                        @if (fieldErrors.ContainsKey("UserId"))
+                        {
+                            <div class="invalid-feedback d-block">@fieldErrors["UserId"]</div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="RoleId" class="form-label fw-semibold">Vai trò (Role) <span class="text-danger">*</span></label>
+                        <select class="form-select @(fieldErrors.ContainsKey("RoleId") ? "is-invalid" : "")" name="RoleId" id="RoleId" required>
+                            <option value="">-- Chọn vai trò phân quyền --</option>
+                            @foreach (var role in roles)
                             {
-                                <span class="invalid-feedback d-block">@fieldErrors["RoleId"]</span>
+                                <option value="@role.Id" @(selectedRole == role.Id ? "selected" : "")>@role.Name</option>
                             }
-                        </div>
+                        </select>
+                        @if (fieldErrors.ContainsKey("RoleId"))
+                        {
+                            <div class="invalid-feedback d-block">@fieldErrors["RoleId"]</div>
+                        }
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <div class="modal-footer bg-light border-top">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Xác nhận gán quyền
+                    </button>
                 </div>
             }
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fa fa-list"></i> DANH SÁCH GÁN ROLE <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal" style="cursor: pointer;"><i class="fa fa-plus-circle"></i></a>
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap" id="nTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 100px;">Hành động</th>
-                                <th>Người dùng</th>
-                                <th>Vai trò (Role)</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                var user = users.FirstOrDefault(x => x.Id == item.UserId);
-                                var role = roles.FirstOrDefault(x => x.Id == item.RoleId);
-                                var userName = user != null ? user.UserName : item.UserId;
-                                var roleName = role != null ? role.Name : item.RoleId;
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+        <h5 class="card-title fw-bold mb-0 text-dark">
+            <i class="fas fa-user-shield text-primary me-2"></i>Danh sách phân quyền tài khoản
+        </h5>
+        <span class="badge bg-light text-muted border">Tổng số: @(Model != null ? Model.Count() : 0) quyền gán</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 w-100" id="nTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 100px;">Thao tác</th>
+                        <th>Tài khoản</th>
+                        <th>Vai trò (Role)</th>
+                        <th>Phân loại</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var user = users.FirstOrDefault(x => x.Id == item.UserId);
+                        var role = roles.FirstOrDefault(x => x.Id == item.RoleId);
+                        var userName = user != null ? user.UserName : item.UserId;
+                        var roleName = role != null ? role.Name : item.RoleId;
 
-                                var isRoleAdmin = string.Equals(roleName, "Admin", StringComparison.OrdinalIgnoreCase);
-                                var isSelf = !string.IsNullOrEmpty(currentUserId) && string.Equals(item.UserId, currentUserId, StringComparison.OrdinalIgnoreCase);
-                                var isLastAdmin = isRoleAdmin && totalAdmins <= 1;
+                        var isRoleAdmin = string.Equals(roleName, "Admin", StringComparison.OrdinalIgnoreCase);
+                        var isSelf = !string.IsNullOrEmpty(currentUserId) && string.Equals(item.UserId, currentUserId, StringComparison.OrdinalIgnoreCase);
+                        var isLastAdmin = isRoleAdmin && totalAdmins <= 1;
 
-                                <tr class="@(isSelf ? "table-warning" : "")">
-                                    <td>
-                                        @if (isLastAdmin)
-                                        {
-                                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Quản trị viên cuối cùng trong hệ thống (không thể gỡ)">
-                                                <i class="fas fa-lock"></i>
-                                            </button>
-                                        }
-                                        else if (isSelf && isRoleAdmin)
-                                        {
-                                            <button type="button" class="btn btn-warning btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', true, true, '@userName', '@roleName')" title="Cảnh báo: Tự gỡ quyền Admin">
-                                                <i class="fas fa-user-slash"></i>
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', @(isSelf ? "true" : "false"), @(isRoleAdmin ? "true" : "false"), '@userName', '@roleName')" title="Gỡ quyền">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        }
-                                    </td>
-                                    <td>
-                                        <strong>@userName</strong>
-                                        @if (isSelf)
-                                        {
-                                            <span class="badge badge-primary ml-1"><i class="fas fa-user-circle"></i> Bạn</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <strong>@roleName</strong>
-                                    </td>
-                                    <td>
-                                        @if (isLastAdmin)
-                                        {
-                                            <span class="badge badge-danger" title="Admin duy nhất (Khóa)"><i class="fas fa-shield-alt"></i></span>
-                                        }
-                                        else if (isRoleAdmin)
-                                        {
-                                            <span class="badge badge-success"><i class="fas fa-user-shield"></i> Quản trị viên</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-secondary">Thành viên</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        <tr class="@(isSelf ? "table-warning-subtle" : "")">
+                            <td>
+                                @if (isLastAdmin)
+                                {
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Quản trị viên cuối cùng trong hệ thống (không thể gỡ)">
+                                        <i class="fas fa-lock"></i>
+                                    </button>
+                                }
+                                else if (isSelf && isRoleAdmin)
+                                {
+                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', true, true, '@userName', '@roleName')" title="Cảnh báo: Tự gỡ quyền Admin">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', @(isSelf ? "true" : "false"), @(isRoleAdmin ? "true" : "false"), '@userName', '@roleName')" title="Gỡ quyền">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                }
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark">@userName</span>
+                                @if (isSelf)
+                                {
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1">
+                                        <i class="fas fa-user-circle me-1"></i>Bạn
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border px-2 py-1">@roleName</span>
+                            </td>
+                            <td>
+                                @if (isLastAdmin)
+                                {
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1" title="Admin duy nhất (Khóa)">
+                                        <i class="fas fa-shield-alt me-1"></i>Quản trị viên duy nhất
+                                    </span>
+                                }
+                                else if (isRoleAdmin)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                        <i class="fas fa-user-shield me-1"></i>Quản trị viên
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                        Thành viên
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
     function delRole(userId, roleId, isSelf, isRoleAdmin, userName, roleName) {
-        var confirmMsg = "Bạn chắc chắn muốn gỡ role '" + roleName + "' của người dùng '" + userName + "'?";
+        var confirmMsg = "Bạn chắc chắn muốn gỡ quyền '" + roleName + "' của người dùng '" + userName + "'?";
         var confirmSelfRevoke = false;
 
         if (isSelf && isRoleAdmin) {
             confirmMsg = "⚠️ CẢNH BÁO NGUY HIỂM ⚠️\n\nBạn đang thực hiện gỡ quyền Admin của CHÍNH TÀI KHOẢN BẠN (" + userName + ")!\nSau khi gỡ quyền này, bạn sẽ MẤT TOÀN BỘ QUYỀN TRUY CẬP vào khu vực quản trị ngay lập tức.\n\nBạn có thực sự chắc chắn muốn tiếp tục không?";
             confirmSelfRevoke = true;
         } else if (isSelf) {
-            confirmMsg = "CẢNH BÁO: Bạn đang tự gỡ role '" + roleName + "' của chính tài khoản mình. Bạn có chắc chắn muốn tiếp tục?";
+            confirmMsg = "CẢNH BÁO: Bạn đang tự gỡ quyền '" + roleName + "' của chính tài khoản mình. Bạn có chắc chắn muốn tiếp tục?";
             confirmSelfRevoke = true;
         }
 
@@ -210,11 +237,16 @@
             }
         });
     }
+
     @if (!string.IsNullOrEmpty(openModal) && fieldErrors.Count > 0)
     {
         <text>
         $(document).ready(function () {
-            $('#@openModal').modal('show');
+            var modalEl = document.getElementById('@openModal');
+            if (modalEl) {
+                var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            }
         });
         </text>
     }

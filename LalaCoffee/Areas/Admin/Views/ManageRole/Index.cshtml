@@ -1,116 +1,142 @@
 @model IEnumerable<Microsoft.AspNet.Identity.EntityFramework.IdentityRole>
 @{
-    ViewBag.Title = "Role Manager";
+    ViewBag.Title = "Quản lý vai trò (Roles)";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
     var systemRoles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Admin", "User" };
     var fieldErrors = (TempData["FieldErrors"] ?? ViewBag.FieldErrors) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     var formValues = (TempData["FormValues"] ?? ViewBag.FormValues) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     string openModal = TempData["OpenModal"] as string;
 }
+
+<div class="admin-page-header d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Quản lý vai trò (Roles)</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/Admin/ManageUser">Người dùng & Phân quyền</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Vai trò</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create_modal">
+            <i class="fas fa-plus-circle me-1"></i> Tạo vai trò mới
+        </button>
+    </div>
+</div>
+
 @Html.Partial("ErrorsAlert")
-<div class="modal fade" id="create_modal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+
+<div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4 rounded-3">
+    <i class="fas fa-shield-alt fs-4 me-3 text-info"></i>
+    <div>
+        <strong>Bảo vệ vai trò hệ thống:</strong> Các vai trò mặc định như <code>Admin</code> và <code>User</code> được hệ thống bảo vệ an toàn để đảm bảo quyền truy cập và không thể xóa.
+    </div>
+</div>
+
+<div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
             @using (Html.BeginForm("Create", "ManageRole", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-                <div class="modal-header">
-                    <h4 class="modal-title">Tạo vai trò mới</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+                <div class="modal-header bg-white border-bottom">
+                    <h5 class="modal-title fw-bold text-dark" id="createModalLabel">
+                        <i class="fas fa-user-tag text-primary me-2"></i>Tạo vai trò mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="card-body table-responsive p-0">
-                        <div class="form-group">
-                            <label>Tên vai trò <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" name="name" id="name" placeholder="Nhập tên vai trò..." value="@(formValues.ContainsKey("name") ? formValues["name"] : "")">
-                            @if (fieldErrors.ContainsKey("name"))
-                            {
-                                <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
-                            }
-                        </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">Tên vai trò <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" name="name" id="name" placeholder="Ví dụ: Manager, Staff..." value="@(formValues.ContainsKey("name") ? formValues["name"] : "")" required>
+                        @if (fieldErrors.ContainsKey("name"))
+                        {
+                            <div class="invalid-feedback d-block">@fieldErrors["name"]</div>
+                        }
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <div class="modal-footer bg-light border-top">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Lưu vai trò
+                    </button>
                 </div>
             }
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fa fa-list"></i> DANH SÁCH ROLE <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal" style="cursor: pointer;"><i class="fa fa-plus-circle"></i></a>
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info py-2 mb-3">
-                    <i class="fas fa-shield-alt mr-1"></i>
-                    <strong>Bảo vệ role hệ thống:</strong> Các role mặc định như <code>Admin</code> và <code>User</code> được hệ thống bảo vệ nghiêm ngặt để đảm bảo an toàn truy cập và không thể xóa.
-                </div>
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap" id="nTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 100px;">Hành động</th>
-                                <th>Id</th>
-                                <th>Tên</th>
-                                <th>Phân loại</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                var isSystem = systemRoles.Contains(item.Name);
-                                <tr>
-                                    <td>
-                                        @if (isSystem)
-                                        {
-                                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Role hệ thống được bảo vệ, không thể xóa">
-                                                <i class="fas fa-lock"></i>
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="del('@item.Id', '@item.Name')" title="Xóa role">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
-                                        }
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Id)
-                                    </td>
-                                    <td>
-                                        <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
-                                    </td>
-                                    <td>
-                                        @if (isSystem)
-                                        {
-                                            <span class="badge badge-info"><i class="fas fa-shield-alt"></i> Role hệ thống</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-secondary">Tùy biến</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+        <h5 class="card-title fw-bold mb-0 text-dark">
+            <i class="fas fa-list text-primary me-2"></i>Danh sách vai trò
+        </h5>
+        <a href="@Url.Action("SetRole", "ManageRole")" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-user-shield me-1"></i> Quản lý gán vai trò
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 w-100" id="nTable">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 100px;">Thao tác</th>
+                        <th>Mã vai trò (ID)</th>
+                        <th>Tên vai trò</th>
+                        <th>Phân loại</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var isSystem = systemRoles.Contains(item.Name);
+                        <tr>
+                            <td>
+                                @if (isSystem)
+                                {
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Vai trò hệ thống được bảo vệ, không thể xóa">
+                                        <i class="fas fa-lock"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="del('@item.Id', '@item.Name')" title="Xóa vai trò">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                }
+                            </td>
+                            <td>
+                                <code class="text-muted small">@Html.DisplayFor(modelItem => item.Id)</code>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark">@Html.DisplayFor(modelItem => item.Name)</span>
+                            </td>
+                            <td>
+                                @if (isSystem)
+                                {
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                                        <i class="fas fa-shield-alt me-1"></i>Hệ thống
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                        Tùy biến
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
     function del(id, roleName) {
-        if (confirm("Bạn chắc chắn muốn xóa role '" + roleName + "'?")) {
+        if (confirm("Bạn chắc chắn muốn xóa vai trò '" + roleName + "'?")) {
             $.ajax({
                 url: "@Url.Action("Delete", "ManageRole")",
                 type: "POST",
@@ -133,7 +159,11 @@
     {
         <text>
         $(document).ready(function () {
-            $('#@openModal').modal('show');
+            var modalEl = document.getElementById('@openModal');
+            if (modalEl) {
+                var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            }
         });
         </text>
     }

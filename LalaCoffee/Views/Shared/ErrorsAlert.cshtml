@@ -5,12 +5,14 @@
 }
 @if (errors != null && errors.Count > 0)
 {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <button type="button" class="close" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        <strong><i class="fa fa-exclamation-circle mr-1"></i> Thông tin chưa hợp lệ:</strong>
-        <ul class="mb-0 mt-1 pl-3">
+    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="d-flex align-items-center mb-1">
+            <strong class="d-inline-flex align-items-center gap-2 text-danger">
+                <i class="fas fa-exclamation-circle"></i> Thông tin chưa hợp lệ:
+            </strong>
+        </div>
+        <ul class="mb-0 ps-3">
             @foreach (string error in errors)
             {
                 <li>@error</li>
