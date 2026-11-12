@@ -53,14 +53,16 @@ namespace LalaCoffee.Controllers
 				{
 					return Redirect("/Collections/All");
 				}
-				if (product.Category != null)
+				var related = product.Category != null
+					? Context.Products.Where(x => x.Category.Id == product.Category.Id && x.Id != product.Id && x.Show == 1).Take(8).ToList()
+					: new List<Product>();
+
+				if (!related.Any())
 				{
-					ViewBag.ProductRelative = Context.Products.Where(x => x.Category.Id == product.Category.Id && x.Id != product.Id).Take(8).ToList();
+					// Nếu trong cùng danh mục không còn món nào khác (ví dụ Cold Brew chỉ có 1 món), gợi ý các món khác
+					related = Context.Products.Where(x => x.Id != product.Id && x.Show == 1).Take(8).ToList();
 				}
-				else
-				{
-					ViewBag.ProductRelative = Context.Products.Where(x => x.Id != product.Id).Take(8).ToList();
-				}
+				ViewBag.ProductRelative = related;
 				return View(product);
 			}
 			catch (Exception)

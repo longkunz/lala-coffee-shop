@@ -177,21 +177,24 @@
                 </div>
             </div>
         </section>
-        <section class="default-section wow fadeInDown animated" data-wow-duration="1000ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 1000ms; animation-delay: 300ms; animation-name: fadeInDown;">
-            <div class="container">
-                <div class="title text-center">
-                    <h3 class="text-coffee">Sản Phẩm Liên Quan</h3>
-                </div>
-                <div class="product-wrapper">
-                    <div class="owl-carousel owl-theme" data-items="4" data-tablet="3" data-mobile="2" data-nav="false" data-dots="true" data-autoplay="true" data-speed="1800" data-autotime="5000">
-                        @if (ViewBag.ProductRelative != null)
-                        {
-                            foreach (var item in (IEnumerable<LalaCoffee.Models.Product>)ViewBag.ProductRelative)
+        @{
+            var relatedProducts = ViewBag.ProductRelative as IEnumerable<LalaCoffee.Models.Product>;
+        }
+        @if (relatedProducts != null && relatedProducts.Any())
+        {
+            <section class="default-section">
+                <div class="container">
+                    <div class="title text-center">
+                        <h3 class="text-coffee">Sản Phẩm Liên Quan</h3>
+                    </div>
+                    <div class="product-wrapper">
+                        <div class="owl-carousel owl-theme" data-items="4" data-tablet="3" data-mobile="2" data-nav="true" data-dots="true" data-autoplay="true" data-speed="1800" data-autotime="5000">
+                            @foreach (var item in relatedProducts)
                             {
                                 <div class="item">
                                     <div class="product-img">
                                         <a href="/Product/@item.Slug">
-                                            <img src="@item.Image" alt="@item.Name">
+                                            <img src="@item.Image" alt="@item.Name" loading="lazy">
                                             <span class="icon-basket fontello"></span>
                                         </a>
                                     </div>
@@ -199,10 +202,10 @@
                                     <span>@item.Price.ToString("N0")đ</span>
                                 </div>
                             }
-                        }
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        }
     </div>
 </main>

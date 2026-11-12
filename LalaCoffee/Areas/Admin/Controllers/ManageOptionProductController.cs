@@ -3,6 +3,7 @@ using LalaCoffee.Data;
 using LalaCoffee.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
@@ -41,9 +42,10 @@ namespace LalaCoffee.Areas.Admin.Controllers
 		// GET: Admin/ManageOptionProduct
 		public ActionResult Index()
 		{
-			var product = _productRepository.GetAll().ToList();
-			ViewBag.Product = product;
-			var listOptionProduct = GetAll().ToList();
+			var products = _productRepository.GetAll().ToList();
+			ViewBag.Product = products;
+			ViewBag.Products = products;
+			var listOptionProduct = GetQueryable().Include(x => x.Product).ToList();
 			return View(listOptionProduct);
 		}
 
@@ -118,8 +120,9 @@ namespace LalaCoffee.Areas.Admin.Controllers
 			{
 				return RedirectToAction("Index", "ManageOptionProduct");
 			}
-			var product = _productRepository.GetAll().ToList();
-			ViewBag.Product = product;
+			var products = _productRepository.GetAll().ToList();
+			ViewBag.Product = products;
+			ViewBag.Products = products;
 			OptionProduct optionProduct = GetById(Id.Value);
 			return View(optionProduct);
 		}
@@ -183,7 +186,9 @@ namespace LalaCoffee.Areas.Admin.Controllers
 				ViewBag.PriceInput = priceStr;
 				ViewBag.Errors = fieldErrors.Values.ToList();
 				ViewBag.FieldErrors = fieldErrors;
-				ViewBag.Product = _productRepository.GetAll().ToList();
+				var products = _productRepository.GetAll().ToList();
+				ViewBag.Product = products;
+				ViewBag.Products = products;
 				return View(optionProduct);
 			}
 
@@ -198,7 +203,9 @@ namespace LalaCoffee.Areas.Admin.Controllers
 				ViewBag.PriceInput = priceStr;
 				ViewBag.Errors = generalErrors;
 				ViewBag.FieldErrors = fieldErrors;
-				ViewBag.Product = _productRepository.GetAll().ToList();
+				var products = _productRepository.GetAll().ToList();
+				ViewBag.Product = products;
+				ViewBag.Products = products;
 				return View(optionProduct);
 			}
 

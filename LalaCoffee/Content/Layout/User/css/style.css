@@ -1706,6 +1706,18 @@ textarea {
     width: 100%;
 }
 
+.product-wrapper .owl-carousel:not(.owl-loaded) {
+    display: flex !important;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.product-wrapper .owl-carousel:not(.owl-loaded) .item {
+    flex: 1 1 240px;
+    max-width: 280px;
+}
+
 .product-img {
     display: inline-block;
     width: 100%;

@@ -30,11 +30,20 @@ namespace LalaCoffee.Controllers
 				.Take(6)
 				.ToList();
 
-			ViewBag.Blogs = _context.Blogs
+			var blogs = _context.Blogs
 				.Where(b => b.Published)
 				.OrderByDescending(b => b.CreatedDate)
-				.Take(3)
+				.Take(6)
 				.ToList();
+
+			if (!blogs.Any())
+			{
+				blogs = _context.Blogs
+					.OrderByDescending(b => b.CreatedDate)
+					.Take(6)
+					.ToList();
+			}
+			ViewBag.Blogs = blogs;
 
 			var products = _productRepository.GetAll().ToList().Take(10);
 			return View(products);
