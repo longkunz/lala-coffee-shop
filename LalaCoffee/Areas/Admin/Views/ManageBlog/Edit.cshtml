@@ -8,8 +8,6 @@
 @Html.Partial("ErrorsAlert")
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script type="text/javascript">
-    // Guard: nếu CDN không tải được (mất mạng) thì bỏ qua cấu hình CKEditor,
-    // textarea thường vẫn nhập và lưu được nội dung thay vì lỗi JS sập trang.
     if (window.CKEDITOR) {
         CKEDITOR.config.versionCheck = false;
     }

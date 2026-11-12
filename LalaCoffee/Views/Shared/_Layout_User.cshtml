@@ -1,13 +1,4 @@
-@*<!DOCTYPE html>
-    <html>
-    <head>
-        <title></title>
-        @RenderSection("head", required: false)
-    </head>
-    <body>
-        @RenderBody()
-    </body>
-    </html>*@
+
 @using Microsoft.AspNet.Identity
 @using LalaCoffee.Helpers
 <!DOCTYPE html>
@@ -27,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..700;1,300..700&family=Pacifico&family=Quicksand:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- <link href="css/icon-plugin/fontello.css" rel="stylesheet"> -->
+
     <link href="~/Content/Layout/User/css/revolution-plugin/extralayers.css" rel="stylesheet">
     <link href="~/Content/Layout/User/css/revolution-plugin/settings.css" rel="stylesheet">
     <link href="~/Content/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -60,18 +51,8 @@
 
 <body class="storefront @(isHomePage ? "is-home-page" : "is-content-page")">
 
-    <!-- Page pre loader -->
-    @*<div id="pre-loader">
-            <div class="loader-holder">
-                <div class="frame">
-                    <img src="~/Content/Layout/User/images/logo-cafe.gif" alt="LalaCoffee" />
-                </div>
-            </div>
-        </div>*@
-
-    <!-- Start Wrapper Part -->
     <div class="wrapper">
-        <!-- Start Header Part -->
+
         <header>
             <div class="header-part @(isHomePage ? "header-overlay-hero" : "header-solid") header-reduce sticky storefront-header">
                 <div class="header-nav">
@@ -93,23 +74,6 @@
                                             <ul class="menu_child" id="menu_child_3_3">
                                                 @Html.Menu()
 
-                                                @*<ul class="menu_child_lv3">
-                                                        <li class="lv3_title" main-menu-new-menu="" a_="">
-                                                            <a href="/collections/ca-phe-viet-nam" title="Cà Phê Đen Đá">
-                                                                Cà Phê Đen Đá
-                                                            </a>
-                                                        </li>
-                                                        <li class="lv3_title" main-menu-new-menu="" a_="">
-                                                            <a href="/collections/ca-phe-may" title="Cà Phê Sữa Đá">
-                                                                Cà Phê Sữa Đá
-                                                            </a>
-                                                        </li>
-                                                        <li class="lv3_title" main-menu-new-menu="" a_="">
-                                                            <a href="/collections/cold-brew" title="Bạc Xỉu">
-                                                                Bạc Xỉu
-                                                            </a>
-                                                        </li>
-                                                    </ul>*@
                                             </ul>
                                         </li>
                                         <li>
@@ -186,47 +150,7 @@
                                     <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
                                     <span id="totalCart" class="header-cart-count">0</span>
                                 </a>
-                                @*<div class="cart animated">
-                                        <span class="icon-basket fontello"><ion-icon name="cart-outline"></ion-icon></span>
-                                        <div class="cart-wrap">
-                                            <div class="cart-blog">
-                                                <div class="cart-item">
-                                                    <div class="cart-item-left">
-                                                        <img src="~/Content/Layout/User/images/ca-phe-sua-da.jpg" alt="">
-                                                    </div>
-                                                    <div class="cart-item-right">
-                                                        <h6>Cà Phê Sữa Đá</h6>
-                                                        <span>39.000đ</span>
-                                                    </div>
-                                                    <span class="delete-icon"></span>
-                                                </div>
-                                                <div class="cart-item">
-                                                    <div class="cart-item-left">
-                                                        <img src="~/Content/Layout/User/images/bac-xiu.jpg" alt="">
-                                                    </div>
-                                                    <div class="cart-item-right">
-                                                        <h6>Bạc Xỉu</h6>
-                                                        <span>39.000đ</span>
-                                                    </div>
-                                                    <span class="delete-icon"></span>
-                                                </div>
-                                                <div class="subtotal">
-                                                    <div class="row">
-                                                        <div class="col-md-6 col-sm-6 col-xs-6">
-                                                            <h6>Tổng tiền: </h6>
-                                                        </div>
-                                                        <div class="col-md-6 col-sm-6 col-xs-6">
-                                                            <span>140.000đ</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="cart-btn">
-                                                    <a href="@Url.Action("Index","Cart")" class="button-default view">Giỏ hàng</a>
-                                                    <a href="@Url.Action("CheckOut","Order")" class="button-default checkout">Thanh toán</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>*@
+
                                 <div class="menu-icon">
                                     <a href="#" class="hambarger">
                                         <span class="bar-1"></span>
@@ -234,11 +158,7 @@
                                         <span class="bar-3"></span>
                                     </a>
                                 </div>
-                                @*<div class="">
-                                        <a href="@Url.Action("Login","Account")"><span>Đăng Nhập</span></a> |
-                                        <a href="@Url.Action("Register","Account")"><span>Đăng Ký</span></a>
 
-                                    </div>*@
                             </div>
                         </div>
                     </div>
@@ -246,12 +166,7 @@
             </div>
         </header>
 
-        <!-- End Header Part -->
-        <!-- Start Main Part -->
         @RenderBody()
-
-        <!-- End Main Part -->
-        <!-- Start Footer Part -->
 
         <footer>
             <div class="footer-part">
@@ -259,7 +174,7 @@
                     <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(16, 10, 8, 0.88) 0%, rgba(12, 7, 5, 0.94) 100%); pointer-events: none;"></div>
                     <div class="container-fluid" style="position: relative; z-index: 1; padding-left: clamp(20px, 4vw, 60px); padding-right: clamp(20px, 4vw, 60px);">
                         <div class="row">
-                            <!-- Cột 1: Thông tin thương hiệu -->
+
                             <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-4">
                                 <div class="logo">
                                     <a href="@Url.Action("Index","Home")" class="d-inline-flex align-items-center" title="LalaCoffee">
@@ -274,7 +189,6 @@
                                 </p>
                             </div>
 
-                            <!-- Cột 2: Thông tin liên hệ -->
                             <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-4">
                                 <h5>Thông Tin Liên Hệ</h5>
                                 <div style="line-height: 2.1; color: #e0d5cb;">
@@ -285,7 +199,6 @@
                                 </div>
                             </div>
 
-                            <!-- Cột 3: Khám phá -->
                             <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-4">
                                 <h5>Khám Phá Lala</h5>
                                 <div style="line-height: 2.1;">
@@ -297,7 +210,6 @@
                                 </div>
                             </div>
 
-                            <!-- Cột 4: Follow Us -->
                             <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-4">
                                 <h5>Theo Dõi Chúng Tôi</h5>
                                 <p style="margin-bottom: 15px; color: #e0d5cb; font-size: 14px; line-height: 1.6;">
@@ -329,12 +241,7 @@
             </div>
         </footer>
 
-        <!-- End Footer Part -->
-
     </div>
-
-    <!-- End Wrapper Part -->
-    <!-- Back To Top Arrow -->
 
     <a href="#" class="top-arrow"></a>
 

@@ -19,8 +19,6 @@
 @Html.Partial("ErrorsAlert")
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script type="text/javascript">
-    // Guard: nếu CDN không tải được (mất mạng) thì bỏ qua CKEditor, textarea thường
-    // trong modal vẫn nhập và lưu được nội dung thay vì lỗi JS sập trang.
     if (window.CKEDITOR) {
         CKEDITOR.config.versionCheck = false;
     }
@@ -248,7 +246,6 @@
         </text>
     }
 
-    // Quản lý vòng đời CKEditor trong Modal để đảm bảo hiển thị đủ thanh công cụ (toolbar)
     var blogEditor = null;
     function initBlogEditor() {
         if (window.CKEDITOR && !CKEDITOR.instances['Content']) {
@@ -278,7 +275,6 @@
         }
     });
 
-    // Tránh việc Bootstrap Modal chặn focus các dialog/dropdown của CKEditor
     if ($.fn.modal && $.fn.modal.Constructor && $.fn.modal.Constructor.prototype.enforceFocus) {
         $.fn.modal.Constructor.prototype.enforceFocus = function () {
             var $modal = this;
@@ -290,4 +286,3 @@
         };
     }
 </script>
-
