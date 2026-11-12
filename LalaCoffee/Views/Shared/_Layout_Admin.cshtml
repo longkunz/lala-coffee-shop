@@ -97,7 +97,7 @@
                     </a>
 
                     <!-- Sản phẩm Submenu -->
-                    <a href="#productSubmenu" class="nav-link-admin" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="productSubmenu">
+                    <a href="javascript:void(0)" class="nav-link-admin" data-bs-toggle="collapse" data-bs-target="#productSubmenu" role="button" aria-expanded="false" aria-controls="productSubmenu">
                         <i class="nav-icon fas fa-coffee"></i>
                         <span>Sản phẩm</span>
                         <i class="fas fa-chevron-right menu-arrow"></i>
@@ -136,7 +136,7 @@
                     </a>
 
                     <!-- Quyền hạn Submenu -->
-                    <a href="#roleSubmenu" class="nav-link-admin" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="roleSubmenu">
+                    <a href="javascript:void(0)" class="nav-link-admin" data-bs-toggle="collapse" data-bs-target="#roleSubmenu" role="button" aria-expanded="false" aria-controls="roleSubmenu">
                         <i class="nav-icon fas fa-user-shield"></i>
                         <span>Vai trò & Quyền</span>
                         <i class="fas fa-chevron-right menu-arrow"></i>
@@ -178,10 +178,7 @@
             <!-- Topbar Header -->
             <header class="admin-topbar">
                 <div class="d-flex align-items-center gap-3">
-                    <button type="button" class="topbar-toggle d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Mở menu điều hướng" title="Mở menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <button type="button" class="topbar-toggle d-none d-lg-inline-flex" id="sidebarToggle" aria-label="Thu gọn hoặc mở rộng thanh điều hướng bên" title="Thu gọn / Mở rộng sidebar">
+                    <button type="button" class="topbar-toggle" id="sidebarToggle" aria-label="Thu gọn hoặc mở rộng thanh điều hướng bên" title="Thu gọn / Mở rộng sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="d-none d-md-flex align-items-center text-muted small">
