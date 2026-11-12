@@ -1,117 +1,116 @@
 @model LalaCoffee.Models.Product
 
 @{
-    ViewBag.Title = "Edit Product";
+    ViewBag.Title = "Chỉnh sửa sản phẩm";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
     bool isActive = Model.Status == "1" 
         || string.Equals(Model.Status, "Show", StringComparison.OrdinalIgnoreCase) 
         || string.Equals(Model.Status, "Active", StringComparison.OrdinalIgnoreCase)
         || string.Equals(Model.Status, "True", StringComparison.OrdinalIgnoreCase);
 }
-@functions{
-    public string ParentCategory(int parentId)
-    {
-        if (ViewBag.Categories != null)
-        {
-            foreach(var item in ViewBag.Categories)
-            {
-                if(item.Id == parentId)
-                {
-                    return item.Name;
-                }
-            }
-        }
-        return "Danh mục cha";
-    }
-}
 @{
     var fieldErrors = (ViewBag.FieldErrors ?? TempData["FieldErrors"]) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     string priceVal = ViewBag.PriceInput != null ? (string)ViewBag.PriceInput : Model.Price.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
 }
 @Html.Partial("ErrorsAlert")
+
+<div class="admin-page-header">
+    <div>
+        <h1 class="admin-page-title">Chỉnh sửa sản phẩm</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb admin-breadcrumb">
+                <li class="breadcrumb-item"><a href="/Admin/ManageOrder" class="text-decoration-none text-muted">Quản trị</a></li>
+                <li class="breadcrumb-item"><a href="/Admin/ManageProduct" class="text-decoration-none text-muted">Sản phẩm</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+    </div>
+    <a href="@Url.Action("Index", "ManageProduct")" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay lại danh sách</span>
+    </a>
+</div>
+
 <div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fa fa-edit"></i> CHỈNH SỬA SẢN PHẨM: @Model.Name
-                </h3>
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i> Thông tin sản phẩm: <strong>@Model.Name</strong>
+                </h5>
             </div>
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.Id)
                 <div class="card-body">
-                    <div class="form-group">
-                        <label>Tên <span class="text-danger">*</span></label>
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Tên sản phẩm <span class="text-danger">*</span></label>
                         <input class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" id="name" name="name" type="text" value="@Model.Name" onchange="getSlug()">
                         @if (fieldErrors.ContainsKey("name"))
                         {
                             <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
                         }
                     </div>
-                    <div class="form-group">
-                        <label>Slug <span class="text-danger">*</span></label>
+                    <div class="mb-3">
+                        <label class="form-label" for="slug">Đường dẫn thân thiện (Slug) <span class="text-danger">*</span></label>
                         <input class="form-control @(fieldErrors.ContainsKey("slug") ? "is-invalid" : "")" id="slug" name="slug" type="text" value="@Model.Slug">
                         @if (fieldErrors.ContainsKey("slug"))
                         {
                             <span class="invalid-feedback d-block">@fieldErrors["slug"]</span>
                         }
                     </div>
-                    <div class="form-group">
-                        <label>Mô tả <span class="text-danger">*</span></label>
-                        <textarea class="form-control @(fieldErrors.ContainsKey("description") ? "is-invalid" : "")" id="description" name="description" rows="3">@Model.Description</textarea>
+                    <div class="mb-3">
+                        <label class="form-label" for="description">Mô tả sản phẩm <span class="text-danger">*</span></label>
+                        <textarea class="form-control @(fieldErrors.ContainsKey("description") ? "is-invalid" : "")" id="description" name="description" rows="4">@Model.Description</textarea>
                         @if (fieldErrors.ContainsKey("description"))
                         {
                             <span class="invalid-feedback d-block">@fieldErrors["description"]</span>
                         }
                     </div>
-                    <div class="form-group">
-                        <label>Giá <span class="text-danger">*</span></label>
-                        <input class="form-control @(fieldErrors.ContainsKey("price") ? "is-invalid" : "")" id="price" name="price" type="number" step="any" min="1000" value="@priceVal">
-                        @if (fieldErrors.ContainsKey("price"))
-                        {
-                            <span class="invalid-feedback d-block">@fieldErrors["price"]</span>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <label>Hình ảnh</label>
-                        <input class="form-control" id="image" name="image" type="text" value="@Model.Image">
-                        <div class="input-group form-group">
-                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*"
-                                   style="display:none;" />
-                            <span class="input-group-btn">
-                                <input type="button" id="btnUpload" value="Chọn" class="btn btn-success" />
-                            </span>
-                        </div>
-                        <img src="@Model.Image" id="pictureUpload" class="img-fluid" />
-                    </div>
-                    <div class="form-group">
-                        <label>Danh mục <span class="text-danger">*</span></label>
-                        <select class="form-control @(fieldErrors.ContainsKey("category_id") ? "is-invalid" : "")" name="category_id">
-                            @if (ViewBag.Categories != null)
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="price">Giá bán (VNĐ) <span class="text-danger">*</span></label>
+                            <input class="form-control @(fieldErrors.ContainsKey("price") ? "is-invalid" : "")" id="price" name="price" type="number" min="1000" step="1000" value="@priceVal">
+                            @if (fieldErrors.ContainsKey("price"))
                             {
-                                foreach (var category in ViewBag.Categories)
-                                {
-                                    bool isSelected = Model.Category != null && Model.Category.Id == category.Id;
-                                    <option value="@category.Id" @(isSelected ? "selected" : "")>@category.Name</option>
-                                }
+                                <span class="invalid-feedback d-block">@fieldErrors["price"]</span>
                             }
-                        </select>
-                        @if (fieldErrors.ContainsKey("category_id"))
-                        {
-                            <span class="invalid-feedback d-block">@fieldErrors["category_id"]</span>
-                        }
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="category_id">Danh mục sản phẩm <span class="text-danger">*</span></label>
+                            <select class="form-select @(fieldErrors.ContainsKey("category_id") ? "is-invalid" : "")" name="category_id" id="category_id">
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option value="@category.Id" @(Model.Category != null && Model.Category.Id == category.Id ? "selected" : "")>@category.Name</option>
+                                }
+                            </select>
+                            @if (fieldErrors.ContainsKey("category_id"))
+                            {
+                                <span class="invalid-feedback d-block">@fieldErrors["category_id"]</span>
+                            }
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Trạng thái</label>
-                        <input type="checkbox" name="status" id="status" value="1" @(isActive ? "checked" : "")>
-                        <label class="form-check-label" for="status">ON</label>
+                    <div class="mb-3">
+                        <label class="form-label" for="image">Ảnh sản phẩm</label>
+                        <div class="input-group mb-2">
+                            <input class="form-control" id="image" name="image" type="text" value="@Model.Image" placeholder="Đường dẫn ảnh hoặc tải file bên dưới...">
+                        </div>
+                        <input type="file" name="fileUpload" id="fileUpload" accept="image/*" class="form-control mb-3">
+                        <div class="p-3 bg-light rounded-3 text-center border">
+                            <img id="pictureUpload" src="@(string.IsNullOrEmpty(Model.Image) ? "/Content/Layout/User/images/coffee.png" : Model.Image)" style="max-height: 180px; width: auto; object-fit: contain; border-radius: 8px;" alt="Preview" />
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mt-3 mb-2">
+                        <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @(isActive ? "checked" : "")>
+                        <label class="form-check-label fw-semibold" for="status">Cho phép hiển thị sản phẩm trên cửa hàng</label>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                    <a href="@Url.Action("Index", "ManageProduct")" class="btn btn-secondary ml-2">Quay lại</a>
+                <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center">
+                    <a href="@Url.Action("Index", "ManageProduct")" class="btn btn-outline-secondary">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-1"></i> Lưu thay đổi
+                    </button>
                 </div>
             }
         </div>
@@ -130,37 +129,29 @@
         var result = removeDiacritics(name);
         $('#slug').val(result.toLowerCase());
     }
-</script>
-
-<script>
     $(function () {
-        $('#btnUpload').click(function () {
-            $('#fileUpload').trigger('click');
-        });
-    });
-    $('#fileUpload').change(function () {
-        if (window.FormData !== undefined) {
-            var fileUpload = $('#fileUpload').get(0);
-            var files = fileUpload.files;
-            var formData = new FormData();
-            formData.append('file', files[0]);
-
-            $.ajax(
-                {
+        $('#fileUpload').change(function () {
+            if (window.FormData !== undefined) {
+                var fileUpload = $('#fileUpload').get(0);
+                var files = fileUpload.files;
+                var formData = new FormData();
+                formData.append('file', files[0]);
+                formData.append('__RequestVerificationToken', $('input[name="__RequestVerificationToken"]').val());
+                $.ajax({
                     type: 'POST',
-                    url: '/Image/ProcessUpload',
+                    url: '/Admin/ManageProduct/ProcessUpload',
                     contentType: false,
                     processData: false,
                     data: formData,
                     success: function (urlImage) {
-
                         $('#pictureUpload').attr('src', urlImage);
                         $('#image').val(urlImage);
                     },
                     error: function (err) {
-                        alert('Error ', err.statusText);
+                        alert('Lỗi upload: ' + err.statusText);
                     }
                 });
-        }
+            }
+        });
     });
 </script>

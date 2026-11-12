@@ -1,22 +1,33 @@
 @model IEnumerable<LalaCoffee.Models.Blog>
 
 @{
-    ViewBag.Title = "Blog Manager";
+    ViewBag.Title = "Quản lý bài viết";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
-}
-@functions{
-    public string NorActive(bool active = true)
-    {
-        return active == true ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
-    }
-}
-@{
     var fieldErrors = (TempData["FieldErrors"] ?? ViewBag.FieldErrors) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     var formValues = (TempData["FormValues"] ?? ViewBag.FormValues) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     string openModal = TempData["OpenModal"] as string;
     bool isCreatePublished = !formValues.ContainsKey("Published") || formValues["Published"] == "true" || formValues["Published"] == "1";
 }
+
+<div class="admin-page-header d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Quản lý bài viết</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/Admin/ManageProduct">Quản trị</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Bài viết</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create_modal">
+            <i class="fas fa-plus-circle me-1"></i> Tạo bài viết mới
+        </button>
+    </div>
+</div>
+
 @Html.Partial("ErrorsAlert")
+
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script type="text/javascript">
     if (window.CKEDITOR) {
@@ -31,89 +42,95 @@
         z-index: 10005 !important;
     }
 </style>
-<div class="modal fade" id="create_modal" tabindex="-1" data-bs-focus="false">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+
+<div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true" data-bs-focus="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
             @using (Html.BeginForm("Create", "ManageBlog", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-                <div class="modal-header">
-                    <h4 class="modal-title">Tạo bài viết mới</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+                <div class="modal-header bg-white border-bottom">
+                    <h5 class="modal-title fw-bold text-dark" id="createModalLabel">
+                        <i class="fas fa-feather-alt text-primary me-2"></i>Tạo bài viết mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
-                    <div class="form-group">
-                        <label>Tiêu đề <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @(fieldErrors.ContainsKey("Title") ? "is-invalid" : "")" name="Title" id="Title" value="@(formValues.ContainsKey("Title") ? formValues["Title"] : "")">
+                <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="mb-3">
+                        <label for="Title" class="form-label fw-semibold">Tiêu đề bài viết <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @(fieldErrors.ContainsKey("Title") ? "is-invalid" : "")" name="Title" id="Title" placeholder="Nhập tiêu đề bài viết..." value="@(formValues.ContainsKey("Title") ? formValues["Title"] : "")" required>
                         @if (fieldErrors.ContainsKey("Title"))
                         {
-                            <span class="invalid-feedback d-block">@fieldErrors["Title"]</span>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <label>Nội dung <span class="text-danger">*</span></label>
-                        <textarea rows="5" class="form-control @(fieldErrors.ContainsKey("Content") ? "is-invalid" : "")" name="Content" id="Content">@(formValues.ContainsKey("Content") ? formValues["Content"] : "")</textarea>
-                        @if (fieldErrors.ContainsKey("Content"))
-                        {
-                            <span class="invalid-feedback d-block">@fieldErrors["Content"]</span>
+                            <div class="invalid-feedback d-block">@fieldErrors["Title"]</div>
                         }
                     </div>
 
-                    <div class="form-group">
-                        <label>Hiện hành</label>
-                        <input type="checkbox" name="Published" id="Published" value="true" @(isCreatePublished ? "checked" : "")>
-                        <label class="form-check-label" for="Published">ON</label>
+                    <div class="mb-3">
+                        <label for="Content" class="form-label fw-semibold">Nội dung <span class="text-danger">*</span></label>
+                        <textarea rows="6" class="form-control @(fieldErrors.ContainsKey("Content") ? "is-invalid" : "")" name="Content" id="Content">@(formValues.ContainsKey("Content") ? formValues["Content"] : "")</textarea>
+                        @if (fieldErrors.ContainsKey("Content"))
+                        {
+                            <div class="invalid-feedback d-block">@fieldErrors["Content"]</div>
+                        }
                     </div>
-                    <div class="form-group">
-                        <label>Hình ảnh</label>
-                        <input type="text" class="form-control" name="image" id="image" value="@(formValues.ContainsKey("image") ? formValues["image"] : "")">
-                        <div class="input-group form-group">
-                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*"
-                                   style="display:none;" />
-                            <span class="input-group-btn">
-                                <input type="button" id="btnUpload" value="Chọn" class="btn btn-success" />
-                            </span>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Trạng thái phát hành</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="Published" id="Published" value="true" @(isCreatePublished ? "checked" : "")>
+                            <label class="form-check-label" for="Published">Hiển thị công khai ngay sau khi tạo</label>
                         </div>
-                        <img src="@(formValues.ContainsKey("image") ? formValues["image"] : "")" id="pictureUpload" class="img-fluid" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label fw-semibold">Hình ảnh bìa</label>
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control" name="image" id="image" placeholder="URL hình ảnh..." value="@(formValues.ContainsKey("image") ? formValues["image"] : "")">
+                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*" aria-label="Tải lên tệp ảnh bìa bài viết" style="display:none;" />
+                            <button type="button" id="btnUpload" class="btn btn-outline-secondary">
+                                <i class="fas fa-folder-open me-1"></i> Chọn tệp ảnh
+                            </button>
+                        </div>
+                        <div class="mt-2 text-center p-2 bg-light rounded border" id="previewContainer" style="@(formValues.ContainsKey("image") && !string.IsNullOrEmpty(formValues["image"]) ? "" : "display:none;")">
+                            <img src="@(formValues.ContainsKey("image") ? formValues["image"] : "")" id="pictureUpload" class="img-fluid rounded" style="max-height: 180px; object-fit: cover;" alt="Preview" />
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <div class="modal-footer bg-light border-top">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Lưu bài viết
+                    </button>
                 </div>
             }
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fa fa-list"></i> DANH SÁCH BÀI VIẾT <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap" id="blogTable" data-server-side="true" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>Hành động</th>
-                                <th>Id</th>
-                                <th>Tiêu đề</th>
-                                <th>Thời gian tạo</th>
-                                <th>Hiện hành</th>
-                                <th>Người đăng</th>
-                                <th>Hình ảnh</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+        <h5 class="card-title fw-bold mb-0 text-dark">
+            <i class="fas fa-newspaper text-primary me-2"></i>Danh sách bài viết
+        </h5>
+        <span class="badge bg-light text-muted border">Quản lý nội dung tin tức</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 w-100" id="blogTable" data-server-side="true">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 100px;">Thao tác</th>
+                        <th style="width: 70px;">ID</th>
+                        <th>Tiêu đề</th>
+                        <th style="width: 140px;">Ngày tạo</th>
+                        <th style="width: 100px;">Trạng thái</th>
+                        <th>Tác giả</th>
+                        <th style="width: 90px;">Hình ảnh</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -137,12 +154,19 @@
                     "orderable": false,
                     "searchable": false,
                     "render": function (data, type, row) {
-                        return '<a href="' + row.editUrl + '" class="btn btn-primary btn-sm mr-1"><i class="fa fa-edit"></i></a> ' +
-                               '<a href="#" class="btn btn-danger btn-sm" onclick="del(\'' + data + '\')"><i class="fa fa-trash"></i></a>';
+                        return '<div class="btn-group btn-group-sm" role="group">' +
+                               '<a href="' + row.editUrl + '" class="btn btn-outline-primary" aria-label="Chỉnh sửa bài viết ' + (row.title || '') + '" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>' +
+                               '<button type="button" class="btn btn-outline-danger" onclick="del(\'' + data + '\')" aria-label="Xóa bài viết ' + (row.title || '') + '" title="Xóa"><i class="fas fa-trash"></i></button>' +
+                               '</div>';
                     }
                 },
                 { "data": "id" },
-                { "data": "title" },
+                { 
+                    "data": "title",
+                    "render": function(data) {
+                        return '<span class="fw-semibold text-dark">' + (data || '') + '</span>';
+                    }
+                },
                 { "data": "createdDate" },
                 {
                     "data": "publishedBadge",
@@ -155,9 +179,9 @@
                     "searchable": false,
                     "render": function (data, type, row) {
                         if (data && data.length > 0) {
-                            return '<img src="' + data + '" alt="' + (row.title || '') + '" style="width:70px; height:50px; object-fit:cover; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,0.12);" />';
+                            return '<img src="' + data + '" alt="' + (row.title || 'Ảnh bài viết') + '" loading="lazy" style="width:60px; height:42px; object-fit:cover; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1);" />';
                         }
-                        return '<span class="text-muted small">Không có ảnh</span>';
+                        return '<span class="text-muted small">Không có</span>';
                     }
                 }
             ],
@@ -182,7 +206,7 @@
     });
 
     function del(id) {
-        if (confirm("Bạn chắc chắn muốn xóa?")) {
+        if (confirm("Bạn chắc chắn muốn xóa bài viết này?")) {
             $.ajax({
                 url: "@Url.Action("Delete", "ManageBlog")",
                 type: "POST",
@@ -205,43 +229,48 @@
             });
         }
     }
-</script>
-<script>
+
     $(function () {
         $('#btnUpload').click(function () {
             $('#fileUpload').trigger('click');
         });
-    });
-    $('#fileUpload').change(function () {
-        if (window.FormData !== undefined) {
-            var fileUpload = $('#fileUpload').get(0);
-            var files = fileUpload.files;
-            var formData = new FormData();
-            formData.append('file', files[0]);
 
-            $.ajax(
-                {
+        $('#fileUpload').change(function () {
+            if (window.FormData !== undefined) {
+                var fileUpload = $('#fileUpload').get(0);
+                var files = fileUpload.files;
+                if (!files || files.length === 0) return;
+                var formData = new FormData();
+                formData.append('file', files[0]);
+
+                $.ajax({
                     type: 'POST',
                     url: '/Image/ProcessUpload',
                     contentType: false,
                     processData: false,
                     data: formData,
                     success: function (urlImage) {
-
                         $('#pictureUpload').attr('src', urlImage);
+                        $('#previewContainer').show();
                         $('#image').val(urlImage);
                     },
                     error: function (err) {
-                        alert('Error ', err.statusText);
+                        alert('Lỗi tải ảnh: ' + (err.statusText || ''));
                     }
                 });
-        }
+            }
+        });
     });
+
     @if (!string.IsNullOrEmpty(openModal) && fieldErrors.Count > 0)
     {
         <text>
         $(document).ready(function () {
-            $('#@openModal').modal('show');
+            var modalEl = document.getElementById('@openModal');
+            if (modalEl) {
+                var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            }
         });
         </text>
     }
@@ -251,7 +280,7 @@
         if (window.CKEDITOR && !CKEDITOR.instances['Content']) {
             blogEditor = CKEDITOR.replace('Content', {
                 versionCheck: false,
-                height: 280,
+                height: 260,
                 width: '100%',
                 toolbarCanCollapse: false
             });
@@ -274,7 +303,6 @@
             CKEDITOR.instances['Content'].updateElement();
         }
     });
-
     if ($.fn.modal && $.fn.modal.Constructor && $.fn.modal.Constructor.prototype.enforceFocus) {
         $.fn.modal.Constructor.prototype.enforceFocus = function () {
             var $modal = this;

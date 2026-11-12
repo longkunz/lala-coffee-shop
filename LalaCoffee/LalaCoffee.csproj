@@ -279,6 +279,8 @@
     <Content Include="Content\images\tra-vai-da-tuyet-yuzu.jpg" />
     <Content Include="Content\images\tra-vai-da-tuyet-yuzu_e2eb908a-68e4-4e69-9203-1076e0df630e.jpg" />
     <Content Include="Content\images\tra=sua-macca.jpg" />
+    <Content Include="Content\Layout\Admin\css\admin-dashboard.css" />
+    <Content Include="Content\Layout\Admin\js\admin-dashboard.js" />
     <Content Include="Content\Layout\Admin\dist\css\adminlte.css" />
     <Content Include="Content\Layout\Admin\dist\css\adminlte.min.css" />
     <Content Include="Content\Layout\Admin\dist\css\alt\adminlte.components.css" />

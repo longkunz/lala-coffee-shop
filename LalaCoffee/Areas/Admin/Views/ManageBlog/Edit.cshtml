@@ -5,7 +5,26 @@
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
     var fieldErrors = (ViewBag.FieldErrors ?? TempData["FieldErrors"]) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }
+
+<div class="admin-page-header d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Chỉnh sửa bài viết</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "ManageBlog")">Bài viết</a></li>
+                <li class="breadcrumb-item active" aria-current="page">#@Model.Id</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="@Url.Action("Index", "ManageBlog")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+</div>
+
 @Html.Partial("ErrorsAlert")
+
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script type="text/javascript">
     if (window.CKEDITOR) {
@@ -18,112 +37,120 @@
     }
 </style>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fa fa-edit"></i> CHỈNH SỬA BÀI VIẾT: (@Model.Title)
-                </h3>
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="card-title fw-bold mb-0 text-dark">
+                    <i class="fas fa-edit text-primary me-2"></i>Chỉnh sửa: @Model.Title
+                </h5>
             </div>
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.Id)
-                <div class="card-body">
-                    <div class="form-group">
-                        <label>Tiêu đề <span class="text-danger">*</span></label>
-                        <input class="form-control @(fieldErrors.ContainsKey("Title") ? "is-invalid" : "")" id="Title" name="Title" type="text" value="@Model.Title">
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <label for="Title" class="form-label fw-semibold">Tiêu đề bài viết <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("Title") ? "is-invalid" : "")" id="Title" name="Title" type="text" value="@Model.Title" required>
                         @if (fieldErrors.ContainsKey("Title"))
                         {
-                            <span class="invalid-feedback d-block">@fieldErrors["Title"]</span>
+                            <div class="invalid-feedback d-block">@fieldErrors["Title"]</div>
                         }
                     </div>
-                    <div class="form-group">
-                        <label>Nội dung <span class="text-danger">*</span></label>
-                        <textarea class="form-control @(fieldErrors.ContainsKey("Content") ? "is-invalid" : "")" id="Content" name="Content" rows="3">@Model.Content</textarea>
+
+                    <div class="mb-3">
+                        <label for="Content" class="form-label fw-semibold">Nội dung <span class="text-danger">*</span></label>
+                        <textarea class="form-control @(fieldErrors.ContainsKey("Content") ? "is-invalid" : "")" id="Content" name="Content" rows="6">@Model.Content</textarea>
                         @if (fieldErrors.ContainsKey("Content"))
                         {
-                            <span class="invalid-feedback d-block">@fieldErrors["Content"]</span>
+                            <div class="invalid-feedback d-block">@fieldErrors["Content"]</div>
                         }
                         <script type="text/javascript">
                             if (window.CKEDITOR) {
                                 CKEDITOR.replace('Content', {
-                                    versionCheck: false
+                                    versionCheck: false,
+                                    height: 320,
+                                    width: '100%'
                                 });
                             }
                         </script>
                     </div>
-                    <div class="form-group">
-                        <label>Người đăng <span class="text-danger">*</span></label>
-                        <input class="form-control @(fieldErrors.ContainsKey("Author") ? "is-invalid" : "")" id="Author" name="Author" type="text" value="@Model.Author">
+
+                    <div class="mb-3">
+                        <label for="Author" class="form-label fw-semibold">Tác giả / Người đăng <span class="text-danger">*</span></label>
+                        <input class="form-control @(fieldErrors.ContainsKey("Author") ? "is-invalid" : "")" id="Author" name="Author" type="text" value="@Model.Author" required>
                         @if (fieldErrors.ContainsKey("Author"))
                         {
-                            <span class="invalid-feedback d-block">@fieldErrors["Author"]</span>
+                            <div class="invalid-feedback d-block">@fieldErrors["Author"]</div>
                         }
                     </div>
-                    <div class="form-group">
-                        <label>Hình ảnh</label>
-                        <input class="form-control" id="image" name="image" type="text" value="@Model.Image">
-                        <div class="input-group form-group">
-                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*"
-                                   style="display:none;" />
-                            <span class="input-group-btn">
-                                <input type="button" id="btnUpload" value="Chọn" class="btn btn-success" />
-                            </span>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label fw-semibold">Hình ảnh bìa</label>
+                        <div class="input-group mb-2">
+                            <input class="form-control" id="image" name="image" type="text" value="@Model.Image" placeholder="URL hình ảnh...">
+                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*" style="display:none;" />
+                            <button type="button" id="btnUpload" class="btn btn-outline-secondary">
+                                <i class="fas fa-folder-open me-1"></i> Chọn tệp ảnh
+                            </button>
                         </div>
-                        <img src="@Model.Image" id="pictureUpload" class="img-fluid" />
+                        <div class="mt-2 text-center p-2 bg-light rounded border" id="previewContainer" style="@(!string.IsNullOrEmpty(Model.Image) ? "" : "display:none;")">
+                            <img src="@Model.Image" id="pictureUpload" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;" alt="Preview" />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Hiện hành</label>
-                        @if (Model.Published)
-                        {
-                            <input type="checkbox" name="Published" id="Published" value="true" checked>
-                        }
-                        else
-                        {
-                            <input type="checkbox" name="Published" id="Published" value="true">
-                        }
-                        <label class="form-check-label" for="Published">ON</label>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Trạng thái phát hành</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="Published" id="Published" value="true" @(Model.Published ? "checked" : "")>
+                            <label class="form-check-label" for="Published">Hiển thị công khai trên website</label>
+                        </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                    <a href="@Url.Action("Index", "ManageBlog")" class="btn btn-secondary ml-2">Quay lại</a>
+                <div class="card-footer bg-white border-top py-3 d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("Index", "ManageBlog")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Hủy bỏ
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Lưu thay đổi
+                    </button>
                 </div>
             }
         </div>
     </div>
 </div>
+
 <script>
     $(function () {
         $('#btnUpload').click(function () {
             $('#fileUpload').trigger('click');
         });
-    });
-    $('#fileUpload').change(function () {
-        if (window.FormData !== undefined) {
-            var fileUpload = $('#fileUpload').get(0);
-            var files = fileUpload.files;
-            var formData = new FormData();
-            formData.append('file', files[0]);
 
-            $.ajax(
-                {
+        $('#fileUpload').change(function () {
+            if (window.FormData !== undefined) {
+                var fileUpload = $('#fileUpload').get(0);
+                var files = fileUpload.files;
+                if (!files || files.length === 0) return;
+                var formData = new FormData();
+                formData.append('file', files[0]);
+
+                $.ajax({
                     type: 'POST',
                     url: '/Image/ProcessUpload',
                     contentType: false,
                     processData: false,
                     data: formData,
                     success: function (urlImage) {
-
                         $('#pictureUpload').attr('src', urlImage);
+                        $('#previewContainer').show();
                         $('#image').val(urlImage);
                     },
                     error: function (err) {
-                        alert('Error ', err.statusText);
+                        alert('Lỗi tải ảnh: ' + (err.statusText || ''));
                     }
                 });
-        }
+            }
+        });
     });
 </script>

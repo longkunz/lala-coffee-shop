@@ -1,7 +1,7 @@
 @model IEnumerable<LalaCoffee.Models.Category>
 
 @{
-    ViewBag.Title = "Category Manager";
+    ViewBag.Title = "Quản lý danh mục";
     Layout = "~/Views/Shared/_Layout_Admin.cshtml";
 }
 @functions{
@@ -15,7 +15,9 @@
     }
     public string NorActive(string active = "1")
     {
-        return IsActive(active) ? "<span class='btn btn-success btn-xs'>ON</span>" : "<span class='btn btn-danger btn-xs'>OFF</span>";
+        return IsActive(active) 
+            ? "<span class='badge bg-success-subtle text-success border border-success-subtle px-2 py-1'>Hiển thị</span>" 
+            : "<span class='badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1'>Tạm ẩn</span>";
     }
     public string ParentCategory(int parentId)
     {
@@ -26,7 +28,7 @@
                 return item.Name;
             }
         }
-        return "Danh mục cha";
+        return "Danh mục gốc";
     }
 }
 @{
@@ -37,116 +39,130 @@
     string selectedParent = formValues.ContainsKey("parentid") ? formValues["parentid"] : "0";
 }
 @Html.Partial("ErrorsAlert")
-<div class="modal fade" id="create_modal">
-    <div class="modal-dialog modal-lg">
+
+<div class="admin-page-header">
+    <div>
+        <h1 class="admin-page-title">Quản lý Danh mục</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb admin-breadcrumb">
+                <li class="breadcrumb-item"><a href="/Admin/ManageOrder" class="text-decoration-none text-muted">Quản trị</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Danh mục thực đơn</li>
+            </ol>
+        </nav>
+    </div>
+    <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#create_modal">
+        <i class="fas fa-plus-circle"></i>
+        <span>Thêm danh mục mới</span>
+    </button>
+</div>
+
+<!-- Modal Thêm danh mục -->
+<div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             @using (Html.BeginForm("Create", "ManageCategory", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
-                    <h4 class="modal-title">Tạo danh mục mới</h4>
-                    <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+                    <h5 class="modal-title" id="createModalLabel">
+                        <i class="fas fa-plus-circle text-primary me-2"></i>Thêm danh mục mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="card-body table-responsive p-0">
-                        <div class="form-group">
-                            <label>Tên <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" name="name" id="name" value="@(formValues.ContainsKey("name") ? formValues["name"] : "")" onchange="getSlug();">
-                            @if (fieldErrors.ContainsKey("name"))
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Tên danh mục <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @(fieldErrors.ContainsKey("name") ? "is-invalid" : "")" name="name" id="name" placeholder="VD: Cà phê Pha Máy, Trà Trái Cây..." value="@(formValues.ContainsKey("name") ? formValues["name"] : "")" onchange="getSlug();">
+                        @if (fieldErrors.ContainsKey("name"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="slug">Đường dẫn thân thiện (Slug) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @(fieldErrors.ContainsKey("slug") ? "is-invalid" : "")" name="slug" id="slug" placeholder="VD: ca-phe-pha-may" value="@(formValues.ContainsKey("slug") ? formValues["slug"] : "")">
+                        @if (fieldErrors.ContainsKey("slug"))
+                        {
+                            <span class="invalid-feedback d-block">@fieldErrors["slug"]</span>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="description">Mô tả danh mục</label>
+                        <textarea rows="3" class="form-control" name="description" id="description" placeholder="Mô tả về nhóm sản phẩm...">@(formValues.ContainsKey("description") ? formValues["description"] : "")</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="parentid">Danh mục cha</label>
+                        <select class="form-select" name="parentid" id="parentid">
+                            <option value="0">-- Danh mục gốc --</option>
+                            @foreach (var parent in Model)
                             {
-                                <span class="invalid-feedback d-block">@fieldErrors["name"]</span>
+                                <option value="@parent.Id" @(selectedParent == parent.Id.ToString() ? "selected" : "")>@parent.Name</option>
                             }
-                        </div>
-                        <div class="form-group">
-                            <label>Slug <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @(fieldErrors.ContainsKey("slug") ? "is-invalid" : "")" name="slug" id="slug" value="@(formValues.ContainsKey("slug") ? formValues["slug"] : "")">
-                            @if (fieldErrors.ContainsKey("slug"))
-                            {
-                                <span class="invalid-feedback d-block">@fieldErrors["slug"]</span>
-                            }
-                        </div>
-                        <div class="form-group">
-                            <label>Mô tả <span class="text-danger">*</span></label>
-                            <textarea rows="5" class="form-control @(fieldErrors.ContainsKey("description") ? "is-invalid" : "")" name="description" id="description">@(formValues.ContainsKey("description") ? formValues["description"] : "")</textarea>
-                            @if (fieldErrors.ContainsKey("description"))
-                            {
-                                <span class="invalid-feedback d-block">@fieldErrors["description"]</span>
-                            }
-                        </div>
-                        <div class="form-group">
-                            <label>Danh mục cha</label>
-                            <select class="form-control" name="parentid" id="parentid">
-                                <option value="0" @(selectedParent == "0" ? "selected" : "")>Danh mục cha</option>
-                                @foreach(var item in Model) { 
-                                <option value="@item.Id" @(selectedParent == item.Id.ToString() ? "selected" : "")>@item.Name</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Trạng thái</label>
-                            <input type="checkbox" name="status" id="status" value="1" @(isCreateActive ? "checked" : "")>
-                            <label class="form-check-label" for="status">ON</label>
-                        </div>
+                        </select>
+                    </div>
+                    <div class="form-check form-switch mt-3">
+                        <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @(isCreateActive ? "checked" : "")>
+                        <label class="form-check-label fw-semibold" for="status">Cho phép hiển thị trên thanh thực đơn</label>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Lưu danh mục
+                    </button>
                 </div>
             }
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <div class="card card-info">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fa fa-list"></i> DANH SÁCH DANH MỤC <a data-bs-toggle="modal" data-toggle="modal" data-bs-target="#create_modal" data-target="#create_modal"><i class="fa fa-plus-circle"></i></a>
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-head-fixed text-nowrap" id="nTable">
-                        <thead>
-                            <tr>
-                                <th>Hành động</th>
-                                <th>Id</th>
-                                <th>Tên</th>
-                                <th>Slug</th>
-                                <th>Danh mục cha</th>
-                                <th>Trạng thái</th>
-                                <th>CreatedAt</th>
-                                <th>UpdatedAt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="@Url.Action("Edit", "ManageCategory", new { id = item.Id })" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-danger btn-sm" onclick="del('@item.Id')">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Slug)</td>
-                                    <td>@ParentCategory(item.ParentId)</td>
-                                    <td>@Html.Raw(NorActive(item.Status))</td>
-                                    <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+<!-- Table Card -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-tags me-2"></i> Danh sách danh mục món
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive p-3">
+            <table class="table table-hover align-middle" id="nTable">
+                <thead>
+                    <tr>
+                        <th style="width: 90px;">Thao tác</th>
+                        <th style="width: 50px;">ID</th>
+                        <th>Tên danh mục</th>
+                        <th>Slug</th>
+                        <th>Danh mục cha</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Cập nhật</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="@Url.Action("Edit", "ManageCategory", new { id = item.Id })" class="btn btn-outline-primary" aria-label="Chỉnh sửa danh mục @item.Name" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" onclick="del('@item.Id')" aria-label="Xóa danh mục @item.Name" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                            <td><strong>@Html.DisplayFor(modelItem => item.Name)</strong></td>
+                            <td><span class="text-muted small">/@Html.DisplayFor(modelItem => item.Slug)</span></td>
+                            <td><span class="badge bg-light text-dark border">@ParentCategory(item.ParentId)</span></td>
+                            <td>@Html.Raw(NorActive(item.Status))</td>
+                            <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                            <td>@Html.DisplayFor(modelItem => item.UpdatedAt)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -164,14 +180,21 @@
         $('#slug').val(result.toLowerCase());
     }
     function del(id) {
-        if (confirm("Bạn chắc chắn muốn xóa?")) {
+        if (confirm("Bạn chắc chắn muốn xóa danh mục này?")) {
             $.ajax({
                 url: "@Url.Action("Delete", "ManageCategory")",
                 type: "POST",
                 data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                success: function (response) {if (response.success) {    alert(response.message);    location.reload();} else {    alert(response.message);}
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
                 },
-                error: function (xhr, status, error) {alert(error);
+                error: function (xhr, status, error) {
+                    alert(error);
                 }
             });
         }
@@ -180,7 +203,11 @@
     {
         <text>
         $(document).ready(function () {
-            $('#@openModal').modal('show');
+            var modalEl = document.getElementById('@openModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                var modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
         });
         </text>
     }
