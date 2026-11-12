@@ -95,13 +95,13 @@
                             <td>
                                 @if (isSystem)
                                 {
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Vai trò hệ thống được bảo vệ, không thể xóa">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled aria-label="Vai trò hệ thống @item.Name được bảo vệ" title="Vai trò hệ thống được bảo vệ, không thể xóa">
                                         <i class="fas fa-lock"></i>
                                     </button>
                                 }
                                 else
                                 {
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="del('@item.Id', '@item.Name')" title="Xóa vai trò">
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="del('@item.Id', '@item.Name')" aria-label="Xóa vai trò @item.Name" title="Xóa vai trò">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 }

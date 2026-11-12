@@ -63,9 +63,9 @@
             <div class="sidebar-header">
                 <a href="/Admin/ManageOrder" class="sidebar-brand">
                     <img src="/Content/Layout/User/images/lalacoffee-logo-horizontal-dark.png" alt="LalaCoffee" class="sidebar-logo-img" />
-                    <span class="sidebar-brand-text">Admin<span>Panel</span></span>
+                    <span id="adminSidebarLabel" class="sidebar-brand-text">Admin<span>Panel</span></span>
                 </a>
-                <button type="button" class="btn-close btn-close-white d-lg-none ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white d-lg-none ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Đóng menu"></button>
             </div>
 
             <div class="sidebar-content">
@@ -178,10 +178,10 @@
             <!-- Topbar Header -->
             <header class="admin-topbar">
                 <div class="d-flex align-items-center gap-3">
-                    <button type="button" class="topbar-toggle d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" title="Mở menu">
+                    <button type="button" class="topbar-toggle d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Mở menu điều hướng" title="Mở menu">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <button type="button" class="topbar-toggle d-none d-lg-inline-flex" id="sidebarToggle" title="Thu gọn / Mở rộng sidebar">
+                    <button type="button" class="topbar-toggle d-none d-lg-inline-flex" id="sidebarToggle" aria-label="Thu gọn hoặc mở rộng thanh điều hướng bên" title="Thu gọn / Mở rộng sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="d-none d-md-flex align-items-center text-muted small">
@@ -236,7 +236,7 @@
             <!-- Footer -->
             <footer class="admin-footer d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div>
-                    <strong>Copyright &copy; 2026 <a href="/" class="text-decoration-none" style="color:var(--admin-brand-gold);">LalaCoffee</a>.</strong> Tất cả quyền được bảo lưu.
+                    <strong>Copyright &copy; 2026 <a href="/" class="text-decoration-none text-brand-gold">LalaCoffee</a>.</strong> Tất cả quyền được bảo lưu.
                 </div>
                 <div class="text-muted">
                     Phiên bản quản trị chuẩn Bootstrap 5.3

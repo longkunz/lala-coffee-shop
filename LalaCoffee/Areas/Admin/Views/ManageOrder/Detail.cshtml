@@ -105,7 +105,7 @@
                             <td>
                                 @if (product != null && !string.IsNullOrEmpty(product.Image))
                                 {
-                                    <img src="@product.Image" alt="@item.ProductName" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0;" />
+                                    <img src="@product.Image" alt="@item.ProductName" loading="lazy" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0;" />
                                 }
                                 else
                                 {

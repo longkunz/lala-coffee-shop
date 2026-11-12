@@ -128,19 +128,19 @@
                             <td>
                                 @if (isLastAdmin)
                                 {
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Quản trị viên cuối cùng trong hệ thống (không thể gỡ)">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled aria-label="Quản trị viên cuối cùng trong hệ thống, không thể gỡ" title="Quản trị viên cuối cùng trong hệ thống (không thể gỡ)">
                                         <i class="fas fa-lock"></i>
                                     </button>
                                 }
                                 else if (isSelf && isRoleAdmin)
                                 {
-                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', true, true, '@userName', '@roleName')" title="Cảnh báo: Tự gỡ quyền Admin">
+                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', true, true, '@userName', '@roleName')" aria-label="Tự gỡ quyền Admin của tài khoản bạn" title="Cảnh báo: Tự gỡ quyền Admin">
                                         <i class="fas fa-user-slash"></i>
                                     </button>
                                 }
                                 else
                                 {
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', @(isSelf ? "true" : "false"), @(isRoleAdmin ? "true" : "false"), '@userName', '@roleName')" title="Gỡ quyền">
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="delRole('@item.UserId', '@item.RoleId', @(isSelf ? "true" : "false"), @(isRoleAdmin ? "true" : "false"), '@userName', '@roleName')" aria-label="Gỡ vai trò @roleName của người dùng @userName" title="Gỡ quyền">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 }

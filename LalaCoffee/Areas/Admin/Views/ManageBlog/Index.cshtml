@@ -86,7 +86,7 @@
                         <label for="image" class="form-label fw-semibold">Hình ảnh bìa</label>
                         <div class="input-group mb-2">
                             <input type="text" class="form-control" name="image" id="image" placeholder="URL hình ảnh..." value="@(formValues.ContainsKey("image") ? formValues["image"] : "")">
-                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*" style="display:none;" />
+                            <input type="file" name="fileUpload" id="fileUpload" accept="image/*" aria-label="Tải lên tệp ảnh bìa bài viết" style="display:none;" />
                             <button type="button" id="btnUpload" class="btn btn-outline-secondary">
                                 <i class="fas fa-folder-open me-1"></i> Chọn tệp ảnh
                             </button>
@@ -155,8 +155,8 @@
                     "searchable": false,
                     "render": function (data, type, row) {
                         return '<div class="btn-group btn-group-sm" role="group">' +
-                               '<a href="' + row.editUrl + '" class="btn btn-outline-primary" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>' +
-                               '<button type="button" class="btn btn-outline-danger" onclick="del(\'' + data + '\')" title="Xóa"><i class="fas fa-trash"></i></button>' +
+                               '<a href="' + row.editUrl + '" class="btn btn-outline-primary" aria-label="Chỉnh sửa bài viết ' + (row.title || '') + '" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>' +
+                               '<button type="button" class="btn btn-outline-danger" onclick="del(\'' + data + '\')" aria-label="Xóa bài viết ' + (row.title || '') + '" title="Xóa"><i class="fas fa-trash"></i></button>' +
                                '</div>';
                     }
                 },
@@ -179,7 +179,7 @@
                     "searchable": false,
                     "render": function (data, type, row) {
                         if (data && data.length > 0) {
-                            return '<img src="' + data + '" alt="' + (row.title || '') + '" style="width:60px; height:42px; object-fit:cover; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1);" />';
+                            return '<img src="' + data + '" alt="' + (row.title || 'Ảnh bài viết') + '" loading="lazy" style="width:60px; height:42px; object-fit:cover; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1);" />';
                         }
                         return '<span class="text-muted small">Không có</span>';
                     }

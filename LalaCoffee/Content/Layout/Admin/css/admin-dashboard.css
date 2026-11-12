@@ -739,3 +739,49 @@ table.dataTable > thead .sorting_desc:after {
 .pl-0 { padding-left: 0 !important; }
 .form-group { margin-bottom: 1.15rem; }
 .card-tools { display: flex; align-items: center; gap: 6px; }
+
+/* Brand Utilities */
+.text-brand-gold {
+    color: var(--admin-brand-gold) !important;
+}
+
+/* ==========================================================================
+   Accessibility & Keyboard Navigation Enhancements
+   ========================================================================== */
+.nav-link-admin:focus-visible,
+.btn:focus-visible,
+.topbar-toggle:focus-visible,
+.dropdown-item:focus-visible {
+    outline: 2px solid var(--admin-brand-gold) !important;
+    outline-offset: 2px !important;
+}
+
+/* Intentional Reduced Motion Alternative */
+@media (prefers-reduced-motion: reduce) {
+    .admin-sidebar,
+    #main-wrapper,
+    .nav-link-admin,
+    .btn,
+    .menu-arrow,
+    .modal.fade .modal-dialog {
+        transition: opacity 0.08s ease, background-color 0.08s ease, border-color 0.08s ease !important;
+        transform: none !important;
+    }
+}
+
+/* ==========================================================================
+   Mobile Touch Target Optimizations
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    .table .btn-group {
+        display: inline-flex;
+        gap: 6px;
+    }
+    
+    .table .btn-group .btn {
+        min-width: 36px;
+        min-height: 36px;
+        border-radius: 6px !important;
+        padding: 0.4rem 0.65rem;
+    }
+}

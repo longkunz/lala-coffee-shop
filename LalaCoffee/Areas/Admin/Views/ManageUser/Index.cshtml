@@ -73,7 +73,7 @@
                                 <span class="small text-muted">@(string.IsNullOrWhiteSpace(item.Address) ? "-" : item.Address)</span>
                             </td>
                             <td class="text-center">
-                                <a href="/Admin/ManageUser/ResetPassword/@item.Id" class="btn btn-sm btn-outline-warning" title="Đổi mật khẩu cho người dùng này">
+                                <a href="/Admin/ManageUser/ResetPassword/@item.Id" class="btn btn-sm btn-outline-warning" aria-label="Đổi mật khẩu cho người dùng @item.UserName" title="Đổi mật khẩu cho người dùng này">
                                     <i class="fas fa-key me-1"></i> Đổi mật khẩu
                                 </a>
                             </td>

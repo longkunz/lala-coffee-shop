@@ -111,7 +111,7 @@
                         <div class="input-group mb-2">
                             <input type="text" class="form-control" name="image" id="image" placeholder="Đường dẫn ảnh hoặc tải lên file bên dưới..." value="@(formValues.ContainsKey("image") ? formValues["image"] : "")">
                         </div>
-                        <input type="file" name="fileUpload" id="fileUpload" accept="image/*" class="form-control">
+                        <input type="file" name="fileUpload" id="fileUpload" accept="image/*" class="form-control" aria-label="Tải lên tệp ảnh sản phẩm">
                     </div>
                     <div class="form-check form-switch mt-3">
                         <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @(isCreateActive ? "checked" : "")>
@@ -182,9 +182,9 @@
                     "orderable": false,
                     "searchable": false,
                     "render": function (data, type, row) {
-                        return '<div class="d-inline-flex gap-1">' +
-                               '<a href="' + row.editUrl + '" class="btn btn-outline-primary btn-sm" title="Chỉnh sửa"><i class="fa fa-edit"></i></a> ' +
-                               '<a href="#" class="btn btn-outline-danger btn-sm" onclick="del(\'' + data + '\')" title="Xóa"><i class="fa fa-trash"></i></a>' +
+                        return '<div class="btn-group btn-group-sm" role="group">' +
+                               '<a href="' + row.editUrl + '" class="btn btn-outline-primary" aria-label="Chỉnh sửa sản phẩm ' + (row.name || '') + '" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>' +
+                               '<button type="button" class="btn btn-outline-danger" onclick="del(\'' + data + '\')" aria-label="Xóa sản phẩm ' + (row.name || '') + '" title="Xóa"><i class="fas fa-trash"></i></button>' +
                                '</div>';
                     }
                 },
@@ -213,7 +213,7 @@
                     "searchable": false,
                     "render": function (data, type, row) {
                         if (data && data.length > 0) {
-                            return '<img src="' + data + '" alt="' + (row.name || '') + '" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0;" />';
+                            return '<img src="' + data + '" alt="' + (row.name || 'Sản phẩm') + '" loading="lazy" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0;" />';
                         }
                         return '<span class="text-muted small">Không có ảnh</span>';
                     }
