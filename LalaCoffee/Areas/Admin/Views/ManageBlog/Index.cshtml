@@ -303,4 +303,14 @@
             CKEDITOR.instances['Content'].updateElement();
         }
     });
+    if ($.fn.modal && $.fn.modal.Constructor && $.fn.modal.Constructor.prototype.enforceFocus) {
+        $.fn.modal.Constructor.prototype.enforceFocus = function () {
+            var $modal = this;
+            $(document).off('focusin.bs.modal').on('focusin.bs.modal', function (e) {
+                if ($modal.$element[0] !== e.target && !$modal.$element.has(e.target).length && !$(e.target).closest('.cke_dialog, .cke').length) {
+                    $modal.$element.trigger('focus');
+                }
+            });
+        };
+    }
 </script>

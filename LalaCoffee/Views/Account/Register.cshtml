@@ -6,55 +6,6 @@
     var fieldErrors = ViewBag.FieldErrors as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 }
 
-@*<h2>Tạo tài khoản mới</h2>
-
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-
-        <div class="form-horizontal">
-            <h4>Register</h4>
-            <hr />
-            @Html.Partial("ErrorsAlert")
-
-            <div class="form-group">
-                <label class="control-label col-md-2"><b>Tên đăng nhập</b></label>
-                <div class="col-md-10">
-                    <input class="form-control" type="text" name="UserName" id="UserName" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="control-label col-md-2"><b>Mật khẩu</b></label>
-                <div class="col-md-10">
-                    <input class="form-control" type="password" name="PasswordHash" id="PasswordHash" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="control-label col-md-2"><b>Địa chỉ Email</b></label>
-                <div class="col-md-10">
-                    <input class="form-control" type="email" name="Email" id="Email" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="control-label col-md-2"><b>Số điện thoại</b></label>
-                <div class="col-md-10">
-                    <input class="form-control" type="text" name="PhoneNumber" id="PhoneNumber" />
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Create" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
-    }
-
-    <div>
-        <a href="@Url.Action("Login", "Account")">Đăng nhập</a>
-    </div>*@
 <section class="account-auth-section">
     <div class="auth-box">
         <div class="auth-content">

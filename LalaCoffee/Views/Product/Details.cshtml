@@ -1,5 +1,4 @@
 @model LalaCoffee.Models.Product
-@*@using IEnumerable<LalaCoffee.Models.Category>*@
 
 @{
     Page.Title = Model.Name;
@@ -97,9 +96,7 @@
                                 <img src="@Model.Image" alt="@Model.Name">
                             </div>
                         </div>
-                        @*<div class="slider slider-nav slick-shop-thumb">
-                            <div><img src="@Model.Image" alt="@Model.Name"></div>
-                        </div>*@
+
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-12 wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="300ms">
                         <input type="hidden" id="productId" value="@Model.Id" />
@@ -156,16 +153,7 @@
                             <span class="plus-text" onclick="plusQuantity()" role="button" aria-label="Tăng số lượng"><i class="fa fa-plus"></i></span>
                         </div>
                         <a href="#" class="filter-btn btn-large" id="addToCart"><i class="fa fa-shopping-bag" aria-hidden="true"></i> Thêm vào giỏ hàng</a>
-                        @*<div class="share-tag">
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="tag-wrap">
-                        <h5>Danh mục</h5>
-                        <a href="#" class="tag-btn">@Model.Category</a>
-                    </div>
-                </div>
-            </div>
-        </div>*@
+
                     </div>
                 </div>
             </div>
