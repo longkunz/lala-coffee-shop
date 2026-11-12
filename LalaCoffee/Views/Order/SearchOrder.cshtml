@@ -2,6 +2,7 @@
 @{
     Page.Title = "Tra cứu đơn hàng";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
+    var orderDetails = ViewBag.OrderDetails as IEnumerable<LalaCoffee.Models.OrderDetail> ?? Enumerable.Empty<LalaCoffee.Models.OrderDetail>();
 }
 <main>
     <div class="main-part">
@@ -11,6 +12,7 @@
                     <h1>Tra cứu đơn hàng</h1>
                     <p>Theo dõi thông tin và trạng thái đơn hàng của bạn.</p>
                 </div>
+
                 @if (Model != null)
                 {
                     <div class="order-lookup-card">
@@ -57,14 +59,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var detail in ViewBag.OrderDetails)
+                                    @foreach (var detail in orderDetails)
                                     {
                                         <tr>
                                             <td>@detail.ProductName</td>
                                             <td class="order-lookup-number">@detail.Price.ToString("N0")đ</td>
                                             <td class="order-lookup-number">@detail.Quantity</td>
-                                            <td>@detail.PropertyProduct</td>
-                                            <td>@detail.OptionProduct</td>
+                                            <td>@(string.IsNullOrWhiteSpace(detail.PropertyProduct) ? "-" : detail.PropertyProduct)</td>
+                                            <td>@(string.IsNullOrWhiteSpace(detail.OptionProduct) ? "-" : detail.OptionProduct)</td>
                                             <td class="order-lookup-number"><strong>@detail.Total.ToString("N0")đ</strong></td>
                                         </tr>
                                     }
@@ -83,7 +85,7 @@
                 {
                     <div class="order-lookup-card order-lookup-empty">
                         <h2>Không tìm thấy đơn hàng</h2>
-                        <p>Mã đơn hàng không hợp lệ. Vui lòng kiểm tra lại mã đơn của bạn.</p>
+                        <p>Mã đơn hàng không hợp lệ hoặc không tồn tại. Vui lòng kiểm tra lại đường dẫn đơn hàng của bạn.</p>
                     </div>
                 }
                 <div class="order-lookup-actions">
