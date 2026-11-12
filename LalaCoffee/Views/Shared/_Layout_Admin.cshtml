@@ -158,10 +158,6 @@
                     </a>
 
                     <div class="nav-header">HỆ THỐNG</div>
-                    <a href="/" target="_blank" class="nav-link-admin">
-                        <i class="nav-icon fas fa-external-link-alt"></i>
-                        <span>Xem Website</span>
-                    </a>
                     <a href="/Account/Logout" class="nav-link-admin text-danger">
                         <i class="nav-icon fas fa-sign-out-alt text-danger"></i>
                         <span>Đăng xuất</span>
@@ -181,16 +177,11 @@
                     </button>
                     <div class="d-none d-md-flex align-items-center text-muted small">
                         <i class="fas fa-shield-alt text-warning me-2"></i>
-                        <span>Hệ thống Quản trị LalaCoffee</span>
+                        <span>LalaCoffee Management</span>
                     </div>
                 </div>
 
                 <div class="d-flex align-items-center gap-2 gap-sm-3">
-                    <a href="/" target="_blank" class="btn btn-sm btn-outline-secondary d-none d-sm-inline-flex align-items-center gap-2">
-                        <i class="fas fa-external-link-alt"></i>
-                        <span>Trang chủ Shop</span>
-                    </a>
-
                     <!-- User Account Dropdown -->
                     <div class="dropdown">
                         <button class="btn btn-sm btn-light border dropdown-toggle d-flex align-items-center gap-2 px-2 py-1" type="button" id="adminUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -200,16 +191,10 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="adminUserDropdown">
                             <li class="px-3 py-2 border-bottom">
                                 <div class="fw-bold text-dark">@User.Identity.GetUserName()</div>
-                                <small class="text-muted">Quản trị viên hệ thống</small>
                             </li>
                             <li>
                                 <a class="dropdown-item py-2" href="/Admin/ManageUser/ChangePassword">
                                     <i class="fas fa-key text-muted me-2"></i> Đổi mật khẩu
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item py-2" href="/" target="_blank">
-                                    <i class="fas fa-store text-muted me-2"></i> Ghé thăm cửa hàng
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider my-1"></li>
@@ -231,10 +216,7 @@
             <!-- Footer -->
             <footer class="admin-footer d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div>
-                    <strong>Copyright &copy; 2026 <a href="/" class="text-decoration-none text-brand-gold">LalaCoffee</a>.</strong> Tất cả quyền được bảo lưu.
-                </div>
-                <div class="text-muted">
-                    Phiên bản quản trị chuẩn Bootstrap 5.3
+                    <strong>Copyright &copy; 2026 <a href="/" class="text-decoration-none text-brand-gold">LalaCoffee</a>.</strong> 2026.
                 </div>
             </footer>
 

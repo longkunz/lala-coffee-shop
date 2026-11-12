@@ -11,6 +11,7 @@
 @{
     var fieldErrors = (ViewBag.FieldErrors ?? TempData["FieldErrors"]) as Dictionary<string, string> ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     string priceVal = ViewBag.PriceInput != null ? (string)ViewBag.PriceInput : Model.Price.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
+    var products = (ViewBag.Products ?? ViewBag.Product) as IEnumerable<LalaCoffee.Models.Product> ?? Enumerable.Empty<LalaCoffee.Models.Product>();
 }
 @Html.Partial("ErrorsAlert")
 
@@ -64,7 +65,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label" for="product_id">Sản phẩm áp dụng <span class="text-danger">*</span></label>
                             <select class="form-select @(fieldErrors.ContainsKey("product_id") ? "is-invalid" : "")" name="product_id" id="product_id">
-                                @foreach (var product in ViewBag.Products)
+                                @foreach (var product in products)
                                 {
                                     <option value="@product.Id" @(Model.Product != null && Model.Product.Id == product.Id ? "selected" : "")>@product.Name</option>
                                 }

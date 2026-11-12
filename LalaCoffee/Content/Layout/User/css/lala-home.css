@@ -287,10 +287,20 @@
     padding: 60px 0;
     background: #f5f3ee;
 }
-.lala-blog .feature-blog .owl-stage {
+.lala-blog .feature-blog .owl-carousel:not(.owl-loaded) {
+    display: flex !important;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.lala-blog .feature-blog .owl-carousel:not(.owl-loaded) .item {
+    flex: 1 1 320px;
+    max-width: 380px;
+}
+.lala-blog .feature-blog .owl-carousel.owl-loaded .owl-stage {
     display: flex;
 }
-.lala-blog .feature-blog .owl-item {
+.lala-blog .feature-blog .owl-carousel.owl-loaded .owl-item {
     display: flex;
     flex: 0 0 auto !important;
     height: auto;
