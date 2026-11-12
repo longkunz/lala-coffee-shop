@@ -148,9 +148,9 @@
                             </div>
                         }
                         <div class="price-textbox">
-                            <span class="minus-text" onclick="minusQuantity()" role="button" aria-label="Giảm số lượng"><i class="fa fa-minus"></i></span>
+                            <button type="button" class="minus-text" onclick="minusQuantity()" aria-label="Giảm số lượng"><i class="fa fa-minus" aria-hidden="true"></i></button>
                             <input type="text" id="quantity" name="quantity" value="1" pattern="[0-9]*" inputmode="numeric" aria-label="Số lượng">
-                            <span class="plus-text" onclick="plusQuantity()" role="button" aria-label="Tăng số lượng"><i class="fa fa-plus"></i></span>
+                            <button type="button" class="plus-text" onclick="plusQuantity()" aria-label="Tăng số lượng"><i class="fa fa-plus" aria-hidden="true"></i></button>
                         </div>
                         <a href="#" class="filter-btn btn-large" id="addToCart"><i class="fa fa-shopping-bag" aria-hidden="true"></i> Thêm vào giỏ hàng</a>
 

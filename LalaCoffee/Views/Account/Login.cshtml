@@ -62,7 +62,7 @@
                             <input type="checkbox" name="RememberMe" id="RememberMe" value="true" @(ViewBag.RememberMe == true ? "checked" : "")>
                             <span>Ghi nhớ đăng nhập</span>
                         </label>
-                        <a href="javascript:void(0);" onclick="alert('Vui lòng liên hệ quản trị viên hoặc hotline 08 7722 0202 để được hỗ trợ cấp lại mật khẩu.');" class="forgot-link">Quên mật khẩu?</a>
+                        <a href="javascript:void(0);" onclick="Swal.fire('Quên mật khẩu', 'Vui lòng liên hệ quản trị viên hoặc hotline 08 8888 8888 để được hỗ trợ cấp lại mật khẩu nhanh nhất.', 'info');" class="forgot-link">Quên mật khẩu?</a>
                     </div>
 
                     <button class="btn-auth-submit" type="submit" value="Login">

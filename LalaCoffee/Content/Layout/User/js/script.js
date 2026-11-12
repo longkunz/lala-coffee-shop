@@ -21,10 +21,10 @@
         // Show hide menu icon
         $(".menu-icon a").on('click', function (e) {
             if ($(this).hasClass('open')) {
-                $(this).removeClass('open');
+                $(this).removeClass('open').attr('aria-expanded', 'false');
                 $('.menu-nav-main').removeClass('open');
             } else {
-                $(this).addClass('open');
+                $(this).addClass('open').attr('aria-expanded', 'true');
                 $('.menu-nav-main').addClass('open');
             }
             return false;
@@ -268,31 +268,4 @@ $(document).on('ready', function () {
         google.maps.event.addDomListener(window, 'load', initialize);
     }
 
-    // Send mail to company
-    $(".alert-container").hide();
-    $("form[name='contact-form']").on('submit', function (e) {
-        e.preventDefault();
-        var url = "functions.php"; // the script where you handle the form input.
-        var thisForm = $(this);
-        var btnValue = $(this).find(".send_message").attr('value');
-        $(this).find(".send_message").attr('value', 'SUBMITTING...');
-        $(this).find(".send_message").attr('disabled', 'disabled');
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: thisForm.serialize(), // serializes the form's elements.
-            success: function (data) {
-                // show response from the php script.
-                $(".alert-container").html(data);
-                $(".alert-container").show();
-                thisForm.trigger("reset");
-                thisForm.find(".send_message").attr('value', btnValue);
-                thisForm.find(".send_message").removeAttr('disabled');
-                $(".alert .close").on('click', function () {
-                    $(".alert-container").hide();
-                });
-            }
-        });
-        return false; // avoid to execute the actual submit of the form.
-    });
 });

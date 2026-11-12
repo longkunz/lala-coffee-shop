@@ -23,6 +23,28 @@ Input, textarea : 14px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBoo
 Sidebar heading : 18px 14px/42px Source Sans Pro, Graviola-Regular, QuicksandBook, jey;
 -------------------------------------------------------------------*/
 
+/*------------------------------------------------------------------
+[Design Tokens - LalaCoffee]
+-------------------------------------------------------------------*/
+:root {
+    --color-primary: #8b572a;
+    --color-primary-dark: #5c3716;
+    --color-primary-light: #c19942;
+    --color-accent: #e4b95b;
+    --color-surface: #faf7f2;
+    --color-surface-white: #ffffff;
+    --color-surface-dark: #20202f;
+    --color-text: #2b1e16;
+    --color-text-muted: #5f5b57;
+    --color-border: #e8dfd5;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-pill: 9999px;
+    --font-heading: 'Montserrat', 'Quicksand', sans-serif;
+    --font-body: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 /* Font Family Reset Here... */
 
 @font-face {
@@ -3567,7 +3589,8 @@ textarea {
 }
 
 .shop-main-list h5 strong {
-    color: #c7a17a;
+    color: var(--color-primary, #8b572a);
+    font-size: 17px;
 }
 
 .shop-page .gallery-pagination {
@@ -3968,8 +3991,8 @@ textarea {
 }
 
 .price-textbox {
-    display: inline-block;
-    width: auto;
+    display: inline-flex;
+    align-items: center;
     position: relative;
     max-width: 170px;
     text-align: center;
@@ -3980,6 +4003,12 @@ textarea {
     text-align: center;
     color: #372727;
     margin: 0px;
+    padding: 0 40px;
+    height: 48px;
+    border: 1px solid var(--color-border, #e8dfd5);
+    border-radius: var(--radius-md, 8px);
+    font-weight: 700;
+    width: 100%;
 }
 
 .price-textbox input::-webkit-input-placeholder {
@@ -4014,31 +4043,54 @@ textarea {
     margin-left: 18px;
 }
 
-.minus-text {
+.minus-text,
+.plus-text,
+button.minus-text,
+button.plus-text {
     position: absolute;
-    top: 15px;
-    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     z-index: 2;
     user-select: none;
     -webkit-user-select: none;
-    transition: color 0.2s ease;
+    border: none;
+    background: transparent;
+    color: #372727;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    padding: 0;
 }
 
-.plus-text {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    cursor: pointer;
-    z-index: 2;
-    user-select: none;
-    -webkit-user-select: none;
-    transition: color 0.2s ease;
+.minus-text,
+button.minus-text {
+    left: 4px;
+}
+
+.plus-text,
+button.plus-text {
+    right: 4px;
 }
 
 .minus-text:hover,
-.plus-text:hover {
-    color: #c66d55;
+.plus-text:hover,
+button.minus-text:hover,
+button.plus-text:hover {
+    color: var(--color-primary, #8b572a);
+    background: rgba(139, 87, 42, 0.08);
+}
+
+.minus-text:focus-visible,
+.plus-text:focus-visible,
+button.minus-text:focus-visible,
+button.plus-text:focus-visible {
+    outline: 2px solid var(--color-primary, #8b572a);
+    outline-offset: 2px;
 }
 
 /* General Tab Style */
@@ -5229,23 +5281,34 @@ table.shop-cart-table .shop-cart-close {
     border-radius: 17px;
 }
 button.remove {
-    display: block;
-    font-size: 1.5em;
-    height: 1em;
-    width: 1em;
-    text-align: center;
-    line-height: 1;
-    border-radius: 100%;
-    color: red !important;
-    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #c93b2b !important;
+    background: #fff;
+    border: 1px solid #f0d0cb;
+    font-size: 20px;
     font-weight: 700;
-    border: 0
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
 }
 
-    button.remove:hover {
-        color: #fff !important;
-        background: red
-    }
+button.remove:hover {
+    color: #fff !important;
+    background: #c93b2b;
+    border-color: #c93b2b;
+    transform: scale(1.05);
+}
+
+button.remove:focus-visible {
+    outline: 2px solid #c93b2b;
+    outline-offset: 2px;
+}
 /* Order lookup */
 .order-lookup { color: #4b3930; }
 .order-lookup-heading { margin-bottom: 32px; text-align: center; }
@@ -5328,3 +5391,40 @@ button.remove {
         background-color: #c19942;
         color:white;
     }
+
+/* ── Accessibility & Focus Rings ── */
+:focus-visible {
+    outline: 2px solid var(--color-primary, #8b572a);
+    outline-offset: 2px;
+}
+
+/* ── Touch Target Defaults ── */
+.menu-icon a.hambarger {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.top-arrow {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* ── Motion Sensitivity (prefers-reduced-motion) ── */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .wow {
+        visibility: visible !important;
+        animation: none !important;
+    }
+}
+

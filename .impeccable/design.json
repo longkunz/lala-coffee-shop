@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T09:46:00Z",
+  "title": "Design System: LalaCoffee",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Deep Roast Coffee", "canonical": "#8b572a", "tonalRamp": ["#311b0b", "#492b12", "#633c1a", "#7e4d22", "#8b572a", "#ab723f", "#c69363", "#e3cbba"] },
+      "primary-light": { "role": "secondary", "displayName": "Amber Gold", "canonical": "#c19942", "tonalRamp": ["#42320e", "#614a16", "#82631e", "#a27c28", "#c19942", "#cfad5e", "#dec281", "#faeed4"] },
+      "surface-cream": { "role": "neutral", "displayName": "Oat Cream", "canonical": "#faf7f2", "tonalRamp": ["#1c1a17", "#38342e", "#565046", "#777063", "#9b9383", "#c1baa9", "#e2ded4", "#faf7f2"] },
+      "text-primary": { "role": "neutral", "displayName": "Charcoal Roast", "canonical": "#2b1e16", "tonalRamp": ["#120c08", "#1c130d", "#2b1e16", "#453226", "#624838", "#83624e", "#a8856e", "#d8c4b6"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Hero Title)", "purpose": "Tiêu đề trang chủ và banner chính" },
+      "headline": { "displayName": "Headline (Section Title)", "purpose": "Tiêu đề các phân mục sản phẩm" },
+      "body": { "displayName": "Body (Content & Descriptions)", "purpose": "Văn bản mô tả, thực đơn, bài viết" }
+    },
+    "shadows": [
+      { "name": "card-rest", "value": "0 2px 12px rgba(43, 30, 22, 0.06)", "purpose": "Trạng thái nghỉ của thẻ sản phẩm" },
+      { "name": "card-hover", "value": "0 10px 28px rgba(43, 30, 22, 0.12)", "purpose": "Trạng thái nhấc nhẹ khi di chuột" }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Chuyển động tự nhiên, không dùng bounce/wobble" }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "575px" },
+      { "name": "tablet", "value": "768px" },
+      { "name": "desktop", "value": "992px" },
+      { "name": "wide", "value": "1200px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Nút kêu gọi hành động chính (Đặt hàng, Xem menu)",
+      "html": "<button class=\"ds-btn-primary\">XEM MENU NGAY</button>",
+      "css": ".ds-btn-primary { background: #8b572a; color: #fff; padding: 12px 28px; font-weight: 700; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; transition: all 0.25s ease; letter-spacing: 0.5px; } .ds-btn-primary:hover { background: #5c3716; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(139, 87, 42, 0.3); }"
+    },
+    {
+      "name": "Quantity Stepper Button",
+      "kind": "button",
+      "refersTo": "stepper-btn",
+      "description": "Nút tăng giảm số lượng món trên thẻ chi tiết và giỏ hàng",
+      "html": "<button class=\"ds-btn-qty\" aria-label=\"Tăng số lượng\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><line x1=\"12\" y1=\"5\" x2=\"12\" y2=\"19\"/><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/></svg></button>",
+      "css": ".ds-btn-qty { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid #d4c2b0; background: #fff; color: #5c3716; cursor: pointer; transition: all 0.2s; } .ds-btn-qty:hover { background: #faf7f2; border-color: #8b572a; color: #8b572a; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Roasted Sanctuary — Chốn Thư Thái Cà Phê Mộc",
+    "overview": "Hệ thống thiết kế của LalaCoffee phản ánh tinh thần mộc mạc, tĩnh tại và chân thực từ những hạt cà phê rang xay nguyên bản của vùng đất đỏ bazan. Trải nghiệm thị giác kết hợp giữa bề mặt sáng màu kem yến mạch, sắc gỗ ấm nồng và điểm xuyết ánh vàng mật ong hổ phách.",
+    "keyCharacteristics": [
+      "Tông màu cà phê rang mộc tự nhiên, tránh màu xám nguội.",
+      "Tương phản thị giác nghiêm ngặt theo chuẩn WCAG AA.",
+      "Vùng cảm ứng rộng rãi (tối thiểu 44px) hỗ trợ tối đa người dùng di động."
+    ],
+    "rules": [
+      { "name": "The 4.5:1 Contrast Rule", "body": "Không bao giờ dùng màu vàng kim #e4b95b làm màu chữ trên nền trắng. Giá tiền phải dùng #8b572a.", "section": "colors" }
+    ],
+    "dos": [
+      "Do duy trì độ tương phản chữ luôn ≥ 4.5:1 so với nền trực tiếp.",
+      "Do hỗ trợ đầy đủ phím Tab và phím Enter/Space cho mọi nút bấm."
+    ],
+    "donts": [
+      "Don't đưa bảng quản trị hay mã scaffolding vào các trang khách hàng.",
+      "Don't sử dụng hộp thoại alert() của trình duyệt cho thông báo nghiệp vụ."
+    ]
+  }
+}

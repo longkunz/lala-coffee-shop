@@ -123,9 +123,9 @@
                                         <th>SỐ LƯỢNG</th>
                                         <td>
                                             <div class="price-textbox">
-                                                <span class="minus-text" onclick="minusQuantity('@item.Id')"><i class="fa fa-minus"></i></span>
+                                                <button type="button" class="minus-text" onclick="minusQuantity('@item.Id')" aria-label="Giảm số lượng @item.ProductName"><i class="fa fa-minus" aria-hidden="true"></i></button>
                                                 <input type="text" inputmode="numeric" id="quantity_@item.Id" value="@item.Quantity" data-quantity="@item.Quantity" onchange="updateCart('@item.Id')" pattern="[0-9]+" aria-label="Số lượng @item.ProductName">
-                                                <span class="plus-text" onclick="plusQuantity('@item.Id')"><i class="fa fa-plus"></i></span>
+                                                <button type="button" class="plus-text" onclick="plusQuantity('@item.Id')" aria-label="Tăng số lượng @item.ProductName"><i class="fa fa-plus" aria-hidden="true"></i></button>
                                             </div>
                                         </td>
                                         <th>TỔNG</th>
@@ -133,7 +133,7 @@
                                             @(((item.Price + (item.PropertyProduct != null ? item.PropertyProduct.Price : 0m) + (item.Options != null ? item.Options.Sum(option => option.Price) : 0m)) * item.Quantity).ToString("N0"))đ
                                         </td>
                                         <td class="product-remove">
-                                            <button class="remove" data-item-cart-id="@item.Id">×</button>
+                                            <button class="remove" data-item-cart-id="@item.Id" aria-label="Xóa @item.ProductName khỏi giỏ hàng">×</button>
                                         </td>
                                     </tr>
                                     }
