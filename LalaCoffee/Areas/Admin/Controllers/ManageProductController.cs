@@ -138,8 +138,45 @@ namespace LalaCoffee.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
+		public ActionResult ProcessUpload(System.Web.HttpPostedFileBase file)
+		{
+			if (file == null || file.ContentLength <= 0)
+			{
+				return new HttpStatusCodeResult(400, "Vui lòng chọn file tải lên.");
+			}
+
+			string rawFileName = System.IO.Path.GetFileName(file.FileName);
+			if (!Helpers.ImageUploadValidator.IsValidExtension(rawFileName))
+			{
+				return new HttpStatusCodeResult(400, "Định dạng file không được phép. Chỉ chấp nhận JPG, JPEG, PNG, WEBP, GIF.");
+			}
+
+			if (!Helpers.ImageUploadValidator.IsValidMimeType(file.ContentType))
+			{
+				return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, "Định dạng MIME không hợp lệ.");
+			}
+
+			if (!Helpers.ImageUploadValidator.IsValidSize(file.ContentLength))
+			{
+				return new HttpStatusCodeResult(400, "Dung lượng file vượt quá giới hạn cho phép (tối đa 5MB).");
+			}
+
+			string uploadDir = Server.MapPath("~/Content/images/");
+			if (!System.IO.Directory.Exists(uploadDir))
+			{
+				System.IO.Directory.CreateDirectory(uploadDir);
+			}
+
+			string safeFileName = Helpers.ImageUploadValidator.GenerateSafeFileName(rawFileName);
+			string fullPath = System.IO.Path.Combine(uploadDir, safeFileName);
+			file.SaveAs(fullPath);
+
+			return Content("/Content/images/" + safeFileName);
+		}
+
+		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(FormCollection formCollection, Product product)
+		public ActionResult Create(FormCollection formCollection, Product product, System.Web.HttpPostedFileBase fileUpload)
 		{
 			var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			var generalErrors = new List<string>();
@@ -149,9 +186,39 @@ namespace LalaCoffee.Areas.Admin.Controllers
 			var slug = formCollection["slug"]?.Trim();
 			var priceStr = formCollection["price"]?.Trim();
 			var description = formCollection["description"]?.Trim();
-			var image = formCollection["image"];
+			var image = formCollection["image"]?.Trim();
 			var status = formCollection["status"] == "1" ? "1" : "0";
 			var categoryIdStr = formCollection["category_id"];
+
+			if (fileUpload != null && fileUpload.ContentLength > 0)
+			{
+				string rawFileName = System.IO.Path.GetFileName(fileUpload.FileName);
+				if (!Helpers.ImageUploadValidator.IsValidExtension(rawFileName))
+				{
+					fieldErrors["image"] = "Định dạng file không được phép. Chỉ chấp nhận JPG, JPEG, PNG, WEBP, GIF.";
+				}
+				else if (!Helpers.ImageUploadValidator.IsValidMimeType(fileUpload.ContentType))
+				{
+					fieldErrors["image"] = "Định dạng MIME không hợp lệ.";
+				}
+				else if (!Helpers.ImageUploadValidator.IsValidSize(fileUpload.ContentLength))
+				{
+					fieldErrors["image"] = "Dung lượng file vượt quá giới hạn cho phép (tối đa 5MB).";
+				}
+				else
+				{
+					string uploadDir = Server.MapPath("~/Content/images/");
+					if (!System.IO.Directory.Exists(uploadDir))
+					{
+						System.IO.Directory.CreateDirectory(uploadDir);
+					}
+					string safeFileName = Helpers.ImageUploadValidator.GenerateSafeFileName(rawFileName);
+					string fullPath = System.IO.Path.Combine(uploadDir, safeFileName);
+					fileUpload.SaveAs(fullPath);
+					image = "/Content/images/" + safeFileName;
+					formValues["image"] = image;
+				}
+			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
@@ -234,7 +301,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(FormCollection formCollection)
+		public ActionResult Edit(FormCollection formCollection, System.Web.HttpPostedFileBase fileUpload)
 		{
 			var fieldErrors = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			var generalErrors = new List<string>();
@@ -244,7 +311,7 @@ namespace LalaCoffee.Areas.Admin.Controllers
 			var slug = formCollection["slug"]?.Trim();
 			var priceStr = formCollection["price"]?.Trim();
 			var description = formCollection["description"]?.Trim();
-			var image = formCollection["image"];
+			var image = formCollection["image"]?.Trim();
 			var status = formCollection["status"] == "1" ? "1" : "0";
 			var categoryIdStr = formCollection["category_id"];
 
@@ -260,6 +327,35 @@ namespace LalaCoffee.Areas.Admin.Controllers
 			{
 				TempData["Errors"] = new List<string> { "Không tìm thấy sản phẩm cần chỉnh sửa." };
 				return RedirectToAction("Index", "ManageProduct");
+			}
+
+			if (fileUpload != null && fileUpload.ContentLength > 0)
+			{
+				string rawFileName = System.IO.Path.GetFileName(fileUpload.FileName);
+				if (!Helpers.ImageUploadValidator.IsValidExtension(rawFileName))
+				{
+					fieldErrors["image"] = "Định dạng file không được phép. Chỉ chấp nhận JPG, JPEG, PNG, WEBP, GIF.";
+				}
+				else if (!Helpers.ImageUploadValidator.IsValidMimeType(fileUpload.ContentType))
+				{
+					fieldErrors["image"] = "Định dạng MIME không hợp lệ.";
+				}
+				else if (!Helpers.ImageUploadValidator.IsValidSize(fileUpload.ContentLength))
+				{
+					fieldErrors["image"] = "Dung lượng file vượt quá giới hạn cho phép (tối đa 5MB).";
+				}
+				else
+				{
+					string uploadDir = Server.MapPath("~/Content/images/");
+					if (!System.IO.Directory.Exists(uploadDir))
+					{
+						System.IO.Directory.CreateDirectory(uploadDir);
+					}
+					string safeFileName = Helpers.ImageUploadValidator.GenerateSafeFileName(rawFileName);
+					string fullPath = System.IO.Path.Combine(uploadDir, safeFileName);
+					fileUpload.SaveAs(fullPath);
+					image = "/Content/images/" + safeFileName;
+				}
 			}
 
 			product.Name = name;
