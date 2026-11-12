@@ -161,7 +161,7 @@ namespace LalaCoffee.Controllers
 				{
 					SendEmail(model.Email, order.Name, order.Code);
 				}
-				return RedirectToAction("CompleteOrder", "Order");
+				return RedirectToAction("CompleteOrder", "Order", new { id = order.Code });
 			}
 			catch (Exception ex)
 			{
@@ -189,37 +189,43 @@ namespace LalaCoffee.Controllers
 			return CheckOut(model);
 		}
 
+		[HttpGet]
 		[Route("Order/SearchOrder")]
-		public ActionResult SearchOrder()
+		[Route("Order/SearchOrder/{id}")]
+		public ActionResult SearchOrder(string id = null, string orderCode = null, string code = null)
 		{
-			return View();
-		}
+			string lookupCode = (!string.IsNullOrWhiteSpace(id) ? id :
+				(!string.IsNullOrWhiteSpace(orderCode) ? orderCode :
+				(!string.IsNullOrWhiteSpace(code) ? code :
+				Session?["orderCode"] as string)))?.Trim();
 
-		[Route("Order/SearchOrder/{orderCode}")]
-		public ActionResult SearchOrder(string orderCode)
-		{
-			if (string.IsNullOrEmpty(orderCode))
+			ViewBag.SearchCode = lookupCode;
+
+			if (!string.IsNullOrEmpty(lookupCode))
 			{
-				return View();
-			}
-
-			var order = _orderService.GetOrderByCode(orderCode);
-
-			if (order != null)
-			{
-				if (Session != null)
+				var order = _orderService.GetOrderByCode(lookupCode);
+				if (order == null && lookupCode.Any(char.IsLower))
 				{
-					Session["orderCode"] = null;
+					order = _orderService.GetOrderByCode(lookupCode.ToUpperInvariant());
 				}
-				var orderDetails = _orderService.GetOrderDetails(orderCode);
-				ViewBag.OrderDetails = orderDetails;
-				return View(order);
+
+				if (order != null)
+				{
+					var orderDetails = _orderService.GetOrderDetails(order.Code);
+					ViewBag.OrderDetails = orderDetails ?? new List<OrderDetail>();
+					ViewBag.SearchCode = order.Code;
+					return View(order);
+				}
 			}
+
+			ViewBag.OrderDetails = new List<OrderDetail>();
 			return View();
 		}
 
-		public ActionResult CompleteOrder()
+		public ActionResult CompleteOrder(string id = null)
 		{
+			string code = (!string.IsNullOrWhiteSpace(id) ? id : Session?["orderCode"] as string)?.Trim();
+			ViewBag.OrderCode = code;
 			return View();
 		}
 	}

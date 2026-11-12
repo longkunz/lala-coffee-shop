@@ -2,6 +2,7 @@
 @{
     Page.Title = "Đặt hàng thành công";
     Layout = "~/Views/Shared/_Layout_User.cshtml";
+    string orderCode = (ViewBag.OrderCode as string) ?? (Session?["orderCode"] as string);
 }
 
 <main>
@@ -16,10 +17,23 @@
                         <li class="active">Order Complete</li>
                     </ul>
                 </div>
-                <div class="text-center">
-                    <p>Bạn đã đặt hàng thành công</p>
+                <div class="text-center py-4">
+                    <h3 class="mb-3 text-success">
+                        <i class="fa fa-check-circle me-2"></i>Bạn đã đặt hàng thành công!
+                    </h3>
                     <p>Cảm ơn bạn vì giữa muôn vàn sự lựa chọn đã chọn <b>LalaCoffee</b></p>
-                    <p>Xem chi tiết đơn đặt hàng của bạn <a href="@Url.Action("SearchOrder", "Order", new { id = Session["orderCode"] })">tại đây</a></p>
+                    @if (!string.IsNullOrWhiteSpace(orderCode))
+                    {
+                        <div class="my-3 p-3 bg-white d-inline-block rounded shadow-sm border">
+                            <p class="mb-1 text-muted small">Mã đơn hàng của bạn:</p>
+                            <h4 class="text-primary font-monospace fw-bold mb-0">@orderCode</h4>
+                        </div>
+                        <p class="mt-2">Xem chi tiết đơn đặt hàng của bạn <a href="@Url.Action("SearchOrder", "Order", new { id = orderCode })" class="fw-bold text-decoration-underline text-primary">tại đây</a></p>
+                    }
+                    else
+                    {
+                        <p class="mt-2">Xem chi tiết đơn đặt hàng của bạn <a href="@Url.Action("SearchOrder", "Order")" class="fw-bold text-decoration-underline text-primary">tại đây</a></p>
+                    }
                 </div>
             </div>
         </section>
