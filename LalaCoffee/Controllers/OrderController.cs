@@ -40,6 +40,7 @@ namespace LalaCoffee.Controllers
 
 		public ActionResult CheckOut()
 		{
+			TempData.Remove("Errors");
 			var cart = _cartService.GetCartItems();
 			if (cart.Count < 1)
 			{
@@ -138,7 +139,6 @@ namespace LalaCoffee.Controllers
 
 				ViewBag.Carts = cart;
 				ViewBag.Errors = errorList;
-				TempData["Errors"] = errorList;
 				return View(model);
 			}
 
@@ -168,7 +168,6 @@ namespace LalaCoffee.Controllers
 				var errorList = new List<string> { ex.Message };
 				ViewBag.Carts = cart;
 				ViewBag.Errors = errorList;
-				TempData["Errors"] = errorList;
 				return View(model);
 			}
 		}

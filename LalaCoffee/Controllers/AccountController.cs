@@ -138,6 +138,7 @@ namespace LalaCoffee.Controllers
 						var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
 						authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
 
+						TempData.Remove("Errors");
 						return RedirectToAction("Index", "Home");
 					}
 					else
@@ -158,7 +159,6 @@ namespace LalaCoffee.Controllers
 			ViewBag.FieldErrors = fieldErrors;
 			ViewBag.GeneralErrors = generalErrors;
 			ViewBag.Errors = generalErrors;
-			TempData["Errors"] = generalErrors;
 			return View();
 		}
 		public ActionResult Login()
@@ -208,6 +208,7 @@ namespace LalaCoffee.Controllers
 						var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
 
 						authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = rememberMe }, userIdentity);
+						TempData.Remove("Errors");
 						return RedirectToAction("Index", "Home");
 					}
 					else
@@ -225,7 +226,6 @@ namespace LalaCoffee.Controllers
 			ViewBag.FieldErrors = fieldErrors;
 			ViewBag.GeneralErrors = generalErrors;
 			ViewBag.Errors = generalErrors;
-			TempData["Errors"] = generalErrors;
 			return View();
 		}
 
@@ -235,6 +235,7 @@ namespace LalaCoffee.Controllers
 		{
 			var authenticationManager = HttpContext.GetOwinContext().Authentication;
 			authenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+			TempData.Remove("Errors");
 			return RedirectToAction("Index", "Home");
 		}
 
@@ -242,6 +243,7 @@ namespace LalaCoffee.Controllers
 		{
 			var AuthenticationManager = HttpContext.GetOwinContext().Authentication;
 			AuthenticationManager.SignOut();
+			TempData.Remove("Errors");
 			return RedirectToAction("Index", "Home");
 		}
 
