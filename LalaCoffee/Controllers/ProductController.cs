@@ -38,12 +38,7 @@ namespace LalaCoffee.Controllers
 
 		public ActionResult Index()
 		{
-			var p = GetAll().ToList();
-			var c = _categoryRepository.GetAll().ToList();
-			ViewBag.Categories = c;
-			ViewBag.PropertyProducts = _propertyProductRepositoy.GetAll().ToList();
-			ViewBag.OptionProducts = _optionProductRepositoy.GetAll().ToList();
-			return View(p);
+			return RedirectToAction("Collection", "Category", new { Slug = "All" });
 		}
 
 		[Route("Product/{Slug}")]

@@ -55,7 +55,20 @@ namespace LalaCoffee.Controllers
 		}
 		public ActionResult Contact()
 		{
-			return View();
+			return View(new ContactViewModel());
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Contact(ContactViewModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View(model);
+			}
+
+			TempData["SuccessMessage"] = "Cảm ơn bạn đã liên hệ với LalaCoffee! Chúng tôi đã nhận được lời nhắn và sẽ phản hồi qua email/số điện thoại trong thời gian sớm nhất.";
+			return RedirectToAction("Contact");
 		}
 		public ActionResult About()
 		{

@@ -16,20 +16,13 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..700;1,300..700&family=Pacifico&family=Quicksand:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
-    <link href="~/Content/Layout/User/css/revolution-plugin/extralayers.css" rel="stylesheet">
-    <link href="~/Content/Layout/User/css/revolution-plugin/settings.css" rel="stylesheet">
     <link href="~/Content/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="~/Content/Layout/User/css/bootstrap-plugin/bootstrap-slider.css" rel="stylesheet">
     <link href="~/Content/Layout/User/css/animation/animate.min.css" rel="stylesheet">
     <link href="~/Content/Layout/User/css/owl-carousel/owl.carousel.css" rel="stylesheet">
     <link href="~/Content/Layout/User/css/owl-carousel/owl.theme.default.css" rel="stylesheet">
-
     <link href="~/Content/Layout/User/css/light-box/simplelightbox.css" rel="stylesheet">
-    <link href="~/Content/Layout/User/css/light-box/magnific-popup.css" rel="stylesheet">
-    <link href="~/Content/Layout/User/css/scroll-bar/jquery.mCustomScrollbar.css" rel="stylesheet">
     <link href="~/Content/Layout/User/css/form-field/jquery.formstyler.css" rel="stylesheet">
     <link href="~/Content/Layout/User/css/slick-slider/slick-theme.css" rel="stylesheet">
 
@@ -64,7 +57,7 @@
                                 </a>
                             </div>
                             <div class="menu-top-part">
-                                <div class="menu-nav-main">
+                                <div class="menu-nav-main" id="main-mobile-menu">
                                     <ul>
                                         <li>
                                             <a href="@Url.Action("Index","Home")">Trang Chủ</a>
@@ -152,7 +145,7 @@
                                 </a>
 
                                 <div class="menu-icon">
-                                    <a href="#" class="hambarger">
+                                    <a href="#" class="hambarger" role="button" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-mobile-menu">
                                         <span class="bar-1"></span>
                                         <span class="bar-2"></span>
                                         <span class="bar-3"></span>
@@ -222,9 +215,9 @@
                                     <li><a href="#" title="YouTube" style="display: inline-block; width: 36px; height: 36px; line-height: 36px; text-align: center; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; transition: all 0.3s;"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></li>
                                 </ul>
                                 <div class="footer-newsletter">
-                                    <form onsubmit="event.preventDefault(); alert('Cảm ơn bạn đã đăng ký nhận tin từ LalaCoffee!');">
+                                    <form onsubmit="event.preventDefault(); Swal.fire('Cảm ơn bạn!', 'Cảm ơn bạn đã đăng ký nhận tin từ LalaCoffee. Chúng tôi sẽ gửi ưu đãi sớm nhất tới email của bạn!', 'success');">
                                         <div class="input-group" style="max-width: 320px;">
-                                            <input type="email" class="form-control" placeholder="Nhập email của bạn..." required style="height: 38px; font-size: 13px; background: rgba(255,255,255,0.9); border: none; border-radius: 20px 0 0 20px; padding-left: 15px; color: #333;" />
+                                            <input type="email" class="form-control" placeholder="Nhập email của bạn..." required aria-label="Email nhận bản tin" style="height: 38px; font-size: 13px; background: rgba(255,255,255,0.9); border: none; border-radius: 20px 0 0 20px; padding-left: 15px; color: #333;" />
                                             <button type="submit" class="btn" style="height: 38px; background: #c19942; color: #fff; border: none; border-radius: 0 20px 20px 0; padding: 0 16px; font-weight: 600;">Gửi</button>
                                         </div>
                                     </form>
@@ -243,23 +236,18 @@
 
     </div>
 
-    <a href="#" class="top-arrow"></a>
+    <!-- End Wrapper Part -->
+    <!-- Back To Top Arrow -->
+
+    <a href="#" class="top-arrow" role="button" aria-label="Cuộn lên đầu trang" title="Lên đầu trang"></a>
 
     <script src="~/Content/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/Content/Layout/User/js/bootstrap/bootstrap-slider.js"></script>
-    <script src="~/Content/Layout/User/js/revolution-plugin/jquery.themepunch.plugins.min.js"></script>
-    <script src="~/Content/Layout/User/js/revolution-plugin/jquery.themepunch.revolution.min.js"></script>
     <script src="~/Content/Layout/User/js/parallax-stellar/jquery.stellar.js"></script>
     <script src="~/Content/Layout/User/js/animation/wow.min.js"></script>
     <script src="~/Content/Layout/User/js/owl-carousel/owl.carousel.min.js"></script>
     <script src="~/Content/Layout/User/js/light-box/simple-lightbox.min.js"></script>
-    <script src="~/Content/Layout/User/js/light-box/jquery.magnific-popup.min.js"></script>
-    <script src="~/Content/Layout/User/js/scroll-bar/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script src="~/Content/Layout/User/js/masonry/isotop.js"></script>
-    <script src="~/Content/Layout/User/js/masonry/packery-mode.pkgd.min.js"></script>
     <script src="~/Content/Layout/User/js/form-field/jquery.formstyler.min.js"></script>
     <script src="~/Content/Layout/User/js/slick-slider/slick.min.js"></script>
-    <script src="~/Content/Layout/User/js/progress-circle/waterbubble.min.js"></script>
     <script src="~/Content/Layout/User/js/app.js"></script>
     <script src="~/Content/Layout/User/js/script.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

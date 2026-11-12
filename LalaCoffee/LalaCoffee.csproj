@@ -223,6 +223,7 @@
     <Compile Include="Models\OrderStatus.cs" />
     <Compile Include="Models\DataTableModels.cs" />
     <Compile Include="Models\CheckOutViewModel.cs" />
+    <Compile Include="Models\ContactViewModel.cs" />
     <Compile Include="Models\UserProfileViewModel.cs" />
     <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\Product.cs" />
@@ -2219,6 +2220,7 @@
     <Content Include="Content\Layout\User\css\revolution-plugin\settings.css" />
     <Content Include="Content\Layout\User\css\scroll-bar\jquery.mCustomScrollbar.css" />
     <Content Include="Content\Layout\User\css\slick-slider\slick-theme.css" />
+    <Content Include="Content\Layout\User\css\lala-home.css" />
     <Content Include="Content\Layout\User\css\style.css" />
     <Content Include="Content\Layout\User\css\sweetalert2\sweetalert2.min.css" />
     <Content Include="Content\Layout\User\fonts\Graviola-Regular.svg" />
