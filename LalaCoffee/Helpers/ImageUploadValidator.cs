@@ -20,6 +20,7 @@ namespace LalaCoffee.Helpers
 		public static readonly HashSet<string> AllowedMimeTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 		{
 			"image/jpeg",
+			"image/jpg",
 			"image/pjpeg",
 			"image/png",
 			"image/x-png",
@@ -50,7 +51,8 @@ namespace LalaCoffee.Helpers
 				return false;
 			}
 
-			return AllowedMimeTypes.Contains(contentType.Trim());
+			string mime = contentType.Split(';')[0].Trim();
+			return AllowedMimeTypes.Contains(mime);
 		}
 
 		public static bool IsValidSize(long contentLength)

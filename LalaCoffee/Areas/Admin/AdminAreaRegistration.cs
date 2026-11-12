@@ -17,7 +17,7 @@ namespace LalaCoffee.Areas.Admin
 			context.MapRoute(
 				"Admin_default",
 				"Admin/{controller}/{action}/{id}",
-				new { action = "Index", id = UrlParameter.Optional }
+				new { controller = "ManageOrder", action = "Index", id = UrlParameter.Optional }
 			);
 		}
 	}

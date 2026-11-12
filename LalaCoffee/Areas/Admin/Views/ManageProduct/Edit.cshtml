@@ -39,7 +39,7 @@
                     <i class="fas fa-edit me-2"></i> Thông tin sản phẩm: <strong>@Model.Name</strong>
                 </h5>
             </div>
-            @using (Html.BeginForm())
+            @using (Html.BeginForm("Edit", "ManageProduct", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.Id)
@@ -94,11 +94,19 @@
                     <div class="mb-3">
                         <label class="form-label" for="image">Ảnh sản phẩm</label>
                         <div class="input-group mb-2">
-                            <input class="form-control" id="image" name="image" type="text" value="@Model.Image" placeholder="Đường dẫn ảnh hoặc tải file bên dưới...">
+                            <input class="form-control @(fieldErrors.ContainsKey("image") ? "is-invalid" : "")" id="image" name="image" type="text" value="@Model.Image" placeholder="Đường dẫn ảnh hoặc chọn tệp bên dưới...">
+                            <button type="button" id="btnUpload" class="btn btn-outline-secondary">
+                                <i class="fas fa-folder-open me-1"></i> Chọn tệp ảnh
+                            </button>
                         </div>
-                        <input type="file" name="fileUpload" id="fileUpload" accept="image/*" class="form-control mb-3">
-                        <div class="p-3 bg-light rounded-3 text-center border">
-                            <img id="pictureUpload" src="@(string.IsNullOrEmpty(Model.Image) ? "/Content/Layout/User/images/coffee.png" : Model.Image)" style="max-height: 180px; width: auto; object-fit: contain; border-radius: 8px;" alt="Preview" />
+                        @if (fieldErrors.ContainsKey("image"))
+                        {
+                            <span class="invalid-feedback d-block mb-2">@fieldErrors["image"]</span>
+                        }
+                        <input type="file" name="fileUpload" id="fileUpload" accept="image/*" class="d-none" aria-label="Tải lên tệp ảnh sản phẩm">
+                        <div class="text-muted small mb-2">Chấp nhận JPG, JPEG, PNG, WEBP, GIF (tối đa 5MB).</div>
+                        <div class="p-3 bg-light rounded-3 text-center border" id="previewContainer">
+                            <img id="pictureUpload" src="@(string.IsNullOrEmpty(Model.Image) ? "/Content/Layout/User/images/coffee.png" : Model.Image)" style="max-height: 180px; width: auto; object-fit: contain; border-radius: 8px;" alt="Xem trước ảnh sản phẩm" />
                         </div>
                     </div>
                     <div class="form-check form-switch mt-3 mb-2">
@@ -130,16 +138,27 @@
         $('#slug').val(result.toLowerCase());
     }
     $(function () {
+        $('#btnUpload').click(function () {
+            $('#fileUpload').trigger('click');
+        });
+
         $('#fileUpload').change(function () {
             if (window.FormData !== undefined) {
                 var fileUpload = $('#fileUpload').get(0);
                 var files = fileUpload.files;
+                if (!files || files.length === 0) return;
+
                 var formData = new FormData();
                 formData.append('file', files[0]);
                 formData.append('__RequestVerificationToken', $('input[name="__RequestVerificationToken"]').val());
+
+                var $btn = $('#btnUpload');
+                var originalHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Đang tải...');
+
                 $.ajax({
                     type: 'POST',
-                    url: '/Admin/ManageProduct/ProcessUpload',
+                    url: '@Url.Action("ProcessUpload", "Image", new { area = "" })',
                     contentType: false,
                     processData: false,
                     data: formData,
@@ -147,10 +166,21 @@
                         $('#pictureUpload').attr('src', urlImage);
                         $('#image').val(urlImage);
                     },
-                    error: function (err) {
-                        alert('Lỗi upload: ' + err.statusText);
+                    error: function (xhr) {
+                        var msg = xhr.statusDescription || xhr.responseText || xhr.statusText || 'Không thể tải lên ảnh.';
+                        alert('Lỗi upload: ' + msg);
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html(originalHtml);
                     }
                 });
+            }
+        });
+
+        $('#image').on('input change', function () {
+            var url = $(this).val();
+            if (url && url.trim().length > 0) {
+                $('#pictureUpload').attr('src', url.trim());
             }
         });
     });

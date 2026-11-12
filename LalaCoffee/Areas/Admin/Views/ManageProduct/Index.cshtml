@@ -48,7 +48,7 @@
 <div class="modal fade" id="create_modal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            @using (Html.BeginForm("Create", "ManageProduct", FormMethod.Post))
+            @using (Html.BeginForm("Create", "ManageProduct", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
@@ -109,9 +109,20 @@
                     <div class="mb-3">
                         <label class="form-label" for="image">Ảnh sản phẩm</label>
                         <div class="input-group mb-2">
-                            <input type="text" class="form-control" name="image" id="image" placeholder="Đường dẫn ảnh hoặc tải lên file bên dưới..." value="@(formValues.ContainsKey("image") ? formValues["image"] : "")">
+                            <input type="text" class="form-control @(fieldErrors.ContainsKey("image") ? "is-invalid" : "")" name="image" id="image" placeholder="Đường dẫn ảnh hoặc chọn tệp bên dưới..." value="@(formValues.ContainsKey("image") ? formValues["image"] : "")">
+                            <button type="button" id="btnUpload" class="btn btn-outline-secondary">
+                                <i class="fas fa-folder-open me-1"></i> Chọn tệp ảnh
+                            </button>
                         </div>
-                        <input type="file" name="fileUpload" id="fileUpload" accept="image/*" class="form-control" aria-label="Tải lên tệp ảnh sản phẩm">
+                        @if (fieldErrors.ContainsKey("image"))
+                        {
+                            <span class="invalid-feedback d-block mb-2">@fieldErrors["image"]</span>
+                        }
+                        <input type="file" name="fileUpload" id="fileUpload" accept="image/*" class="d-none" aria-label="Tải lên tệp ảnh sản phẩm">
+                        <div class="text-muted small mb-2">Chấp nhận JPG, JPEG, PNG, WEBP, GIF (tối đa 5MB).</div>
+                        <div class="mt-2 text-center p-2 bg-light rounded border" id="previewContainer" style="@(formValues.ContainsKey("image") && !string.IsNullOrEmpty(formValues["image"]) ? "" : "display:none;")">
+                            <img id="pictureUpload" src="@(formValues.ContainsKey("image") ? formValues["image"] : "")" class="img-fluid rounded" style="max-height: 180px; object-fit: contain;" alt="Xem trước ảnh sản phẩm" />
+                        </div>
                     </div>
                     <div class="form-check form-switch mt-3">
                         <input class="form-check-input" type="checkbox" role="switch" name="status" id="status" value="1" @(isCreateActive ? "checked" : "")>
@@ -300,27 +311,53 @@
         </text>
     }
     $(function () {
+        $('#btnUpload').click(function () {
+            $('#fileUpload').trigger('click');
+        });
+
         $('#fileUpload').change(function () {
             if (window.FormData !== undefined) {
                 var fileUpload = $('#fileUpload').get(0);
                 var files = fileUpload.files;
+                if (!files || files.length === 0) return;
+
                 var formData = new FormData();
                 formData.append('file', files[0]);
                 formData.append('__RequestVerificationToken', $('input[name="__RequestVerificationToken"]').val());
+
+                var $btn = $('#btnUpload');
+                var originalHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Đang tải...');
+
                 $.ajax({
                     type: 'POST',
-                    url: '/Admin/ManageProduct/ProcessUpload',
+                    url: '@Url.Action("ProcessUpload", "Image", new { area = "" })',
                     contentType: false,
                     processData: false,
                     data: formData,
                     success: function (urlImage) {
                         $('#pictureUpload').attr('src', urlImage);
+                        $('#previewContainer').show();
                         $('#image').val(urlImage);
                     },
-                    error: function (err) {
-                        alert('Lỗi upload: ' + err.statusText);
+                    error: function (xhr) {
+                        var msg = xhr.statusDescription || xhr.responseText || xhr.statusText || 'Không thể tải lên ảnh.';
+                        alert('Lỗi upload: ' + msg);
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html(originalHtml);
                     }
                 });
+            }
+        });
+
+        $('#image').on('input change', function () {
+            var url = $(this).val();
+            if (url && url.trim().length > 0) {
+                $('#pictureUpload').attr('src', url.trim());
+                $('#previewContainer').show();
+            } else {
+                $('#previewContainer').hide();
             }
         });
     });
