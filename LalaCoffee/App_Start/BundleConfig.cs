@@ -15,8 +15,10 @@ namespace LalaCoffee
 			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
 						"~/Scripts/modernizr-*"));
 
-			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-					  "~/Content/lib/bootstrap/dist/js/bootstrap.bundle.min.js"));
+			var bootstrapBundle = new Bundle("~/bundles/bootstrap").Include(
+					  "~/Content/lib/bootstrap/dist/js/bootstrap.bundle.min.js");
+			bootstrapBundle.Transforms.Clear();
+			bundles.Add(bootstrapBundle);
 
 			bundles.Add(new StyleBundle("~/Content/css").Include(
 					  "~/Content/lib/bootstrap/dist/css/bootstrap.min.css",

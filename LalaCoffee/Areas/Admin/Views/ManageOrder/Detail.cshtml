@@ -80,8 +80,7 @@
             <table class="table table-hover align-middle mb-0" id="nTable">
                 <thead>
                     <tr>
-                        <th style="width: 50px;">ID</th>
-                        <th>Hình ảnh</th>
+                        <th style="width: 80px;">Mã SP</th>
                         <th>Tên sản phẩm</th>
                         <th>Kích cỡ (Size)</th>
                         <th>Topping thêm</th>
@@ -91,54 +90,40 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @if (Model != null)
                     {
-                        var product = item.Product;
-                        decimal itemPrice = item.Price;
-                        decimal propertyPrice = item.PropertyPrice;
-                        decimal optionsPrice = item.OptionPrice;
-                        decimal unitTotal = itemPrice + propertyPrice + optionsPrice;
-                        decimal lineTotal = unitTotal * item.Quantity;
-
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>
-                                @if (product != null && !string.IsNullOrEmpty(product.Image))
-                                {
-                                    <img src="@product.Image" alt="@item.ProductName" loading="lazy" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0;" />
-                                }
-                                else
-                                {
-                                    <span class="text-muted small">Không có ảnh</span>
-                                }
-                            </td>
-                            <td>
-                                <strong>@item.ProductName</strong>
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(item.PropertyName))
-                                {
-                                    <span class="badge bg-light text-dark border">@item.PropertyName (+@propertyPrice.ToString("N0")đ)</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">-</span>
-                                }
-                            </td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(item.OptionName))
-                                {
-                                    <span class="badge bg-light text-dark border">@item.OptionName (+@optionsPrice.ToString("N0")đ)</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">-</span>
-                                }
-                            </td>
-                            <td>@unitTotal.ToString("N0")đ</td>
-                            <td><span class="badge bg-secondary px-2 py-1">x@item.Quantity</span></td>
-                            <td><strong class="text-success">@lineTotal.ToString("N0")đ</strong></td>
-                        </tr>
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><span class="badge bg-light text-dark border">#@item.ProductId</span></td>
+                                <td>
+                                    <strong>@item.ProductName</strong>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.PropertyProduct))
+                                    {
+                                        <span class="badge bg-light text-dark border">@item.PropertyProduct</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.OptionProduct))
+                                    {
+                                        <div class="small text-muted" style="white-space: pre-line;">@item.OptionProduct</div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>@item.Price.ToString("N0")đ</td>
+                                <td><span class="badge bg-secondary px-2 py-1">x@item.Quantity</span></td>
+                                <td><strong class="text-success">@item.Total.ToString("N0")đ</strong></td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
