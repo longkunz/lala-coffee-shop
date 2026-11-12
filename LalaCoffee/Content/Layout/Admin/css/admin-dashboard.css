@@ -4,12 +4,12 @@
    ========================================================================== */
 
 :root {
-    --admin-sidebar-bg: #181513;
-    --admin-sidebar-hover: rgba(255, 255, 255, 0.06);
-    --admin-sidebar-active: rgba(193, 153, 66, 0.16);
-    --admin-sidebar-border: rgba(255, 255, 255, 0.08);
-    --admin-sidebar-text: #94a3b8;
-    --admin-sidebar-text-active: #ffffff;
+    --admin-sidebar-bg: #ffffff;
+    --admin-sidebar-hover: #f1f5f9;
+    --admin-sidebar-active: #fdfaf3;
+    --admin-sidebar-border: #e2e8f0;
+    --admin-sidebar-text: #475569;
+    --admin-sidebar-text-active: #855b14;
     --admin-brand-gold: #c19942;
     --admin-brand-gold-hover: #a68031;
     --admin-content-bg: #f8fafc;
@@ -209,35 +209,30 @@ body.admin-body {
     align-items: center;
     padding: 0 1.25rem;
     border-bottom: 1px solid var(--admin-sidebar-border);
+    background-color: #ffffff;
 }
 
 .sidebar-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
     text-decoration: none;
-    color: #ffffff;
+    color: #1e293b;
+    width: 100%;
 }
 
 .sidebar-brand:hover {
-    color: #ffffff;
+    color: var(--admin-brand-gold);
 }
 
 .sidebar-logo-img {
-    max-height: 32px;
+    max-height: 38px;
     width: auto;
+    max-width: 180px;
     object-fit: contain;
 }
 
 .sidebar-brand-text {
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: #ffffff;
-}
-
-.sidebar-brand-text span {
-    color: var(--admin-brand-gold);
+    display: none !important;
 }
 
 .sidebar-content {
@@ -253,7 +248,7 @@ body.admin-body {
     gap: 12px;
     padding: 0.85rem;
     margin-bottom: 1rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: #f8fafc;
     border: 1px solid var(--admin-sidebar-border);
     border-radius: 10px;
 }
@@ -264,6 +259,7 @@ body.admin-body {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--admin-brand-gold);
+    flex-shrink: 0;
 }
 
 .sidebar-user-info {
@@ -274,7 +270,7 @@ body.admin-body {
 .sidebar-user-name {
     display: block;
     font-weight: 600;
-    color: #ffffff;
+    color: #0f172a;
     font-size: 0.875rem;
     white-space: nowrap;
     overflow: hidden;
@@ -282,13 +278,18 @@ body.admin-body {
     text-decoration: none;
 }
 
+.sidebar-user-name:hover {
+    color: var(--admin-brand-gold);
+}
+
 .sidebar-user-role {
     display: inline-block;
     font-size: 0.72rem;
-    padding: 1px 7px;
+    padding: 2px 8px;
     border-radius: 4px;
-    background: rgba(193, 153, 66, 0.2);
-    color: var(--admin-brand-gold);
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid rgba(245, 158, 11, 0.2);
     font-weight: 600;
     margin-top: 3px;
 }
@@ -301,11 +302,11 @@ body.admin-body {
 }
 
 .nav-header {
-    font-size: 0.7rem;
+    font-size: 0.6875rem;
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 0.08em;
-    color: #64748b;
+    color: #94a3b8;
     padding: 0.85rem 0.85rem 0.4rem;
 }
 
@@ -333,7 +334,7 @@ body.admin-body {
 
 .nav-link-admin:hover {
     background-color: var(--admin-sidebar-hover);
-    color: #ffffff;
+    color: #0f172a;
 }
 
 .nav-link-admin:hover i.nav-icon {
@@ -342,7 +343,7 @@ body.admin-body {
 
 .nav-link-admin.active {
     background-color: var(--admin-sidebar-active);
-    color: #ffffff;
+    color: var(--admin-sidebar-text-active);
     font-weight: 600;
 }
 
@@ -375,7 +376,9 @@ body.admin-body {
 
 /* Submenu dropdown */
 .nav-submenu {
-    padding-left: 2rem;
+    padding-left: 0.75rem;
+    margin-left: 1.5rem;
+    border-left: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -385,6 +388,18 @@ body.admin-body {
 .nav-submenu .nav-link-admin {
     font-size: 0.85rem;
     padding: 0.45rem 0.75rem;
+    color: #64748b;
+}
+
+.nav-submenu .nav-link-admin:hover {
+    color: #0f172a;
+    background-color: #f1f5f9;
+}
+
+.nav-submenu .nav-link-admin.active {
+    background-color: var(--admin-sidebar-active);
+    color: var(--admin-sidebar-text-active);
+    font-weight: 600;
 }
 
 /* ==========================================================================
